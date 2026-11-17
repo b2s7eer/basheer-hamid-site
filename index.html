@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>basheer hamid | المنصة الرئيسية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#121212;
+    --surface:#1e1e1e;
+    --surface-2:#242424;
+    --cyan:#00ffcc;
+    --green:#00b38f;
+    --text:#f2f2f2;
+    --text-dim:#9a9a9a;
+    --border:rgba(255,255,255,.08);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(0,255,204,.06), transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(0,179,143,.07), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,.brand{font-family:'Cairo', sans-serif;}
+
+  a{color:inherit;text-decoration:none;}
+
+  ::selection{background:var(--cyan);color:#0a0a0a;}
+
+  /* ---------- Background grid texture ---------- */
+  .grid-overlay{
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:42px 42px;
+    pointer-events:none;
+    z-index:0;
+    mask-image:radial-gradient(circle at 50% 30%, black, transparent 75%);
+  }
+
+  /* ---------- Top banner ---------- */
+.banner-container {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  overflow: hidden;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+}
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 0; /* Keep this completely static */
+  white-space: nowrap;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 8px #FFD700;
+  direction: rtl; 
+  will-change: transform; 
+  backface-visibility: hidden; /* CRITICAL: Forces GPU smoothing */
+  -webkit-font-smoothing: antialiased;
+  /* CRITICAL CHANGE: 25s duration and a curve (0.25, 0.1, 0.75, 1.0) that ensures a fast, immediate start without the sluggish delay */
+  animation: flawless-scroll-ltr 25s cubic-bezier(0.25, 0.1, 0.75, 1.0) infinite; 
+}
+@keyframes flawless-scroll-ltr {
+  /* CRITICAL CHANGE: Added +80px so it starts slightly inside the screen, not at the absolute edge */
+  0% { transform: translate3d(calc(-100% + 80px), -50%, 0); } 
+  100% { transform: translate3d(100vw, -50%, 0); } 
+}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 6%;
+    background:rgba(18,18,18,.75);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    font-weight:800;
+    font-size:1.35rem;
+    letter-spacing:.5px;
+  }
+
+  .brand span.mark{color:var(--cyan);}
+
+  .topbar nav a{
+    color:var(--text-dim);
+    font-size:.95rem;
+    margin-inline-start:28px;
+    transition:color .25s ease;
+  }
+  .topbar nav a:hover{color:var(--cyan);}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    z-index:1;
+    padding:9rem 6% 6rem;
+    text-align:center;
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .hero .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 18px;
+    border:1px solid rgba(0,255,204,.35);
+    border-radius:999px;
+    color:var(--cyan);
+    font-size:.85rem;
+    font-weight:500;
+    background:rgba(0,255,204,.05);
+    margin-bottom:2rem;
+  }
+
+  .hero .eyebrow i{font-size:.75rem;}
+
+  .hero h1{
+    font-size:clamp(1rem, 5vw, 2.6rem);
+    font-weight:900;
+    line-height:1.25;
+    margin-bottom:1.4rem;
+    white-space:nowrap;
+  }
+
+  .hero h1 .accent{
+    background:linear-gradient(90deg, var(--cyan), var(--green));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .hero p{
+    color:var(--text-dim);
+    font-size:1.08rem;
+    max-width:620px;
+    margin:0 auto 2.6rem;
+  }
+
+  .hero .scroll-cue{
+    color:var(--text-dim);
+    font-size:.85rem;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .hero .scroll-cue i{
+    color:var(--cyan);
+    animation:bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(6px);}
+  }
+
+  /* ---------- Section shell ---------- */
+  section{position:relative;z-index:1;padding:2rem 6% 5rem;}
+
+  .section-head{
+    max-width:680px;
+    margin:0 auto 3rem;
+    text-align:center;
+  }
+  .section-head h2{
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    font-weight:800;
+    margin-bottom:.7rem;
+  }
+  .section-head p{color:var(--text-dim);font-size:1rem;}
+
+  /* ---------- Subjects grid ---------- */
+  .subjects{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1.8rem;
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  .card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:2.4rem 1.8rem 2rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    transition:transform .35s ease, border-color .35s ease, box-shadow .35s ease, background .35s ease;
+    overflow:hidden;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:18px;
+    padding:1px;
+    background:linear-gradient(135deg, transparent 40%, rgba(0,255,204,.5), transparent 70%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    opacity:0;
+    transition:opacity .35s ease;
+    pointer-events:none;
+  }
+
+  .card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(0,255,204,.4);
+    box-shadow:0 18px 40px -18px rgba(0,255,204,.25);
+    background:linear-gradient(180deg, var(--surface-2), var(--surface));
+  }
+  .card:hover::before{opacity:1;}
+
+  .card .icon-wrap{
+    width:74px;
+    height:74px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,255,204,.06);
+    border:1px solid rgba(0,255,204,.18);
+    margin-bottom:1.4rem;
+    transition:background .35s ease, transform .35s ease;
+  }
+  .card:hover .icon-wrap{
+    background:rgba(0,255,204,.12);
+    transform:scale(1.06) rotate(-4deg);
+  }
+
+  .card .icon-wrap i{
+    font-size:1.9rem;
+    color:var(--cyan);
+  }
+
+  .card h3{
+    font-size:1.18rem;
+    font-weight:700;
+    margin-bottom:.5rem;
+    min-height:2.7em;
+    display:flex;
+    align-items:center;
+  }
+
+  .card .tag{
+    color:var(--text-dim);
+    font-size:.85rem;
+    margin-bottom:1.8rem;
+  }
+
+  .card .actions{
+    display:flex;
+    flex-direction:column;
+    gap:.7rem;
+    width:100%;
+    margin-top:auto;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:.75rem 1rem;
+    border-radius:10px;
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    font-size:.92rem;
+    cursor:pointer;
+    transition:all .25s ease;
+    border:1px solid transparent;
+  }
+
+  .btn-primary{
+    background:var(--cyan);
+    color:#0a0a0a;
+  }
+  .btn-primary:hover{
+    background:#33ffd9;
+    box-shadow:0 0 22px rgba(0,255,204,.45);
+  }
+
+  .btn-outline{
+    background:transparent;
+    border:1px solid rgba(0,179,143,.5);
+    color:var(--green);
+  }
+  .btn-outline:hover{
+    border-color:var(--green);
+    background:rgba(0,179,143,.1);
+    box-shadow:0 0 16px rgba(0,179,143,.25);
+  }
+
+  /* ---------- Contact ---------- */
+  .contact{
+    text-align:center;
+    padding-bottom:2rem;
+  }
+
+  .contact .section-head h2{margin-bottom:.5rem;}
+
+  .social-row{
+    display:flex;
+    justify-content:center;
+    gap:1.6rem;
+    margin-top:2.4rem;
+    flex-wrap:wrap;
+  }
+
+  .social-btn{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.4rem;
+    color:var(--text);
+    position:relative;
+    transition:transform .3s ease, border-color .3s ease, color .3s ease;
+  }
+
+  .social-btn::after{
+    content:"";
+    position:absolute;
+    inset:-6px;
+    border-radius:50%;
+    border:1px solid var(--cyan);
+    opacity:0;
+    transform:scale(.85);
+    transition:all .3s ease;
+  }
+
+  .social-btn:hover{
+    transform:translateY(-5px);
+    color:var(--cyan);
+    border-color:rgba(0,255,204,.4);
+  }
+  .social-btn:hover::after{opacity:.55;transform:scale(1);}
+
+  .social-btn span{
+    position:absolute;
+    bottom:-2rem;
+    font-size:.75rem;
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    text-align:center;
+    padding:2.6rem 6% 2rem;
+    color:var(--text-dim);
+    font-size:.85rem;
+    border-top:1px solid var(--border);
+    position:relative;
+    z-index:1;
+  }
+  footer .mark{color:var(--cyan);}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1024px){
+    .subjects{grid-template-columns:repeat(2, 1fr);}
+  }
+
+  @media (max-width:768px){
+    .topbar nav{display:none;}
+    .hero{padding:6rem 6% 4rem;}
+    .subjects{grid-template-columns:1fr;}
+    .card{width:100%;}
+    .social-row{gap:2.4rem;}
+    section{padding:1.5rem 6% 3.5rem;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<div class="banner-container">
+  <span class="banner-text">✨ لا تجعل القراءة تلهيك عن الصلاة ✨ { فَإِذَا قَضَيْتُمُ ٱلصَّلَوٰةَ فَٱذْكُرُوا۟ ٱللَّهَ قِيَٰمًا وَقُعُودًا وَعَلَىٰ جُنُوبِكُمْ ۚ فَإِذَا ٱطْمَأْنَنتُمْ فَأَقِيمُوا۟ ٱلصَّلَوٰةَ ۚ إِنَّ ٱلصَّلَوٰةَ كَانَتْ عَلَى ٱلْمُؤْمِنِينَ كِتَٰبًا مَّوْقُوتًا ۝١٠٣ } ✨</span>
+</div>
+
+<header class="topbar">
+  <div class="brand"><span dir="ltr" style="display: inline-flex; align-items: baseline; font-weight: bold; font-size: 1.8rem; color: #fff;">basheer hamid</span></div>
+  <nav>
+    <a href="#subjects">المواد الدراسية</a>
+    <a href="#contact">تواصل معنا</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow"><i class="fa-solid fa-satellite-dish"></i> منصة الفصل الدراسي الثاني</div>
+  <h1>المنصة الرئيسية <span class="accent">basheer hamid</span></h1>
+  <p>نقطة انطلاقك الموحدة لمواد الفصل الدراسي. واجهة شاملة تجمع الملخصات، الشيتات، بنوك الأسئلة، والاختبارات التفاعلية في مكان واحد لجميع طلاب كليات الحاسوب.</p>
+  <a href="#subjects" class="scroll-cue">
+    <span>استعرض المواد</span>
+    <i class="fa-solid fa-chevron-down"></i>
+  </a>
+</section>
+
+<section id="subjects">
+  <div class="section-head">
+    <h2>المواد الدراسية</h2>
+    <p>اختر مادتك للدخول إلى منصتها التعليمية.</p>
+  </div>
+
+  <div class="subjects">
+
+    <!-- 1: Math -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-square-root-variable"></i></div>
+      <h3>الهندسة التحليلية والجبر الخطي</h3>
+      <p class="tag">Linear Algebra &amp; Geometry</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Linear-algebra-and-geometry/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 2: Communication -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-comments"></i></div>
+      <h3>مهارات الاتصال</h3>
+      <p class="tag">Communication Skills</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Communication-Skills/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 3: Programming Methods -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-code"></i></div>
+      <h3>أساليب البرمجة</h3>
+      <p class="tag">Programming Methods</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Programming-F.T-S2/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 4: Computer Applications -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-display"></i></div>
+      <h3>تطبيقات الحاسوب</h3>
+      <p class="tag">Computer Applications</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Computer-Applications-S2/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 5: Operating Systems -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-brands fa-linux"></i></div>
+      <h3>نظم التشغيل</h3>
+      <p class="tag">Operating Systems</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/LINUX-OS/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 6: Accounting -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-coins"></i></div>
+      <h3>المحاسبة</h3>
+      <p class="tag">Accounting</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Accounting-Platform-cipher73-/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 7: Physics -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-atom"></i></div>
+      <h3>الفيزياء</h3>
+      <p class="tag">Physics II</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/Physics-II/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+    <!-- 8: English -->
+    <div class="card">
+      <div class="icon-wrap"><i class="fa-solid fa-language"></i></div>
+      <h3>اللغة الإنجليزية</h3>
+      <p class="tag">English Language</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://ah6119221-star.github.io/English-s2/" target="_blank" rel="noopener">
+          <i class="fa-solid fa-arrow-left-long"></i> الدخول للمنصة
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="section-head">
+    <h2>تواصل مع المطور</h2>
+    <p>لأي استفسار أو اقتراح، تقدر تتواصل عن طريق القنوات التالية.</p>
+  </div>
+
+  <div class="social-row">
+    <a class="social-btn" href="https://wa.me/qr/M4C46RFHPB55M1" target="_blank" rel="noopener" aria-label="واتساب">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span>واتساب</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© <span id="year"></span> <span class="mark">basheer hamid</span> — جميع الحقوق محفوظة</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
