@@ -1,0 +1,3143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+        <title>basheer hamid — Linux OS II Lab Companion</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+        <style>
+            /* ============================================================
+   basheer hamid — Design tokens
+   ============================================================ */
+            :root {
+                --bg: #080b10;
+                --bg-raised: #0d1219;
+                --panel: #111826;
+                --panel-2: #151d2c;
+                --line: #1f2a3a;
+                --line-soft: #182231;
+                --cyan: #2fe6e6;
+                --cyan-dim: #1aa3a3;
+                --green: #5bffb0;
+                --green-dim: #2fbd85;
+                --text: #e9eef5;
+                --text-dim: #8ea0b8;
+                --text-faint: #546681;
+                --danger: #ff5470;
+                --danger-dim: #3a1620;
+                --success-dim: #0f2e24;
+                --radius: 14px;
+                --radius-sm: 8px;
+                --font-en: 'Space Grotesk',sans-serif;
+                --font-ar: 'Tajawal',sans-serif;
+                --font-mono: 'JetBrains Mono',monospace;
+                --maxw: 960px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html,body {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: radial-gradient(1200px 600px at 15% -10%, rgba(47,230,230,0.07), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(91,255,176,0.06), transparent 55%), var(--bg);
+                color: var(--text);
+                font-family: var(--font-en);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+                line-height: 1.5;
+            }
+
+            body[dir="rtl"] {
+                font-family: var(--font-ar);
+            }
+
+            body[dir="rtl"] .mono {
+                direction: ltr;
+                unicode-bidi: isolate;
+                display: inline-block;
+            }
+
+            ::selection {
+                background: rgba(47,230,230,0.3);
+            }
+
+            a {
+                color: var(--cyan);
+            }
+
+            button {
+                font-family: inherit;
+            }
+
+            .mono {
+                font-family: var(--font-mono);
+            }
+
+            /* ---------- Scrollbar ---------- */
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: var(--bg);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--line);
+                border-radius: 8px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--cyan-dim);
+            }
+
+            /* ============================================================
+   LANGUAGE GATE (initial modal)
+   ============================================================ */
+            #lang-gate {
+                position: fixed;
+                inset: 0;
+                z-index: 100;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: radial-gradient(900px 500px at 50% 20%, rgba(47,230,230,0.09), transparent 60%), var(--bg);
+                padding: 24px;
+            }
+
+            #lang-gate.hidden {
+                display: none;
+            }
+
+            .gate-card {
+                width: 100%;
+                max-width: 440px;
+                background: linear-gradient(180deg, var(--panel-2), var(--panel));
+                border: 1px solid var(--line);
+                border-radius: 20px;
+                padding: 40px 32px;
+                text-align: center;
+                box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(47,230,230,0.04) inset;
+            }
+
+            .gate-brand {
+                font-family: var(--font-mono);
+                font-size: 13px;
+                letter-spacing: 0.16em;
+                color: var(--cyan);
+                margin-bottom: 6px;
+            }
+
+            .gate-logo {
+                font-size: 30px;
+                font-weight: 700;
+                margin: 4px 0 22px;
+                background: linear-gradient(100deg,var(--cyan),var(--green));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+            .gate-title {
+                font-size: 15px;
+                color: var(--text-dim);
+                margin-bottom: 26px;
+            }
+
+            .gate-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .gate-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 20px;
+                background: var(--bg-raised);
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                color: var(--text);
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: border-color .15s ease, transform .1s ease, background .15s ease;
+                text-align: start;
+            }
+
+            .gate-btn:hover {
+                border-color: var(--cyan-dim);
+                background: var(--panel-2);
+            }
+
+            .gate-btn:active {
+                transform: scale(0.98);
+            }
+
+            .gate-btn small {
+                display: block;
+                font-weight: 400;
+                color: var(--text-faint);
+                font-size: 12px;
+                margin-top: 3px;
+            }
+
+            .gate-btn .arrow {
+                color: var(--cyan);
+                font-family: var(--font-mono);
+            }
+
+            /* ============================================================
+   APP SHELL
+   ============================================================ */
+            #app {
+                display: none;
+                min-height: 100vh;
+                flex-direction: column;
+            }
+
+            #app.ready {
+                display: flex;
+            }
+
+            header {
+                position: sticky;
+                top: 0;
+                z-index: 40;
+                background: rgba(8,11,16,0.85);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+                border-bottom: 1px solid var(--line-soft);
+            }
+
+            .header-inner {
+                max-width: var(--maxw);
+                margin: 0 auto;
+                padding: 14px 18px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+                border-radius: 9px;
+                background: linear-gradient(135deg,var(--cyan),var(--green));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--font-mono);
+                font-weight: 800;
+                color: #04141a;
+                font-size: 15px;
+                flex-shrink: 0;
+            }
+
+            .brand-text {
+                font-weight: 700;
+                font-size: 17px;
+                letter-spacing: 0.01em;
+            }
+
+            .brand-text .sup {
+                color: var(--green);
+                font-size: 13px;
+                vertical-align: super;
+            }
+
+            .lang-toggle {
+                display: flex;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                padding: 3px;
+                flex-shrink: 0;
+            }
+
+            .lang-toggle button {
+                border: none;
+                background: transparent;
+                color: var(--text-faint);
+                padding: 7px 14px;
+                border-radius: 999px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .15s ease;
+            }
+
+            .lang-toggle button.active {
+                background: linear-gradient(100deg,var(--cyan),var(--green));
+                color: #04141a;
+            }
+
+            nav.tabs {
+                max-width: var(--maxw);
+                margin: 0 auto;
+                display: flex;
+                gap: 4px;
+                padding: 0 18px 12px;
+                overflow-x: auto;
+            }
+
+            nav.tabs button {
+                border: 1px solid var(--line);
+                background: var(--panel);
+                color: var(--text-dim);
+                padding: 9px 16px;
+                border-radius: 10px;
+                font-size: 13.5px;
+                font-weight: 600;
+                cursor: pointer;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                transition: all .15s ease;
+            }
+
+            nav.tabs button .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--text-faint);
+            }
+
+            nav.tabs button.active {
+                color: var(--text);
+                border-color: var(--cyan-dim);
+                background: linear-gradient(180deg, rgba(47,230,230,0.10), rgba(47,230,230,0.03));
+            }
+
+            nav.tabs button.active .dot {
+                background: var(--green);
+                box-shadow: 0 0 8px var(--green);
+            }
+
+            main {
+                flex: 1;
+                max-width: var(--maxw);
+                margin: 0 auto;
+                width: 100%;
+                padding: 22px 18px 60px;
+            }
+
+            .view {
+                display: none;
+            }
+
+            .view.active {
+                display: block;
+                animation: fadein .25s ease;
+            }
+
+            @keyframes fadein {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .page-head {
+                margin-bottom: 20px;
+            }
+
+            .page-eyebrow {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                color: var(--green);
+                margin-bottom: 6px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0 0 6px;
+            }
+
+            .page-sub {
+                color: var(--text-dim);
+                font-size: 14.5px;
+                max-width: 60ch;
+            }
+
+            /* ---------- Summaries ---------- */
+            .lab-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .lab-card {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: var(--radius);
+                padding: 20px;
+                cursor: pointer;
+                transition: border-color .15s ease, transform .12s ease;
+            }
+
+            .lab-card:hover {
+                border-color: var(--cyan-dim);
+            }
+
+            .lab-card:active {
+                transform: scale(0.995);
+            }
+
+            .lab-card-top {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .lab-num {
+                font-family: var(--font-mono);
+                font-weight: 700;
+                font-size: 13px;
+                color: var(--bg);
+                background: linear-gradient(135deg,var(--cyan),var(--green));
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .lab-card-title {
+                font-size: 16px;
+                font-weight: 700;
+                margin: 0 0 5px;
+            }
+
+            .lab-card-desc {
+                color: var(--text-dim);
+                font-size: 13.5px;
+                line-height: 1.55;
+                margin: 0;
+            }
+
+            .lab-card-foot {
+                margin-top: 12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: var(--cyan);
+                font-size: 12.5px;
+                font-weight: 600;
+            }
+
+            .chev {
+                transition: transform .2s ease;
+            }
+
+            .lab-card.open .chev {
+                transform: rotate(90deg);
+            }
+
+            body[dir="rtl"] .lab-card.open .chev {
+                transform: rotate(-90deg);
+            }
+
+            .lab-points {
+                list-style: none;
+                margin: 16px 0 0;
+                padding: 14px 0 0;
+                border-top: 1px solid var(--line-soft);
+                display: none;
+            }
+
+            .lab-card.open .lab-points {
+                display: block;
+            }
+
+            .lab-points li {
+                position: relative;
+                padding-inline-start:20px;margin-bottom: 10px;
+                color: var(--text);
+                font-size: 13.5px;
+                line-height: 1.6;
+            }
+
+            .lab-points li::before {
+                content: "";
+                position: absolute;
+                inset-inline-start: 0;
+                top: 7px;
+                width: 7px;
+                height: 7px;
+                border-radius: 2px;
+                background: var(--green);
+                transform: rotate(45deg);
+            }
+
+            /* ---------- Dictionary ---------- */
+            .dict-search {
+                width: 100%;
+                padding: 13px 16px;
+                border-radius: var(--radius-sm);
+                background: var(--panel);
+                border: 1px solid var(--line);
+                color: var(--text);
+                font-size: 14.5px;
+                margin-bottom: 16px;
+                font-family: inherit;
+            }
+
+            .dict-search:focus {
+                outline: none;
+                border-color: var(--cyan-dim);
+            }
+
+            .dict-count {
+                font-size: 12.5px;
+                color: var(--text-faint);
+                margin-bottom: 14px;
+                font-family: var(--font-mono);
+            }
+
+            .dict-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .dict-item {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 14px 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .dict-en {
+                font-weight: 600;
+                font-size: 14px;
+                font-family: var(--font-mono);
+                color: var(--cyan);
+            }
+
+            .dict-ar {
+                font-weight: 500;
+                font-size: 14.5px;
+                color: var(--text);
+                text-align: end;
+                font-family: var(--font-ar);
+            }
+
+            /* ---------- Quiz ---------- */
+            .quiz-intro {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: var(--radius);
+                padding: 28px 22px;
+                text-align: center;
+            }
+
+            .quiz-intro-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: 14px;
+                margin: 0 auto 16px;
+                background: linear-gradient(135deg,var(--cyan),var(--green));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+            }
+
+            .quiz-stats {
+                display: flex;
+                justify-content: center;
+                gap: 26px;
+                margin: 20px 0 26px;
+                flex-wrap: wrap;
+            }
+
+            .quiz-stat b {
+                display: block;
+                font-size: 22px;
+                font-family: var(--font-mono);
+                color: var(--green);
+            }
+
+            .quiz-stat span {
+                font-size: 12px;
+                color: var(--text-faint);
+            }
+
+            .btn-primary {
+                background: linear-gradient(100deg,var(--cyan),var(--green));
+                color: #04141a;
+                border: none;
+                padding: 14px 30px;
+                border-radius: 999px;
+                font-weight: 700;
+                font-size: 15px;
+                cursor: pointer;
+                transition: transform .12s ease, box-shadow .15s ease;
+                box-shadow: 0 10px 30px -10px rgba(47,230,230,0.5);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-1px);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .btn-ghost {
+                background: transparent;
+                border: 1px solid var(--line);
+                color: var(--text);
+                padding: 12px 24px;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            .btn-ghost:hover {
+                border-color: var(--cyan-dim);
+            }
+
+            .quiz-progress {
+                position: sticky;
+                top: 106px;
+                z-index: 20;
+                background: var(--bg);
+                padding: 10px 0 14px;
+            }
+
+            .quiz-progress-bar {
+                height: 6px;
+                border-radius: 4px;
+                background: var(--panel);
+                overflow: hidden;
+                border: 1px solid var(--line);
+            }
+
+            .quiz-progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg,var(--cyan),var(--green));
+                width: 0%;
+                transition: width .3s ease;
+            }
+
+            .quiz-progress-label {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                color: var(--text-faint);
+                margin-top: 7px;
+                text-align: center;
+            }
+
+            .q-card {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: var(--radius);
+                padding: 20px;
+                margin-bottom: 14px;
+            }
+
+            .q-card.unanswered {
+                border-color: rgba(255,84,112,0.35);
+            }
+
+            .q-head {
+                display: flex;
+                gap: 10px;
+                align-items: flex-start;
+                margin-bottom: 14px;
+            }
+
+            .q-index {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--cyan);
+                background: rgba(47,230,230,0.08);
+                border: 1px solid var(--cyan-dim);
+                padding: 3px 9px;
+                border-radius: 6px;
+                flex-shrink: 0;
+            }
+
+            .q-text {
+                font-size: 15px;
+                font-weight: 600;
+                line-height: 1.5;
+            }
+
+            .q-opts {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .q-opt {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                padding: 12px 14px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: var(--bg-raised);
+                cursor: pointer;
+                font-size: 14px;
+                transition: all .12s ease;
+            }
+
+            .q-opt:hover {
+                border-color: var(--cyan-dim);
+            }
+
+            .q-opt input {
+                accent-color: var(--cyan);
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+            }
+
+            .q-opt.selected {
+                border-color: var(--cyan-dim);
+                background: rgba(47,230,230,0.06);
+            }
+
+            .q-opt.correct {
+                border-color: var(--green-dim);
+                background: var(--success-dim);
+            }
+
+            .q-opt.incorrect {
+                border-color: var(--danger);
+                background: var(--danger-dim);
+            }
+
+            .q-opt.disabled {
+                cursor: default;
+            }
+
+            .q-tag {
+                margin-inline-start:auto;font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-faint);
+            }
+
+            .quiz-submit-bar {
+                position: sticky;
+                bottom: 0;
+                z-index: 20;
+                margin-top: 10px;
+                padding: 16px 0;
+                background: linear-gradient(180deg, transparent, var(--bg) 30%);
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .quiz-hint {
+                font-size: 12.5px;
+                color: var(--text-faint);
+            }
+
+            /* ---------- Results ---------- */
+            .result-card {
+                background: linear-gradient(180deg, var(--panel-2), var(--panel));
+                border: 1px solid var(--line);
+                border-radius: 20px;
+                padding: 34px 24px;
+                text-align: center;
+            }
+
+            .result-score {
+                font-family: var(--font-mono);
+                font-size: 58px;
+                font-weight: 800;
+                background: linear-gradient(100deg,var(--cyan),var(--green));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                line-height: 1;
+                margin-bottom: 6px;
+            }
+
+            .result-pct {
+                font-size: 15px;
+                color: var(--text-dim);
+                margin-bottom: 22px;
+            }
+
+            .result-quote {
+                font-size: 15px;
+                font-style: italic;
+                color: var(--text);
+                border-inline-start:3px solid var(--green); padding-inline-start: 16px;
+                text-align: start;
+                margin: 0 auto 26px;
+                max-width: 52ch;
+                line-height: 1.6;
+            }
+
+            body[dir="rtl"] .result-quote {
+                font-style: normal;
+            }
+
+            .result-actions {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .review-title {
+                font-size: 15px;
+                font-weight: 700;
+                margin: 34px 0 14px;
+                color: var(--text-dim);
+            }
+
+            footer {
+                text-align: center;
+                padding: 26px 18px 40px;
+                color: var(--text-faint);
+                font-size: 12px;
+                font-family: var(--font-mono);
+            }
+
+            @media(min-width: 640px) {
+                .lab-grid {
+                    grid-template-columns:1fr 1fr;
+                }
+
+                .dict-grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ============================================================
+     LANGUAGE GATE
+     ============================================================ -->
+        <div id="lang-gate">
+            <div class="gate-card">
+                <div class="gate-brand">SYSTEM.INIT</div>
+                <div class="gate-logo">basheer hamid</div>
+                <div class="gate-title" id="gate-title">
+                    Choose your language to continue<br>اختر لغتك للمتابعة
+                </div>
+                <div class="gate-buttons">
+                    <button class="gate-btn" onclick="selectLanguage('en')">
+                        <span>English</span>
+                        <span class="arrow mono">EN →</span>
+                    </button>
+                    <button class="gate-btn" onclick="selectLanguage('ar')" style="font-family:'Tajawal',sans-serif;">
+                        <span>العربية</span>
+                        <span class="arrow mono">AR ←</span>
+                    </button>
+                </div>
+            </div>s
+        </div>
+        <!-- ============================================================
+     APP
+     ============================================================ -->
+        <div id="app">
+            <header>
+                <div class="header-inner">
+                    <div class="brand">
+                        <div class="brand-mark">C⁷³</div>
+                        <div class="brand-text" data-i18n="brandName">
+                            basheer hamid
+                        </div>
+                    </div>
+                    <div class="lang-toggle">
+                        <button id="btn-lang-en" onclick="setLanguage('en')">EN</button>
+                        <button id="btn-lang-ar" onclick="setLanguage('ar')">AR</button>
+                    </div>
+                </div>
+                <nav class="tabs">
+                    <button id="tab-btn-summaries" class="tab-btn active" onclick="showView('summaries')">
+                        <span class="dot"></span>
+                        <span data-i18n="tabSummaries">Summaries</span>
+                    </button>
+                    <button id="tab-btn-quiz" class="tab-btn" onclick="showView('quiz')">
+                        <span class="dot"></span>
+                        <span data-i18n="tabQuiz">Quiz Bank</span>
+                    </button>
+                    <button id="tab-btn-dictionary" class="tab-btn" onclick="showView('dictionary')">
+                        <span class="dot"></span>
+                        <span data-i18n="tabDictionary">Dictionary</span>
+                    </button>
+                </nav>
+            </header>
+            <main>
+                <!-- ============ SUMMARIES VIEW ============ -->
+                <section id="view-summaries" class="view">
+                    <div class="page-head">
+                        <div class="page-eyebrow" data-i18n="revisionEyebrow">REVISION</div>
+                        <h1 class="page-title" data-i18n="summariesTitle">Summaries &amp;Revision</h1>
+                        <p class="page-sub" data-i18n="summariesSub">Ten labs from the Linux Operating System II manual, condensed into quick-reference cards.</p>
+                    </div>
+                    <div class="lab-grid" id="lab-grid"></div>
+                </section>
+                <!-- ============ QUIZ VIEW ============ -->
+                <section id="view-quiz" class="view">
+                    <div id="quiz-stage-intro">
+                        <div class="page-head">
+                            <div class="page-eyebrow" data-i18n="quizEyebrow">ASSESSMENT</div>
+                            <h1 class="page-title" data-i18n="quizTitle">Interactive Quiz Bank</h1>
+                            <p class="page-sub" data-i18n="quizSub">Test your knowledge with a randomized set pulled from the full question bank.</p>
+                        </div>
+                        <div class="quiz-intro">
+                            <div class="quiz-intro-icon">🧠</div>
+                            <div class="quiz-stats">
+                                <div class="quiz-stat">
+                                    <b id="stat-pool">0</b>
+                                    <span data-i18n="statPool">questions in bank</span>
+                                </div>
+                                <div class="quiz-stat">
+                                    <b>20</b>
+                                    <span data-i18n="statPerRun">per attempt</span>
+                                </div>
+                                <div class="quiz-stat">
+                                    <b id="stat-labs">10</b>
+                                    <span data-i18n="statLabs">labs covered</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="startQuiz()" data-i18n="startQuizBtn">Start Quiz</button>
+                        </div>
+                    </div>
+                    <div id="quiz-stage-active" style="display:none;">
+                        <div class="quiz-progress">
+                            <div class="quiz-progress-bar">
+                                <div class="quiz-progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="quiz-progress-label" id="progress-label">0 / 20 answered</div>
+                        </div>
+                        <div id="questions-container"></div>
+                        <div class="quiz-submit-bar">
+                            <div class="quiz-hint" id="submit-hint" data-i18n="submitHint">Answer all 20 questions to submit.</div>
+                            <button class="btn-primary" id="submit-btn" onclick="submitQuiz()" disabled data-i18n="submitBtn">Submit Quiz</button>
+                        </div>
+                    </div>
+                    <div id="quiz-stage-results" style="display:none;">
+                        <div class="result-card">
+                            <div class="page-eyebrow" data-i18n="resultsEyebrow">RESULTS</div>
+                            <div class="result-score" id="result-score">0/20</div>
+                            <div class="result-pct" id="result-pct">0%</div>
+                            <div class="result-quote" id="result-quote"></div>
+                            <div class="result-actions">
+                                <button class="btn-primary" onclick="startQuiz()" data-i18n="retryBtn">Try Another Set</button>
+                                <button class="btn-ghost" onclick="reviewResults()" data-i18n="reviewBtn">Review Answers</button>
+                            </div>
+                        </div>
+                        <div id="review-container"></div>
+                    </div>
+                </section>
+                <!-- ============ DICTIONARY VIEW ============ -->
+                <section id="view-dictionary" class="view">
+                    <div class="page-head">
+                        <div class="page-eyebrow" data-i18n="dictEyebrow">REFERENCE</div>
+                        <h1 class="page-title" data-i18n="dictTitle">Technical Dictionary</h1>
+                        <p class="page-sub" data-i18n="dictSub">Every key Linux term from the manual, paired with its Arabic translation.</p>
+                    </div>
+                    <input type="text" class="dict-search" id="dict-search" oninput="renderDictionary()" data-i18n-placeholder="dictSearchPlaceholder" placeholder="Search a term…">
+                    <div class="dict-count" id="dict-count"></div>
+                    <div class="dict-grid" id="dict-grid"></div>
+                </section>
+            </main>
+            <footer>
+                <span data-i18n="footerText">basheer hamid — Linux Operating System II Lab Companion</span>
+            </footer>
+        </div>
+        <script>
+            /* ============================================================
+   DATA — parsed from "Using Operating Systems II Lab Manual.pdf"
+   ============================================================ */
+            const DATA = {
+                "labs": [{
+                    "id": 1,
+                    "title_en": "Introduction & CentOS Installation",
+                    "title_ar": "مقدمة وتثبيت نظام CentOS",
+                    "summary_en": "An introduction to Linux and a beginner-friendly guide to installing CentOS. Covers what Linux and a Linux distribution are, the advantages and disadvantages of Linux, and a full step-by-step CentOS installation walkthrough ending with basic configuration such as creating user accounts.",
+                    "summary_ar": "مقدمة عن نظام لينكس ودليل مبسط للمبتدئين لتثبيت توزيعة CentOS. يغطي هذا الدرس تعريف لينكس وتوزيعات لينكس، مزايا وعيوب لينكس، بالإضافة إلى خطوات تثبيت CentOS كاملة بدءًا من التحميل وحتى الإعدادات الأساسية مثل إنشاء حسابات المستخدمين.",
+                    "points_en": ["Linux is an open-source operating system built on the Linux Kernel, similar to Unix.", "A Linux distribution bundles the kernel with supporting libraries and software.", "Advantages: open source, free licensing, frequent updates, multiuser, privacy.", "Disadvantages: less user-friendly, fewer hardware drivers, lack of a single standard.", "Installation requires a CentOS ISO, a bootable USB (8GB+), and a data backup.", "Installation Summary screen lets you configure Date & Time, Keyboard, Destination disk, Network, Root Password, and User Creation before clicking Begin Installation."],
+                    "points_ar": ["لينكس نظام تشغيل مفتوح المصدر مبني على نواة لينكس، ويشبه نظام يونكس.", "توزيعة لينكس هي نظام تشغيل يجمع النواة مع مكتبات وبرمجيات داعمة.", "المزايا: مفتوح المصدر، مجاني الترخيص، تحديثات متكررة، متعدد المستخدمين، يحافظ على الخصوصية.", "العيوب: أقل سهولة للمستخدم، تعريفات أجهزة أقل، لا يوجد إصدار موحّد قياسي.", "يتطلب التثبيت ملف ISO لتوزيعة CentOS، وفلاشة USB قابلة للإقلاع (8GB فأكثر)، ونسخ احتياطي للبيانات.", "شاشة ملخص التثبيت تتيح ضبط التاريخ والوقت، لوحة المفاتيح، قرص التثبيت، الشبكة، كلمة مرور الجذر، وإنشاء المستخدم قبل بدء التثبيت."]
+                }, {
+                    "id": 2,
+                    "title_en": "Linux Interfaces & Directory Structure",
+                    "title_ar": "واجهات لينكس وهيكل الدليل",
+                    "summary_en": "Explores the two main ways users interact with Linux — the Command-Line Interface (CLI) and the Graphical User Interface (GUI) — and how to switch between them, plus the hierarchical structure of the Linux file system starting from the root directory.",
+                    "summary_ar": "يستعرض هذا الدرس الطريقتين الأساسيتين للتعامل مع لينكس: واجهة سطر الأوامر (CLI) والواجهة الرسومية (GUI)، وكيفية التبديل بينهما، بالإضافة إلى الهيكل الهرمي لنظام الملفات في لينكس بدءًا من الدليل الجذر.",
+                    "points_en": ["CLI lets users control programs by typing text commands; the shell (e.g. bash) interprets them.", "Switch GUI→CLI with Alt+Ctrl+F1..F6, and CLI→GUI with Alt+Ctrl+F7.", "The prompt format is username@servername, showing $ for a normal user and # for the superuser (root).", "GNOME is the default desktop environment in RedHat-based systems, with a Top Bar, Dash, Activities overview, and Search Box.", "The root directory (/) is the top of the Linux hierarchy; every other directory lives beneath it.", "Key directories: /bin (executables), /etc (config files), /home (user homes), /tmp (temporary files), /usr, /var, /opt.", "Extended directories include /boot, /dev, /lib, /media, /mnt, /root, /sbin, /srv, /sys, /var/log."],
+                    "points_ar": ["واجهة سطر الأوامر (CLI) تتيح التحكم بالبرامج عبر كتابة أوامر نصية؛ ويقوم الصدفة (shell) مثل bash بتفسيرها.", "للتنقل من الواجهة الرسومية إلى سطر الأوامر: Alt+Ctrl+F1..F6، وللعودة: Alt+Ctrl+F7.", "شكل سطر الأوامر: username@servername، ويظهر $ للمستخدم العادي و# للمستخدم الجذر (root) صاحب الصلاحيات الكاملة.", "بيئة GNOME هي سطح المكتب الافتراضي في أنظمة RedHat، وتضم شريط علوي (Top Bar) وقائمة Dash ونافذة الأنشطة ومربع بحث.", "الدليل الجذر (/) هو أعلى نقطة في هيكل لينكس، وكل الأدلة الأخرى موجودة تحته.", "أهم الأدلة: /bin (البرامج التنفيذية)، /etc (ملفات الإعداد)، /home (أدلة المستخدمين)، /tmp (ملفات مؤقتة)، /usr، /var، /opt.", "أدلة إضافية: /boot، /dev، /lib، /media، /mnt، /root، /sbin، /srv، /sys، /var/log."]
+                }, {
+                    "id": 3,
+                    "title_en": "Basic Linux Commands & Listing Files",
+                    "title_ar": "أوامر لينكس الأساسية وعرض الملفات",
+                    "summary_en": "Covers the general command syntax (Command [Option] [Argument]) and a wide set of essential commands for navigation, file inspection, and system info, along with the many useful options of the ls command for listing files and directories.",
+                    "summary_ar": "يغطي هذا الدرس بنية الأوامر العامة (الأمر [الخيار] [المعطى]) ومجموعة واسعة من الأوامر الأساسية للتنقل وفحص الملفات ومعلومات النظام، بالإضافة إلى خيارات أمر ls المتعددة والمفيدة لعرض الملفات والأدلة.",
+                    "points_en": ["pwd prints the current working directory; cd navigates between directories.", "cp copies files, mv moves/renames files, rm deletes files, rmdir deletes empty directories.", "touch creates an empty file; sudo runs a command with elevated (superuser) privileges.", "echo prints text; head shows the first lines of a file (default 10); tail shows the last lines.", "uname prints system information; history shows previously used commands; man opens manual pages.", "useradd adds a new user; du shows disk usage; cat displays file contents; ping checks host reachability.", "chown changes file ownership; cal shows a calendar; who lists logged-in users; whoami shows the current user.", "whatis gives a one-line description of a command; clear clears the terminal screen.", "ls lists directory contents. ls -a shows hidden files; ls -l gives a long/detailed listing; ls -t sorts by time; ls -r reverses order; ls -F marks file types (/, @, *)."],
+                    "points_ar": ["pwd يطبع مسار الدليل الحالي؛ cd يُستخدم للتنقل بين الأدلة.", "cp لنسخ الملفات، mv لنقل/إعادة تسمية الملفات، rm لحذف الملفات، rmdir لحذف الأدلة الفارغة.", "touch لإنشاء ملف فارغ؛ sudo لتنفيذ أمر بصلاحيات المستخدم الجذر (Superuser).", "echo لطباعة نص؛ head لعرض أول أسطر الملف (10 أسطر افتراضيًا)؛ tail لعرض آخر الأسطر.", "uname لعرض معلومات النظام؛ history لعرض الأوامر السابقة؛ man لفتح صفحات الدليل (Manual).", "useradd لإضافة مستخدم جديد؛ du لعرض المساحة المستخدمة؛ cat لعرض محتوى الملف؛ ping لفحص الاتصال بمضيف.", "chown لتغيير مالك الملف؛ cal لعرض التقويم؛ who لعرض المستخدمين المسجّلين حاليًا؛ whoami لعرض اسم المستخدم الحالي.", "whatis يعطي وصفًا مختصرًا لسطر واحد عن أمر معيّن؛ clear لمسح شاشة الطرفية.", "ls يعرض محتويات الدليل. ls -a تعرض الملفات المخفية؛ ls -l تعرض قائمة تفصيلية طويلة؛ ls -t للترتيب حسب الوقت؛ ls -r لعكس الترتيب؛ ls -F لتمييز أنواع الملفات (/, @, *)."]
+                }, {
+                    "id": 4,
+                    "title_en": "Linux Directory Management",
+                    "title_ar": "إدارة الأدلة في لينكس",
+                    "summary_en": "Focuses on absolute vs relative pathnames and the commands used to create, remove, rename, copy, and navigate directories, practiced through building and modifying directory trees.",
+                    "summary_ar": "يركز هذا الدرس على المسارات المطلقة والنسبية، والأوامر المستخدمة لإنشاء الأدلة وحذفها وإعادة تسميتها ونسخها والتنقل بينها، من خلال بناء وتعديل أشجار من الأدلة.",
+                    "points_en": ["An absolute pathname always begins with / and is described relative to root (e.g. /etc/passwd).", "A relative pathname never begins with / and is described relative to the current directory.", "mkdir creates directories; you can create several at once: mkdir d1 d2 d3.", "rmdir removes an empty directory; rm -rf removes a directory and all its contents recursively (use with caution — no trash bin).", "mv renames a directory or moves it; cp -r copies a directory and its contents recursively.", "cd .. moves up one directory; cd ../.. moves up two directories."],
+                    "points_ar": ["المسار المطلق يبدأ دائمًا بـ / ويُوصف بالنسبة للجذر (مثل /etc/passwd).", "المسار النسبي لا يبدأ أبدًا بـ / ويُوصف بالنسبة للدليل الحالي.", "mkdir لإنشاء الأدلة، ويمكن إنشاء عدة أدلة دفعة واحدة: mkdir d1 d2 d3.", "rmdir لحذف دليل فارغ؛ rm -rf لحذف دليل وكل محتوياته بشكل متكرر (يجب الحذر فلا توجد سلة مهملات لاسترجاع الملفات).", "mv لإعادة تسمية الدليل أو نقله؛ cp -r لنسخ دليل وكل محتوياته بشكل متكرر.", "cd .. للانتقال خطوة للأعلى؛ cd ../.. للانتقال خطوتين للأعلى."]
+                }, {
+                    "id": 5,
+                    "title_en": "File & Directory Permissions",
+                    "title_ar": "صلاحيات الملفات والأدلة",
+                    "summary_en": "Explains how Linux permissions control access to files and directories using read, write, and execute permissions for three classes — user (owner), group, and others — and how to view and change them using chmod in both symbolic and numeric (octal) modes.",
+                    "summary_ar": "يشرح كيف تتحكم الصلاحيات في لينكس بالوصول إلى الملفات والأدلة باستخدام صلاحيات القراءة والكتابة والتنفيذ لثلاث فئات: المالك، المجموعة، والآخرون، وكيفية عرضها وتغييرها باستخدام أمر chmod بالوضعين الرمزي والرقمي (الثماني).",
+                    "points_en": ["ls -l shows permissions, owner, group, size, and modification date; the first character shows file type (- file, d directory, l symbolic link).", "Three permission classes: u (user/owner), g (group), o (others), a (all).", "Three permission types: r (read), w (write), x (execute).", "chmod symbolic mode: chmod user_category operator permission, e.g. chmod g+w file, chmod u=rwx,g+x file.", "Operators: + adds permissions, - removes permissions, = sets permissions exactly.", "Octal mode values: r=4, w=2, x=1. Add them per class, e.g. rwxr-xr-x = 755, rw-rw-r-- = 664.", "Common permission sets: 700 (owner only), 755 (everyone executes, owner edits), 644 (everyone reads, owner edits)."],
+                    "points_ar": ["الأمر ls -l يعرض الصلاحيات والمالك والمجموعة والحجم وتاريخ التعديل؛ الحرف الأول يوضح نوع الملف (- ملف عادي، d دليل، l رابط رمزي).", "ثلاث فئات للصلاحيات: u (المالك)، g (المجموعة)، o (الآخرون)، a (الجميع).", "ثلاثة أنواع صلاحيات: r (قراءة)، w (كتابة)، x (تنفيذ).", "الوضع الرمزي لـ chmod: chmod فئة_المستخدم عامل صلاحية، مثل chmod g+w file أو chmod u=rwx,g+x file.", "العوامل: + لإضافة صلاحية، - لإزالتها، = لتعيينها بالضبط.", "قيم الوضع الثماني: r=4، w=2، x=1. تُجمع لكل فئة، مثل rwxr-xr-x = 755، rw-rw-r-- = 664.", "مجموعات صلاحيات شائعة: 700 (للمالك فقط)، 755 (الجميع ينفذ، المالك يعدّل)، 644 (الجميع يقرأ، المالك يعدّل)."]
+                }, {
+                    "id": 6,
+                    "title_en": "Find Command & Viewing/Editing Files",
+                    "title_ar": "أمر البحث find وعرض وتحرير الملفات",
+                    "summary_en": "Covers the powerful find command for searching files by name, size, or modification time, viewing files with cat/head/tail/less/more, and editing text files using the Vi editor's Command, Insert, and Line modes.",
+                    "summary_ar": "يغطي أمر find القوي للبحث عن الملفات بالاسم أو الحجم أو تاريخ التعديل، وعرض الملفات باستخدام cat/head/tail/less/more، وتحرير الملفات النصية باستخدام محرر Vi وأوضاعه الثلاثة: الأوامر، الإدراج، والسطر.",
+                    "points_en": ["find syntax: find [path] [options] [expression], e.g. find /opt -iname apache.", "-name matches case-sensitively, -iname ignores case, -mtime finds files by age in days, -size finds by size, -exec runs a command on results.", "Size units in find: c (bytes), k (KB), M (MB), G (GB), e.g. find . -size +300M.", "cat displays a whole file; head/tail show the first/last lines; less/more page through content.", "Vi has two core modes: Command mode (navigate/delete/copy) and Insert mode (type text); press Esc to return to Command mode.", "Insert-mode keys: i (insert before cursor), a (append after cursor), A (append at end of line), o/O (open new line below/above).", "Line mode commands: :w (save), :q (quit), :q! (quit without saving), :wq! (save and quit)."],
+                    "points_ar": ["بنية أمر find: find [المسار] [الخيارات] [الشرط]، مثل find /opt -iname apache.", "-name يبحث بحساسية لحالة الأحرف، -iname يتجاهل حالة الأحرف، -mtime للبحث حسب عمر الملف بالأيام، -size للبحث حسب الحجم، -exec لتنفيذ أمر على النتائج.", "وحدات الحجم في find: c (بايت)، k (كيلوبايت)، M (ميجابايت)، G (جيجابايت)، مثل find . -size +300M.", "cat يعرض الملف كاملاً؛ head/tail يعرضان أول/آخر أسطر الملف؛ less/more للتصفح صفحة بصفحة.", "لمحرر Vi وضعان أساسيان: وضع الأوامر (للتنقل والحذف والنسخ) ووضع الإدراج (لكتابة النص)؛ اضغط Esc للعودة لوضع الأوامر.", "مفاتيح وضع الإدراج: i (إدراج قبل المؤشر)، a (إضافة بعد المؤشر)، A (إضافة في نهاية السطر)، o/O (فتح سطر جديد أسفل/أعلى).", "أوامر وضع السطر: :w (حفظ)، :q (خروج)، :q! (خروج بدون حفظ)، :wq! (حفظ وخروج)."]
+                }, {
+                    "id": 7,
+                    "title_en": "Comparing Files, Searching & Pipes",
+                    "title_ar": "مقارنة الملفات، البحث النصي، والأنابيب",
+                    "summary_en": "Teaches how to compare files using diff, sdiff, and vimdiff; how to search text inside files using grep and its options; and how to chain commands together using pipes (|) together with the cut command.",
+                    "summary_ar": "يعلّم كيفية مقارنة الملفات باستخدام diff وsdiff وvimdiff، وكيفية البحث عن نص داخل الملفات باستخدام grep وخياراته، وكيفية ربط الأوامر ببعضها باستخدام الأنابيب (|) مع أمر cut.",
+                    "points_en": ["diff compares two files line by line and shows the differences; sdiff shows differences side by side; vimdiff opens files in Vim highlighting changes.", "grep searches for text patterns inside files and supports regular expressions.", "grep options: -i (ignore case), -r/-R (recursive), -n (show line numbers), -v (invert match), -l (list filenames only), -c (count matches).", "A pipe (|) sends the output of one command as input to the next: command1 | command2.", "cut extracts columns from text: cut -d delimiter -f N displays the Nth field.", "Example: grep bob /etc/passwd | cut -f1,5 -d: | sort chains search, extraction, and sorting together.", "Piping into less or more lets you page through large output."],
+                    "points_ar": ["diff يقارن ملفين سطرًا بسطر ويعرض الفروق؛ sdiff يعرض الفروق جنبًا إلى جنب؛ vimdiff يفتح الملفات في محرر Vim مع تمييز التغييرات.", "grep يبحث عن أنماط نصية داخل الملفات ويدعم التعبيرات النمطية (Regular Expressions).", "خيارات grep: -i (تجاهل حالة الأحرف)، -r/-R (بحث متكرر في الأدلة الفرعية)، -n (عرض أرقام الأسطر)، -v (عكس المطابقة)، -l (عرض أسماء الملفات فقط)، -c (عدّ التطابقات).", "الأنبوب (|) يرسل ناتج أمر كمدخل لأمر آخر: command1 | command2.", "cut يستخرج أعمدة من النص: cut -d الفاصل -f N لعرض الحقل رقم N.", "مثال: grep bob /etc/passwd | cut -f1,5 -d: | sort يربط البحث والاستخراج والفرز معًا.", "تمرير الناتج إلى less أو more يتيح تصفح المخرجات الطويلة صفحة بصفحة."]
+                }, {
+                    "id": 8,
+                    "title_en": "Deleting, Copying, Moving & Renaming Files",
+                    "title_ar": "حذف ونسخ ونقل وإعادة تسمية الملفات",
+                    "summary_en": "Practical file-management skills: deleting files safely with rm, duplicating files and directories with cp, and moving or renaming them with mv, practiced through building and reorganizing folder trees.",
+                    "summary_ar": "مهارات عملية لإدارة الملفات: الحذف الآمن باستخدام rm، إنشاء نسخ من الملفات والأدلة باستخدام cp، والنقل أو إعادة التسمية باستخدام mv، من خلال بناء وإعادة تنظيم أشجار من المجلدات.",
+                    "points_en": ["rm filename deletes a single file; rm file1 file2 file3 deletes multiple files.", "rm -r directoryname deletes a directory and its contents recursively; rm -f forces deletion without confirmation; rm -rf combines both.", "cp sourcefile destinationfile copies a file; cp -r sourcedir /path/ copies a directory recursively.", "cp -i prompts for confirmation if the destination file already exists.", "mv sourcefile /path/to/destination/ moves a file; mv oldfilename newfilename renames a file.", "mv can also move or rename entire directories the same way it works on files."],
+                    "points_ar": ["rm filename يحذف ملفًا واحدًا؛ rm file1 file2 file3 يحذف عدة ملفات دفعة واحدة.", "rm -r directoryname يحذف دليلاً ومحتوياته بشكل متكرر؛ rm -f يحذف بدون طلب تأكيد؛ rm -rf يجمع بين الاثنين.", "cp sourcefile destinationfile لنسخ ملف؛ cp -r sourcedir /path/ لنسخ دليل بشكل متكرر.", "cp -i يطلب تأكيدًا إذا كان الملف الوجهة موجودًا بالفعل.", "mv sourcefile /path/to/destination/ لنقل ملف؛ mv oldfilename newfilename لإعادة تسمية ملف.", "يمكن لـ mv أيضًا نقل أو إعادة تسمية أدلة كاملة بنفس الطريقة المستخدمة مع الملفات."]
+                }, {
+                    "id": 9,
+                    "title_en": "Sorting Data & Redirection",
+                    "title_ar": "فرز البيانات وإعادة التوجيه",
+                    "summary_en": "Covers organizing data with the sort command in various ways, and controlling how data flows using I/O redirection — sending output to files, appending output, reading input from a file, and redirecting error messages.",
+                    "summary_ar": "يغطي تنظيم البيانات باستخدام أمر sort بطرق مختلفة، والتحكم في تدفق البيانات باستخدام إعادة التوجيه (Redirection): إرسال المخرجات إلى ملفات، إلحاق المخرجات، قراءة المدخلات من ملف، وإعادة توجيه رسائل الخطأ.",
+                    "points_en": ["sort filename.txt sorts lines alphabetically; sort -r sorts in reverse order; sort -n sorts numerically.", "sort -k2 sorts by a specific field/column; sort -u sorts and removes duplicate lines.", "The three standard I/O streams are stdin (0), stdout (1), and stderr (2).", "command > file.txt redirects output to a file, overwriting it; command >> file.txt appends output instead.", "command < input.txt redirects a file's content as input to a command, e.g. sort < da.txt.", "command 2> error.txt redirects error messages to a file; 2>> appends error output instead of overwriting."],
+                    "points_ar": ["sort filename.txt يفرز الأسطر أبجديًا؛ sort -r يفرز بترتيب عكسي؛ sort -n يفرز رقميًا.", "sort -k2 يفرز حسب حقل/عمود معيّن؛ sort -u يفرز ويحذف الأسطر المكررة.", "تيارات الإدخال/الإخراج القياسية الثلاثة: stdin (0)، stdout (1)، stderr (2).", "command > file.txt يعيد توجيه المخرجات إلى ملف مع الكتابة فوقه؛ command >> file.txt يلحق المخرجات بدلاً من الكتابة فوقها.", "command < input.txt يستخدم محتوى ملف كمدخل لأمر، مثل sort < da.txt.", "command 2> error.txt يعيد توجيه رسائل الخطأ إلى ملف؛ 2>> يلحق رسائل الخطأ بدلاً من الكتابة فوقها."]
+                }, {
+                    "id": 10,
+                    "title_en": "Shell Command Line Editing & Environment Variables",
+                    "title_ar": "تحرير سطر الأوامر ومتغيرات البيئة",
+                    "summary_en": "Explores command-line editing techniques in Emacs mode and Vi mode for efficiently navigating and editing shell commands, and explains environment variables — what they are, common examples, how to view them, export them, and remove them.",
+                    "summary_ar": "يستعرض تقنيات تحرير سطر الأوامر بوضعي Emacs وVi للتنقل والتعديل بكفاءة في أوامر الصدفة، ويشرح متغيرات البيئة: تعريفها، أمثلة شائعة، كيفية عرضها وتصديرها وإزالتها.",
+                    "points_en": ["Bash defaults to Emacs mode; switch with set -o emacs or set -o vi.", "Emacs mode: Ctrl+A (start of line), Ctrl+E (end of line), Ctrl+K (cut to end), Ctrl+Y (paste), Ctrl+W (cut word before cursor).", "Vi mode: press Esc for command mode; h/j/k/l move left/down/up/right; i/a/A/I enter insert mode at different positions.", "Environment variables are dynamic values in the format VARIABLE_NAME=value that affect process/application behavior.", "Common variables: HOME, PATH, USER, LOGNAME, PWD, OLDPWD, EDITOR, PAGER, PS1, MAIL.", "echo $VAR or printenv VAR views one variable; printenv or env alone lists all variables.", "export VARIABLE=value makes a variable available to subsequently launched processes; unset VARIABLE removes it."],
+                    "points_ar": ["الوضع الافتراضي في Bash هو Emacs؛ يمكن التبديل باستخدام set -o emacs أو set -o vi.", "وضع Emacs: Ctrl+A (بداية السطر)، Ctrl+E (نهاية السطر)، Ctrl+K (قص حتى النهاية)، Ctrl+Y (لصق)، Ctrl+W (قص الكلمة قبل المؤشر).", "وضع Vi: اضغط Esc للدخول لوضع الأوامر؛ h/j/k/l للتحرك يسار/أسفل/أعلى/يمين؛ i/a/A/I للدخول في وضع الإدراج بمواضع مختلفة.", "متغيرات البيئة هي قيم ديناميكية بصيغة VARIABLE_NAME=value تؤثر في سلوك العمليات والتطبيقات.", "متغيرات شائعة: HOME، PATH، USER، LOGNAME، PWD، OLDPWD، EDITOR، PAGER، PS1، MAIL.", "echo $VAR أو printenv VAR لعرض متغير واحد؛ printenv أو env بمفردها لعرض كل المتغيرات.", "export VARIABLE=value يجعل المتغير متاحًا للعمليات التي تبدأ لاحقًا؛ unset VARIABLE يقوم بإزالته."]
+                }],
+                "dictionary": [["Linux", "لينكس"], ["Linux Kernel", "نواة لينكس"], ["Linux Distribution", "توزيعة لينكس"], ["Open Source", "مفتوح المصدر"], ["CentOS", "سنت أو إس"], ["Operating System", "نظام التشغيل"], ["CLI (Command-Line Interface)", "واجهة سطر الأوامر"], ["GUI (Graphical User Interface)", "الواجهة الرسومية"], ["Shell", "الصدفة (المفسّر)"], ["Bash", "باش (الصدفة الافتراضية)"], ["Root / Superuser", "الجذر / المستخدم المتميّز"], ["Terminal", "الطرفية"], ["Prompt", "سطر التلقين"], ["Tab Completion", "الإكمال التلقائي"], ["GNOME", "جنوم (بيئة سطح المكتب)"], ["Top Bar", "الشريط العلوي"], ["Dash", "لوحة داش"], ["Activities Overview", "نافذة استعراض الأنشطة"], ["Directory", "الدليل"], ["Root Directory (/)", "الدليل الجذر"], ["Home Directory", "الدليل الرئيسي"], ["Absolute Pathname", "المسار المطلق"], ["Relative Pathname", "المسار النسبي"], ["pwd command", "أمر pwd (طباعة المسار الحالي)"], ["cd command", "أمر cd (تغيير الدليل)"], ["ls command", "أمر ls (عرض المحتويات)"], ["cp command", "أمر cp (النسخ)"], ["mv command", "أمر mv (النقل/إعادة التسمية)"], ["rm command", "أمر rm (الحذف)"], ["rmdir command", "أمر rmdir (حذف دليل فارغ)"], ["mkdir command", "أمر mkdir (إنشاء دليل)"], ["touch command", "أمر touch (إنشاء ملف فارغ)"], ["sudo command", "أمر sudo (تنفيذ بصلاحيات مرتفعة)"], ["echo command", "أمر echo (طباعة نص)"], ["head command", "أمر head (أول الأسطر)"], ["tail command", "أمر tail (آخر الأسطر)"], ["uname command", "أمر uname (معلومات النظام)"], ["history command", "أمر history (سجل الأوامر)"], ["man command", "أمر man (دليل الاستخدام)"], ["useradd command", "أمر useradd (إضافة مستخدم)"], ["du command", "أمر du (استخدام القرص)"], ["cat command", "أمر cat (عرض المحتوى)"], ["ping command", "أمر ping (فحص الاتصال)"], ["chown command", "أمر chown (تغيير المالك)"], ["cal command", "أمر cal (عرض التقويم)"], ["who command", "أمر who (المستخدمون المتصلون)"], ["whoami command", "أمر whoami (اسم المستخدم الحالي)"], ["whatis command", "أمر whatis (وصف مختصر لأمر)"], ["clear command", "أمر clear (مسح الشاشة)"], ["File Permissions", "صلاحيات الملفات"], ["chmod command", "أمر chmod (تغيير الصلاحيات)"], ["Owner", "المالك"], ["Group", "المجموعة"], ["Others", "الآخرون"], ["Symbolic Mode", "الوضع الرمزي"], ["Octal Mode", "الوضع الثماني (الرقمي)"], ["Read Permission (r)", "صلاحية القراءة"], ["Write Permission (w)", "صلاحية الكتابة"], ["Execute Permission (x)", "صلاحية التنفيذ"], ["find command", "أمر find (البحث)"], ["grep command", "أمر grep (البحث النصي)"], ["Regular Expression", "تعبير نمطي"], ["diff command", "أمر diff (مقارنة الملفات)"], ["sdiff command", "أمر sdiff (مقارنة تفاعلية)"], ["vimdiff command", "أمر vimdiff (مقارنة بمحرر Vim)"], ["Pipe ( | )", "الأنبوب"], ["cut command", "أمر cut (استخراج أعمدة)"], ["Redirection", "إعادة التوجيه"], ["stdin (Standard Input)", "المدخل القياسي"], ["stdout (Standard Output)", "المخرج القياسي"], ["stderr (Standard Error)", "مخرج الخطأ القياسي"], ["File Descriptor", "واصف الملف"], ["sort command", "أمر sort (الفرز)"], ["Vi Editor", "محرر Vi"], ["Command Mode", "وضع الأوامر"], ["Insert Mode", "وضع الإدراج"], ["Line Mode", "وضع السطر"], ["Environment Variable", "متغير البيئة"], ["export command", "أمر export (تصدير متغير)"], ["unset command", "أمر unset (إزالة متغير)"], ["printenv command", "أمر printenv (عرض متغيرات البيئة)"], ["PATH variable", "متغير PATH"], ["HOME variable", "متغير HOME"], ["Emacs Mode", "وضع Emacs"], ["Vi Mode (Shell Editing)", "وضع Vi (تحرير سطر الأوامر)"], ["less / more", "أوامر التصفح الصفحي"]],
+                "quiz": [{
+                    "lab": 1,
+                    "en": {
+                        "q": "What is the Linux operating system built upon?",
+                        "o": ["The Windows Kernel", "The Linux Kernel", "The Unix Shell", "The BIOS"]
+                    },
+                    "ar": {
+                        "q": "على ماذا يُبنى نظام تشغيل لينكس؟",
+                        "o": ["نواة ويندوز", "نواة لينكس", "صدفة يونكس", "نظام BIOS"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "What does it mean that Linux is 'open-source'?",
+                        "o": ["It only runs on open hardware", "Its source code is open for anyone to see and modify", "It is only free for one year", "It cannot be installed on servers"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني أن لينكس \"مفتوح المصدر\"؟",
+                        "o": ["يعمل فقط على أجهزة مفتوحة", "الكود المصدري متاح للجميع للاطلاع والتعديل", "مجاني لمدة سنة واحدة فقط", "لا يمكن تثبيته على الخوادم"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "A Linux distribution contains the kernel plus what else?",
+                        "o": ["Only a graphical desktop", "Supporting libraries and software", "Only device drivers", "A copy of Windows"]
+                    },
+                    "ar": {
+                        "q": "توزيعة لينكس تحتوي على النواة بالإضافة إلى ماذا؟",
+                        "o": ["واجهة رسومية فقط", "مكتبات وبرمجيات داعمة", "تعريفات الأجهزة فقط", "نسخة من ويندوز"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "Which of these is listed as an advantage of Linux?",
+                        "o": ["It has small peripheral hardware drivers", "Licensing costs are free", "No standard version exists", "It is not user-friendly"]
+                    },
+                    "ar": {
+                        "q": "أي مما يلي يُعد من مزايا لينكس؟",
+                        "o": ["قلة تعريفات الأجهزة الطرفية", "تكاليف الترخيص مجانية", "لا يوجد إصدار موحد قياسي", "غير سهل الاستخدام"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "Which of these is listed as a disadvantage of Linux?",
+                        "o": ["Multiuser capability", "Frequent software updates", "It may be confusing for beginners", "It maintains user privacy"]
+                    },
+                    "ar": {
+                        "q": "أي مما يلي يُعد من عيوب لينكس؟",
+                        "o": ["إمكانية تعدد المستخدمين", "تحديثات برمجية متكررة", "قد يكون مربكًا للمبتدئين", "يحافظ على خصوصية المستخدم"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "What is the minimum recommended USB drive space to create bootable CentOS installation media?",
+                        "o": ["1GB", "4GB", "8GB", "32GB"]
+                    },
+                    "ar": {
+                        "q": "ما الحد الأدنى الموصى به لمساحة فلاشة USB لإنشاء وسيط تثبيت CentOS قابل للإقلاع؟",
+                        "o": ["1 جيجابايت", "4 جيجابايت", "8 جيجابايت", "32 جيجابايت"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "Before starting the CentOS installation process, what should you do first?",
+                        "o": ["Disable the internet", "Back up important data", "Uninstall Windows", "Change the BIOS password"]
+                    },
+                    "ar": {
+                        "q": "قبل بدء عملية تثبيت CentOS، ماذا يجب أن تفعل أولاً؟",
+                        "o": ["تعطيل الإنترنت", "عمل نسخة احتياطية من البيانات المهمة", "إزالة تثبيت ويندوز", "تغيير كلمة مرور BIOS"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "What is the central screen used to set configuration options before installing CentOS?",
+                        "o": ["Boot Menu", "Installation Summary", "Root Password screen", "First Boot screen"]
+                    },
+                    "ar": {
+                        "q": "ما هي الشاشة المركزية لضبط خيارات الإعداد قبل تثبيت CentOS؟",
+                        "o": ["قائمة الإقلاع", "ملخص التثبيت (Installation Summary)", "شاشة كلمة مرور الجذر", "شاشة الإقلاع الأول"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "On the Installation Summary screen, items marked with an exclamation point icon mean:",
+                        "o": ["The option is optional", "Configuration must be completed before installation can begin", "The disk is full", "The network is disconnected"]
+                    },
+                    "ar": {
+                        "q": "في شاشة ملخص التثبيت، العناصر المُعلَّمة بأيقونة علامة تعجب تعني:",
+                        "o": ["الخيار اختياري", "يجب إكمال الإعداد قبل أن يبدأ التثبيت", "القرص ممتلئ", "الشبكة غير متصلة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "Checking 'Make this user administrator' during user creation adds the account to which group, enabling sudo?",
+                        "o": ["admin group", "wheel group", "root group", "sudoers group only by name"]
+                    },
+                    "ar": {
+                        "q": "عند تفعيل خيار \"اجعل هذا المستخدم مسؤولاً\" أثناء إنشاء المستخدم، يُضاف الحساب إلى أي مجموعة لتفعيل sudo؟",
+                        "o": ["مجموعة admin", "مجموعة wheel", "مجموعة root", "مجموعة sudoers فقط بالاسم"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 1,
+                    "en": {
+                        "q": "After the CentOS installation completes, what should you do?",
+                        "o": ["Immediately shut down and remove the disk", "Click Reboot", "Reinstall automatically", "Format the disk again"]
+                    },
+                    "ar": {
+                        "q": "بعد اكتمال تثبيت CentOS، ماذا يجب أن تفعل؟",
+                        "o": ["إيقاف التشغيل فورًا وإزالة القرص", "الضغط على إعادة التشغيل (Reboot)", "إعادة التثبيت تلقائيًا", "تهيئة القرص مرة أخرى"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What are the two main types of Linux interfaces?",
+                        "o": ["CLI and API", "CLI and GUI", "GUI and BIOS", "Shell and Kernel"]
+                    },
+                    "ar": {
+                        "q": "ما هما النوعان الرئيسيان لواجهات لينكس؟",
+                        "o": ["CLI و API", "CLI و GUI", "GUI و BIOS", "الصدفة والنواة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What key combination switches from GUI to CLI?",
+                        "o": ["Alt+Ctrl+F7", "Alt+Ctrl+F1 through F6", "Ctrl+Alt+Delete", "Alt+Tab"]
+                    },
+                    "ar": {
+                        "q": "ما مجموعة المفاتيح للانتقال من الواجهة الرسومية إلى سطر الأوامر؟",
+                        "o": ["Alt+Ctrl+F7", "Alt+Ctrl من F1 إلى F6", "Ctrl+Alt+Delete", "Alt+Tab"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What key combination switches from CLI back to GUI?",
+                        "o": ["Alt+Ctrl+F7", "Alt+Ctrl+F2", "Ctrl+Shift+Esc", "Alt+F4"]
+                    },
+                    "ar": {
+                        "q": "ما مجموعة المفاتيح للعودة من سطر الأوامر إلى الواجهة الرسومية؟",
+                        "o": ["Alt+Ctrl+F7", "Alt+Ctrl+F2", "Ctrl+Shift+Esc", "Alt+F4"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What does CLI stand for?",
+                        "o": ["Command-Line Interface", "Central Link Interface", "Command List Instruction", "Control Line Input"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني الاختصار CLI؟",
+                        "o": ["واجهة سطر الأوامر", "واجهة الربط المركزي", "قائمة تعليمات الأوامر", "إدخال سطر التحكم"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What is the shell in Linux?",
+                        "o": ["A graphical file manager", "A program that accepts and executes commands", "A type of hard disk partition", "A network protocol"]
+                    },
+                    "ar": {
+                        "q": "ما هي الصدفة (Shell) في لينكس؟",
+                        "o": ["مدير ملفات رسومي", "برنامج يستقبل وينفذ الأوامر", "نوع من تقسيمات القرص الصلب", "بروتوكول شبكة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What is the default user shell of most Linux distributions?",
+                        "o": ["zsh", "ksh", "bash", "csh"]
+                    },
+                    "ar": {
+                        "q": "ما هي الصدفة الافتراضية لمعظم توزيعات لينكس؟",
+                        "o": ["zsh", "ksh", "bash", "csh"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What is the special administrator account in Linux called?",
+                        "o": ["admin", "root", "super", "master"]
+                    },
+                    "ar": {
+                        "q": "ما اسم حساب المسؤول الخاص في لينكس؟",
+                        "o": ["admin", "root", "super", "master"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "In the prompt 'bob@linuxsvr $', what does the '$' symbol indicate?",
+                        "o": ["A superuser session", "A normal user session", "A network error", "A locked terminal"]
+                    },
+                    "ar": {
+                        "q": "في سطر التلقين 'bob@linuxsvr $'، ماذا تعني علامة '$'؟",
+                        "o": ["جلسة مستخدم متميز (superuser)", "جلسة مستخدم عادي", "خطأ في الشبكة", "طرفية مقفلة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which symbol appears in the prompt when a user is acting as superuser?",
+                        "o": ["$", "#", "%", "&"]
+                    },
+                    "ar": {
+                        "q": "أي رمز يظهر في سطر التلقين عندما يعمل المستخدم كمستخدم متميز (superuser)؟",
+                        "o": ["$", "#", "%", "&"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "What key helps increase efficiency by invoking tab completion?",
+                        "o": ["Ctrl", "Tab", "Shift", "Esc"]
+                    },
+                    "ar": {
+                        "q": "أي مفتاح يساعد على زيادة الكفاءة عبر تفعيل الإكمال التلقائي؟",
+                        "o": ["Ctrl", "Tab", "Shift", "Esc"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which desktop environment is the default in RedHat-based systems?",
+                        "o": ["KDE", "XFCE", "GNOME", "Unity"]
+                    },
+                    "ar": {
+                        "q": "ما بيئة سطح المكتب الافتراضية في أنظمة RedHat؟",
+                        "o": ["KDE", "XFCE", "GNOME", "Unity"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which part of the GNOME desktop provides calendar access, volume control, and networking options?",
+                        "o": ["The Dash", "The Top Bar", "The Activity Menu", "The Search Box"]
+                    },
+                    "ar": {
+                        "q": "أي جزء من سطح مكتب GNOME يوفر الوصول إلى التقويم، والتحكم بالصوت، وإعدادات الشبكة؟",
+                        "o": ["Dash", "الشريط العلوي (Top Bar)", "قائمة الأنشطة", "مربع البحث"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which directory is described as the 'starting point for the file system hierarchy'?",
+                        "o": ["/home", "/", "/etc", "/root"]
+                    },
+                    "ar": {
+                        "q": "أي دليل يُوصف بأنه \"نقطة البداية لهيكل نظام الملفات\"؟",
+                        "o": ["/home", "/", "/etc", "/root"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which directory contains system configuration files?",
+                        "o": ["/etc", "/bin", "/tmp", "/opt"]
+                    },
+                    "ar": {
+                        "q": "أي دليل يحتوي على ملفات إعداد النظام؟",
+                        "o": ["/etc", "/bin", "/tmp", "/opt"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which directory is typically cleared on reboot and used for temporary files?",
+                        "o": ["/var", "/tmp", "/usr", "/srv"]
+                    },
+                    "ar": {
+                        "q": "أي دليل يُستخدم للملفات المؤقتة ويُمسح عادة عند إعادة التشغيل؟",
+                        "o": ["/var", "/tmp", "/usr", "/srv"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 2,
+                    "en": {
+                        "q": "Which directory is the home directory for the root account specifically?",
+                        "o": ["/home", "/root", "/usr/root", "/sys"]
+                    },
+                    "ar": {
+                        "q": "أي دليل هو الدليل الرئيسي لحساب root تحديدًا؟",
+                        "o": ["/home", "/root", "/usr/root", "/sys"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'pwd' command stand for?",
+                        "o": ["Print Working Directory", "Print Word Document", "Path With Directory", "Print Windows Data"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني أمر 'pwd'؟",
+                        "o": ["طباعة الدليل الحالي (Print Working Directory)", "طباعة مستند وورد", "المسار مع الدليل", "طباعة بيانات ويندوز"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'cd ..' do?",
+                        "o": ["Goes to the home directory", "Goes back one directory step", "Goes back two directory steps", "Creates a new directory"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل الأمر 'cd ..'؟",
+                        "o": ["الانتقال إلى الدليل الرئيسي", "الرجوع خطوة واحدة للخلف", "الرجوع خطوتين للخلف", "إنشاء دليل جديد"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'cd ../..' do?",
+                        "o": ["Go back one step", "Go back two steps", "Go to root directory", "Rename the directory"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل الأمر 'cd ../..'؟",
+                        "o": ["الرجوع خطوة واحدة", "الرجوع خطوتين", "الانتقال للدليل الجذر", "إعادة تسمية الدليل"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which command copies files from one directory to another?",
+                        "o": ["mv", "cp", "rm", "ls"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يُستخدم لنسخ الملفات من دليل إلى آخر؟",
+                        "o": ["mv", "cp", "rm", "ls"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which command moves a file or renames it?",
+                        "o": ["cp", "mv", "rm", "cd"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يُستخدم لنقل ملف أو إعادة تسميته؟",
+                        "o": ["cp", "mv", "rm", "cd"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which command deletes files and needs to be used carefully?",
+                        "o": ["rm", "rmdir", "touch", "cat"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يحذف الملفات ويجب استخدامه بحذر؟",
+                        "o": ["rm", "rmdir", "touch", "cat"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "For 'rmdir' to successfully delete a directory, the directory must be:",
+                        "o": ["Owned by root", "Empty", "Hidden", "Larger than 1MB"]
+                    },
+                    "ar": {
+                        "q": "لكي ينجح أمر 'rmdir' في حذف دليل، يجب أن يكون الدليل:",
+                        "o": ["مملوكًا لـ root", "فارغًا", "مخفيًا", "أكبر من 1 ميجابايت"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'touch' command do?",
+                        "o": ["Deletes a file", "Creates a new blank file", "Displays file content", "Changes file permissions"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'touch'؟",
+                        "o": ["يحذف ملفًا", "ينشئ ملفًا فارغًا جديدًا", "يعرض محتوى الملف", "يغيّر صلاحيات الملف"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'sudo' stand for?",
+                        "o": ["System User Do", "SuperUser Do", "Set User Domain", "Switch User Directory"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني 'sudo'؟",
+                        "o": ["System User Do", "SuperUser Do", "Set User Domain", "Switch User Directory"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'echo' command do?",
+                        "o": ["Displays text/string to standard output", "Deletes text from a file", "Compares two files", "Changes the shell prompt"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'echo'؟",
+                        "o": ["يعرض نصًا أو سلسلة إلى المخرج القياسي", "يحذف نصًا من ملف", "يقارن ملفين", "يغيّر سطر تلقين الصدفة"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "By default, how many lines does the 'head' command display?",
+                        "o": ["5", "10", "20", "All lines"]
+                    },
+                    "ar": {
+                        "q": "كم عدد الأسطر التي يعرضها أمر 'head' افتراضيًا؟",
+                        "o": ["5", "10", "20", "كل الأسطر"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "By default, how many lines does the 'tail' command display?",
+                        "o": ["10", "5", "15", "25"]
+                    },
+                    "ar": {
+                        "q": "كم عدد الأسطر التي يعرضها أمر 'tail' افتراضيًا؟",
+                        "o": ["10", "5", "15", "25"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'uname' stand for?",
+                        "o": ["User Name", "Unix Name", "Unified Name", "Universal Naming"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني 'uname'؟",
+                        "o": ["User Name", "Unix Name", "Unified Name", "Universal Naming"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'history' command display?",
+                        "o": ["Currently logged in users", "Previously used commands", "File modification dates", "System boot time"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعرض أمر 'history'؟",
+                        "o": ["المستخدمون المسجّلون حاليًا", "الأوامر المستخدمة سابقًا", "تواريخ تعديل الملفات", "وقت إقلاع النظام"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What is the 'man' command used for?",
+                        "o": ["Managing users", "Checking reference manual pages for a command", "Monitoring the network", "Mounting a disk"]
+                    },
+                    "ar": {
+                        "q": "ما الغرض من أمر 'man'؟",
+                        "o": ["إدارة المستخدمين", "فحص صفحات الدليل المرجعي لأمر ما", "مراقبة الشبكة", "تثبيت قرص (mount)"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'useradd' command do?",
+                        "o": ["Deletes a user", "Adds a user on a Linux server", "Changes a user's password", "Lists all users"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'useradd'؟",
+                        "o": ["يحذف مستخدمًا", "يضيف مستخدمًا على خادم لينكس", "يغيّر كلمة مرور مستخدم", "يعرض جميع المستخدمين"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'du' command show?",
+                        "o": ["Disk usage of a file or directory", "The current date", "User login history", "Network usage"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعرض أمر 'du'؟",
+                        "o": ["مساحة القرص التي يستخدمها ملف أو دليل", "التاريخ الحالي", "سجل دخول المستخدمين", "استخدام الشبكة"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'cat' command do?",
+                        "o": ["Creates a directory", "Displays the contents of a file", "Checks disk space", "Changes file owner"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'cat'؟",
+                        "o": ["ينشئ دليلاً", "يعرض محتويات ملف", "يفحص مساحة القرص", "يغيّر مالك الملف"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'ping' command check?",
+                        "o": ["File permissions", "The reachability of a host on a network", "Disk space", "CPU temperature"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفحص أمر 'ping'؟",
+                        "o": ["صلاحيات الملفات", "إمكانية الوصول لمضيف عبر الشبكة", "مساحة القرص", "حرارة المعالج"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'chown' command change?",
+                        "o": ["File permissions", "File ownership", "File name", "File size"]
+                    },
+                    "ar": {
+                        "q": "ماذا يغيّر أمر 'chown'؟",
+                        "o": ["صلاحيات الملف", "مالك الملف", "اسم الملف", "حجم الملف"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'cal' command display?",
+                        "o": ["A calendar", "A calculator", "A file list", "A login screen"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعرض أمر 'cal'؟",
+                        "o": ["تقويمًا", "آلة حاسبة", "قائمة ملفات", "شاشة تسجيل دخول"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'who' command show?",
+                        "o": ["The current username only", "The names of users currently logged into the system", "The system's IP address", "The kernel version"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعرض أمر 'who'؟",
+                        "o": ["اسم المستخدم الحالي فقط", "أسماء المستخدمين المسجّلين حاليًا في النظام", "عنوان IP للنظام", "إصدار النواة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'whoami' display?",
+                        "o": ["All logged in users", "The name of the currently logged-in user", "The shell version", "The last command executed"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعرض أمر 'whoami'؟",
+                        "o": ["جميع المستخدمين المسجّلين حاليًا", "اسم المستخدم المسجل دخوله حاليًا", "إصدار الصدفة", "آخر أمر تم تنفيذه"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does 'whatis <command>' do?",
+                        "o": ["Runs the command as root", "Shows a brief description of what the command does", "Deletes the command's alias", "Lists all installed commands"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'whatis <command>'؟",
+                        "o": ["ينفذ الأمر بصلاحيات root", "يعرض وصفًا مختصرًا لوظيفة الأمر", "يحذف الاسم المستعار للأمر", "يعرض كل الأوامر المثبتة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "What does the 'clear' command do?",
+                        "o": ["Deletes all files in a directory", "Clears the terminal screen", "Clears file permissions", "Restarts the shell"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'clear'؟",
+                        "o": ["يحذف كل الملفات في الدليل", "يمسح شاشة الطرفية", "يمسح صلاحيات الملف", "يعيد تشغيل الصدفة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which 'ls' option displays hidden files (starting with a dot)?",
+                        "o": ["ls -l", "ls -a", "ls -t", "ls -F"]
+                    },
+                    "ar": {
+                        "q": "أي خيار من خيارات 'ls' يعرض الملفات المخفية (التي تبدأ بنقطة)؟",
+                        "o": ["ls -l", "ls -a", "ls -t", "ls -F"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which 'ls' option displays a long, detailed listing format?",
+                        "o": ["ls -r", "ls -t", "ls -l", "ls -a"]
+                    },
+                    "ar": {
+                        "q": "أي خيار من خيارات 'ls' يعرض قائمة تفصيلية طويلة؟",
+                        "o": ["ls -r", "ls -t", "ls -l", "ls -a"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "Which 'ls' option sorts the listing by modification time?",
+                        "o": ["ls -t", "ls -F", "ls -a", "ls -r"]
+                    },
+                    "ar": {
+                        "q": "أي خيار من خيارات 'ls' يفرز القائمة حسب وقت التعديل؟",
+                        "o": ["ls -t", "ls -F", "ls -a", "ls -r"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 3,
+                    "en": {
+                        "q": "In 'ls -F' output, what does the '*' symbol indicate?",
+                        "o": ["A directory", "A symbolic link", "An executable program", "A hidden file"]
+                    },
+                    "ar": {
+                        "q": "في مخرجات 'ls -F'، ماذا يعني رمز '*'؟",
+                        "o": ["دليل", "رابط رمزي", "برنامج تنفيذي", "ملف مخفي"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "What character must an absolute pathname always begin with?",
+                        "o": ["~", "/", "..", "$"]
+                    },
+                    "ar": {
+                        "q": "بأي رمز يجب أن يبدأ المسار المطلق دائمًا؟",
+                        "o": ["~", "/", "..", "$"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "A relative pathname is described in relation to:",
+                        "o": ["The root directory", "The current working directory", "The home directory only", "The /etc directory"]
+                    },
+                    "ar": {
+                        "q": "المسار النسبي يُوصف بالنسبة إلى:",
+                        "o": ["الدليل الجذر", "الدليل الحالي (العامل)", "الدليل الرئيسي فقط", "دليل /etc"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "What does 'mkdir' stand for?",
+                        "o": ["Make Directory", "Move Directory", "Mark Directory", "Modify Directory"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني أمر 'mkdir'؟",
+                        "o": ["إنشاء دليل (Make Directory)", "نقل دليل", "تمييز دليل", "تعديل دليل"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "How do you create three directories 'd1', 'd2', 'd3' at once?",
+                        "o": ["mkdir d1; mkdir d2; mkdir d3", "mkdir d1 d2 d3", "mkdir -all d1 d2 d3", "mkdir(d1,d2,d3)"]
+                    },
+                    "ar": {
+                        "q": "كيف يمكن إنشاء ثلاثة أدلة 'd1' و'd2' و'd3' دفعة واحدة؟",
+                        "o": ["mkdir d1; mkdir d2; mkdir d3", "mkdir d1 d2 d3", "mkdir -all d1 d2 d3", "mkdir(d1,d2,d3)"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "Which command is used to remove an empty directory?",
+                        "o": ["rm", "rmdir", "del", "erase"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يُستخدم لحذف دليل فارغ؟",
+                        "o": ["rm", "rmdir", "del", "erase"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "What does 'rm -rf directoryname' do?",
+                        "o": ["Renames the directory", "Recursively and forcibly removes the directory and its contents", "Restores a deleted directory", "Lists directory contents recursively"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل الأمر 'rm -rf directoryname'؟",
+                        "o": ["يعيد تسمية الدليل", "يحذف الدليل ومحتوياته بشكل متكرر وإجباري", "يستعيد دليلاً محذوفًا", "يعرض محتويات الدليل بشكل متكرر"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "According to the manual, what happens to files deleted via the command line?",
+                        "o": ["They go to a Trash folder", "They can be restored anytime", "They are gone — there is no trash container", "They are backed up automatically"]
+                    },
+                    "ar": {
+                        "q": "وفق الدليل، ماذا يحدث للملفات المحذوفة عبر سطر الأوامر؟",
+                        "o": ["تذهب إلى سلة المهملات", "يمكن استعادتها في أي وقت", "تختفي نهائيًا، فلا توجد سلة مهملات", "يتم نسخها احتياطيًا تلقائيًا"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "Which command can be used to rename a directory?",
+                        "o": ["cp", "mv", "rmdir", "find"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يمكن استخدامه لإعادة تسمية دليل؟",
+                        "o": ["cp", "mv", "rmdir", "find"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "Which command copies a directory and its contents recursively?",
+                        "o": ["cp -r", "mv -r", "rm -r", "ls -r"]
+                    },
+                    "ar": {
+                        "q": "أي أمر ينسخ دليلاً ومحتوياته بشكل متكرر؟",
+                        "o": ["cp -r", "mv -r", "rm -r", "ls -r"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 4,
+                    "en": {
+                        "q": "What is the syntax to change to a directory named 'dirname'?",
+                        "o": ["cd dirname", "go dirname", "open dirname", "dir dirname"]
+                    },
+                    "ar": {
+                        "q": "ما هي صيغة الانتقال إلى دليل باسم 'dirname'؟",
+                        "o": ["cd dirname", "go dirname", "open dirname", "dir dirname"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In 'ls -l' output, what does the first character 'd' indicate?",
+                        "o": ["A regular file", "A directory", "A symbolic link", "A deleted file"]
+                    },
+                    "ar": {
+                        "q": "في مخرجات 'ls -l'، ماذا يعني الحرف الأول 'd'؟",
+                        "o": ["ملف عادي", "دليل", "رابط رمزي", "ملف محذوف"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In 'ls -l' output, what does the first character '-' indicate?",
+                        "o": ["A symbolic link", "A directory", "A regular file", "A hidden file"]
+                    },
+                    "ar": {
+                        "q": "في مخرجات 'ls -l'، ماذا يعني الحرف الأول '-'؟",
+                        "o": ["رابط رمزي", "دليل", "ملف عادي", "ملف مخفي"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In 'ls -l' output, what does the first character 'l' indicate?",
+                        "o": ["A symbolic link", "A directory", "A locked file", "A log file"]
+                    },
+                    "ar": {
+                        "q": "في مخرجات 'ls -l'، ماذا يعني الحرف الأول 'l'؟",
+                        "o": ["رابط رمزي", "دليل", "ملف مقفل", "ملف سجلات"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What are the three permission classes in Linux?",
+                        "o": ["Read, Write, Execute", "User, Group, Others", "Local, Global, Shared", "Public, Private, Protected"]
+                    },
+                    "ar": {
+                        "q": "ما هي فئات الصلاحيات الثلاث في لينكس؟",
+                        "o": ["قراءة، كتابة، تنفيذ", "المستخدم، المجموعة، الآخرون", "محلي، عام، مشترك", "عام، خاص، محمي"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "Which reference letter refers to the owner of a file?",
+                        "o": ["g", "o", "u", "a"]
+                    },
+                    "ar": {
+                        "q": "أي حرف مرجعي يشير إلى مالك الملف؟",
+                        "o": ["g", "o", "u", "a"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "Which reference letter refers to 'others' in permission settings?",
+                        "o": ["u", "g", "o", "a"]
+                    },
+                    "ar": {
+                        "q": "أي حرف مرجعي يشير إلى \"الآخرون\" في إعدادات الصلاحيات؟",
+                        "o": ["u", "g", "o", "a"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "Which reference letter applies permissions to all three classes at once?",
+                        "o": ["u", "g", "o", "a"]
+                    },
+                    "ar": {
+                        "q": "أي حرف مرجعي يطبّق الصلاحيات على الفئات الثلاث معًا؟",
+                        "o": ["u", "g", "o", "a"]
+                    },
+                    "c": 3
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What does the 'r' permission allow?",
+                        "o": ["Modifying a file's contents", "Reading a file's contents", "Executing a file", "Deleting a file"]
+                    },
+                    "ar": {
+                        "q": "ماذا تتيح صلاحية 'r'؟",
+                        "o": ["تعديل محتوى الملف", "قراءة محتوى الملف", "تنفيذ الملف", "حذف الملف"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What does the 'x' permission allow, and when is it given?",
+                        "o": ["Reading; always given", "Writing; only for directories", "Executing; only if the file is a program", "Deleting; only for the owner"]
+                    },
+                    "ar": {
+                        "q": "ماذا تتيح صلاحية 'x' ومتى تُمنح؟",
+                        "o": ["القراءة؛ تُمنح دائمًا", "الكتابة؛ فقط للأدلة", "التنفيذ؛ فقط إذا كان الملف برنامجًا", "الحذف؛ فقط للمالك"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What does 'chmod' stand for?",
+                        "o": ["Change Mode", "Check Mode", "Change Model", "Channel Mode"]
+                    },
+                    "ar": {
+                        "q": "ماذا يعني أمر 'chmod'؟",
+                        "o": ["تغيير الوضع (Change Mode)", "فحص الوضع", "تغيير النموذج", "وضع القناة"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In chmod symbolic mode, what does the '+' operator do?",
+                        "o": ["Removes permissions", "Adds permissions", "Sets permissions exactly", "Lists permissions"]
+                    },
+                    "ar": {
+                        "q": "في الوضع الرمزي لـ chmod، ماذا يفعل العامل '+'؟",
+                        "o": ["يزيل الصلاحيات", "يضيف الصلاحيات", "يضبط الصلاحيات بالضبط", "يعرض الصلاحيات"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In chmod symbolic mode, what does the '=' operator do?",
+                        "o": ["Adds permissions to existing ones", "Removes all permissions permanently", "Sets the permissions to exactly the specified values", "Compares two files' permissions"]
+                    },
+                    "ar": {
+                        "q": "في الوضع الرمزي لـ chmod، ماذا يفعل العامل '='؟",
+                        "o": ["يضيف صلاحيات للموجود", "يزيل كل الصلاحيات نهائيًا", "يضبط الصلاحيات على القيم المحددة بالضبط", "يقارن صلاحيات ملفين"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What command adds write permission for the group on 'sales.data'?",
+                        "o": ["chmod g+w sales.data", "chmod u+w sales.data", "chmod o+w sales.data", "chmod a-w sales.data"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يضيف صلاحية الكتابة للمجموعة على ملف 'sales.data'؟",
+                        "o": ["chmod g+w sales.data", "chmod u+w sales.data", "chmod o+w sales.data", "chmod a-w sales.data"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In octal permission mode, what value represents 'read'?",
+                        "o": ["1", "2", "4", "8"]
+                    },
+                    "ar": {
+                        "q": "في وضع الصلاحيات الثماني، أي قيمة تمثل \"القراءة\"؟",
+                        "o": ["1", "2", "4", "8"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In octal permission mode, what value represents 'write'?",
+                        "o": ["1", "2", "4", "8"]
+                    },
+                    "ar": {
+                        "q": "في وضع الصلاحيات الثماني، أي قيمة تمثل \"الكتابة\"؟",
+                        "o": ["1", "2", "4", "8"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "In octal permission mode, what value represents 'execute'?",
+                        "o": ["1", "2", "4", "0"]
+                    },
+                    "ar": {
+                        "q": "في وضع الصلاحيات الثماني، أي قيمة تمثل \"التنفيذ\"؟",
+                        "o": ["1", "2", "4", "0"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What permission string does octal value 755 represent?",
+                        "o": ["rw-r--r--", "rwxr-xr-x", "rwxrwxrwx", "r--r--r--"]
+                    },
+                    "ar": {
+                        "q": "أي سلسلة صلاحيات تمثلها القيمة الثمانية 755؟",
+                        "o": ["rw-r--r--", "rwxr-xr-x", "rwxrwxrwx", "r--r--r--"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "What permission string does octal value 644 represent?",
+                        "o": ["rw-r--r--", "rwxr-xr-x", "rw-rw----", "r-xr-xr-x"]
+                    },
+                    "ar": {
+                        "q": "أي سلسلة صلاحيات تمثلها القيمة الثمانية 644؟",
+                        "o": ["rw-r--r--", "rwxr-xr-x", "rw-rw----", "r-xr-xr-x"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 5,
+                    "en": {
+                        "q": "Octal permission 700 ensures the file can be accessed by:",
+                        "o": ["Everyone on the system", "Only the owner", "Only the group", "Only other users"]
+                    },
+                    "ar": {
+                        "q": "الصلاحية الثمانية 700 تضمن أن الوصول للملف يقتصر على:",
+                        "o": ["جميع مستخدمي النظام", "المالك فقط", "المجموعة فقط", "الآخرون فقط"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "What is the correct syntax structure for the 'find' command?",
+                        "o": ["find [expression] [path]", "find [path] [options] [expression]", "find [options] [path]", "find -search [path]"]
+                    },
+                    "ar": {
+                        "q": "ما هي البنية الصحيحة لأمر 'find'؟",
+                        "o": ["find [الشرط] [المسار]", "find [المسار] [الخيارات] [الشرط]", "find [الخيارات] [المسار]", "find -search [المسار]"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which find option matches a filename pattern while ignoring case?",
+                        "o": ["-name", "-iname", "-size", "-mtime"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في find يطابق نمط اسم الملف مع تجاهل حالة الأحرف؟",
+                        "o": ["-name", "-iname", "-size", "-mtime"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which find option searches for files based on their age in days?",
+                        "o": ["-mtime", "-newer", "-size", "-exec"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في find يبحث عن الملفات حسب عمرها بالأيام؟",
+                        "o": ["-mtime", "-newer", "-size", "-exec"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which find option runs a command against every file that is found?",
+                        "o": ["-run", "-exec ... {} \\;", "-ls", "-newer"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في find ينفذ أمرًا على كل الملفات التي تم العثور عليها؟",
+                        "o": ["-run", "-exec ... {} \\;", "-ls", "-newer"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In 'find . -size +300M', what does the 'M' unit represent?",
+                        "o": ["Minutes", "Megabytes", "Milliseconds", "Modified time"]
+                    },
+                    "ar": {
+                        "q": "في الأمر 'find . -size +300M'، ماذا تمثل الوحدة 'M'؟",
+                        "o": ["دقائق", "ميجابايت", "ميلي ثانية", "وقت التعديل"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which command displays the entire content of a file at once?",
+                        "o": ["cat", "less", "more", "tail"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يعرض محتوى الملف بالكامل دفعة واحدة؟",
+                        "o": ["cat", "less", "more", "tail"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which command views the content of a file one page at a time?",
+                        "o": ["cat", "less", "touch", "echo"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يعرض محتوى الملف صفحة تلو الأخرى؟",
+                        "o": ["cat", "less", "touch", "echo"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "How many core modes does the Vi editor have?",
+                        "o": ["One", "Two (Command and Insert)", "Three (Command, Insert, Visual only)", "Four"]
+                    },
+                    "ar": {
+                        "q": "كم عدد الأوضاع الأساسية لمحرر Vi؟",
+                        "o": ["وضع واحد", "وضعان (الأوامر والإدراج)", "ثلاثة أوضاع فقط", "أربعة أوضاع"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "Which key returns you to Command mode from Insert mode in Vi?",
+                        "o": ["Tab", "Esc", "Ctrl+C", "Enter"]
+                    },
+                    "ar": {
+                        "q": "أي مفتاح يعيدك إلى وضع الأوامر من وضع الإدراج في Vi؟",
+                        "o": ["Tab", "Esc", "Ctrl+C", "Enter"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi's Insert mode keys, what does 'A' do?",
+                        "o": ["Insert before cursor", "Insert at end of line", "Insert at beginning of line", "Append after cursor position only"]
+                    },
+                    "ar": {
+                        "q": "في مفاتيح وضع الإدراج بـ Vi، ماذا يفعل الحرف 'A'؟",
+                        "o": ["إدراج قبل المؤشر", "إدراج في نهاية السطر", "إدراج في بداية السطر", "إضافة بعد موضع المؤشر فقط"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi's Insert mode keys, what does 'o' do?",
+                        "o": ["Opens a new line above and enters insert mode", "Opens a new line below and enters insert mode", "Overwrites the current line", "Opens the file in read-only mode"]
+                    },
+                    "ar": {
+                        "q": "في مفاتيح وضع الإدراج بـ Vi، ماذا يفعل الحرف 'o'؟",
+                        "o": ["يفتح سطرًا جديدًا أعلى ويدخل وضع الإدراج", "يفتح سطرًا جديدًا أسفل ويدخل وضع الإدراج", "يكتب فوق السطر الحالي", "يفتح الملف للقراءة فقط"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi line mode, which command saves the file?",
+                        "o": [":q", ":w", ":e", ":x!"]
+                    },
+                    "ar": {
+                        "q": "في وضع السطر بـ Vi، أي أمر يحفظ الملف؟",
+                        "o": [":q", ":w", ":e", ":x!"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi line mode, which command quits without saving changes?",
+                        "o": [":wq", ":q!", ":w!", ":help"]
+                    },
+                    "ar": {
+                        "q": "في وضع السطر بـ Vi، أي أمر يخرج بدون حفظ التغييرات؟",
+                        "o": [":wq", ":q!", ":w!", ":help"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi line mode, which command writes and quits, forcing the save?",
+                        "o": [":q", ":w", ":wq!", ":help"]
+                    },
+                    "ar": {
+                        "q": "في وضع السطر بـ Vi، أي أمر يحفظ ويخرج بشكل إجباري؟",
+                        "o": [":q", ":w", ":wq!", ":help"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 6,
+                    "en": {
+                        "q": "In Vi's command-mode navigation keys, what does 'j' do?",
+                        "o": ["Move up one line", "Move down one line", "Move right one character", "Go to end of line"]
+                    },
+                    "ar": {
+                        "q": "في مفاتيح التنقل بوضع الأوامر في Vi، ماذا يفعل الحرف 'j'؟",
+                        "o": ["التحرك للأعلى سطرًا واحدًا", "التحرك للأسفل سطرًا واحدًا", "التحرك يمينًا حرفًا واحدًا", "الذهاب لنهاية السطر"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which command compares the contents of two files line by line?",
+                        "o": ["grep", "diff", "cut", "sort"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يقارن محتوى ملفين سطرًا بسطر؟",
+                        "o": ["grep", "diff", "cut", "sort"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which command shows differences between two files side by side interactively?",
+                        "o": ["diff", "sdiff", "cat", "find"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يعرض الفروق بين ملفين جنبًا إلى جنب بشكل تفاعلي؟",
+                        "o": ["diff", "sdiff", "cat", "find"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which tool opens multiple files in Vim, highlighting differences between them?",
+                        "o": ["vimdiff", "viedit", "vicompare", "vidiff-tool"]
+                    },
+                    "ar": {
+                        "q": "أي أداة تفتح عدة ملفات في Vim مع تمييز الفروق بينها؟",
+                        "o": ["vimdiff", "viedit", "vicompare", "vidiff-tool"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which command is one of the most powerful tools for searching text and supports regular expressions?",
+                        "o": ["find", "grep", "cut", "sort"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يُعد من أقوى أدوات البحث النصي ويدعم التعبيرات النمطية؟",
+                        "o": ["find", "grep", "cut", "sort"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which grep option performs a case-insensitive search?",
+                        "o": ["-n", "-v", "-i", "-l"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في grep يجعل البحث غير حساس لحالة الأحرف؟",
+                        "o": ["-n", "-v", "-i", "-l"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which grep option shows line numbers with the matching lines?",
+                        "o": ["-n", "-c", "-r", "-v"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في grep يعرض أرقام الأسطر مع الأسطر المطابقة؟",
+                        "o": ["-n", "-c", "-r", "-v"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which grep option inverts the match, showing lines that do NOT match?",
+                        "o": ["-l", "-v", "-H", "-i"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في grep يعكس المطابقة ويعرض الأسطر غير المطابقة؟",
+                        "o": ["-l", "-v", "-H", "-i"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which grep option lists only the filenames that contain the search pattern?",
+                        "o": ["-l", "-c", "-n", "-r"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في grep يعرض فقط أسماء الملفات التي تحتوي على النمط المطلوب؟",
+                        "o": ["-l", "-c", "-n", "-r"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "Which grep option counts the number of matching occurrences in a file?",
+                        "o": ["-c", "-v", "-H", "-i"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في grep يعدّ عدد التطابقات الموجودة في الملف؟",
+                        "o": ["-c", "-v", "-H", "-i"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "What symbol represents the pipe operator in Linux?",
+                        "o": ["&", "|", "^", "~"]
+                    },
+                    "ar": {
+                        "q": "أي رمز يمثل عامل الأنبوب (Pipe) في لينكس؟",
+                        "o": ["&", "|", "^", "~"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "What does a pipe (|) do between two commands?",
+                        "o": ["Runs them at the same time in parallel", "Sends the output of the first command as input to the second", "Compares the outputs of both commands", "Deletes the output of the first command"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل الأنبوب (|) بين أمرين؟",
+                        "o": ["ينفذهما في وقت واحد بالتوازي", "يرسل ناتج الأمر الأول كمدخل للأمر الثاني", "يقارن مخرجات الأمرين", "يحذف ناتج الأمر الأول"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "In the 'cut' command, what does the '-d' option specify?",
+                        "o": ["The delimiter (field separator)", "The directory to search", "The display mode", "The destination file"]
+                    },
+                    "ar": {
+                        "q": "في أمر 'cut'، ماذا يحدد الخيار '-d'؟",
+                        "o": ["الفاصل (فاصل الحقول)", "الدليل المراد البحث فيه", "نمط العرض", "ملف الوجهة"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "In the 'cut' command, what does '-f N' do?",
+                        "o": ["Displays the Nth field", "Filters files by size N", "Finds N occurrences", "Formats output with N spaces"]
+                    },
+                    "ar": {
+                        "q": "في أمر 'cut'، ماذا يفعل '-f N'؟",
+                        "o": ["يعرض الحقل رقم N", "يصفي الملفات حسب الحجم N", "يبحث عن N تكرار", "ينسق المخرجات بمسافة N"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 7,
+                    "en": {
+                        "q": "In diff output, text following the less-than sign (<) belongs to which file?",
+                        "o": ["The second file", "The first file", "Neither file", "Both files equally"]
+                    },
+                    "ar": {
+                        "q": "في مخرجات diff، النص الذي يلي علامة أصغر من (<) ينتمي إلى أي ملف؟",
+                        "o": ["الملف الثاني", "الملف الأول", "لا ينتمي لأي ملف", "كلا الملفين معًا"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "How do you delete multiple files 'file1 file2 file3' at once?",
+                        "o": ["rm file1 file2 file3", "rm -all file1 file2 file3", "delete file1 file2 file3", "rm file1,file2,file3"]
+                    },
+                    "ar": {
+                        "q": "كيف تحذف عدة ملفات 'file1 file2 file3' دفعة واحدة؟",
+                        "o": ["rm file1 file2 file3", "rm -all file1 file2 file3", "delete file1 file2 file3", "rm file1,file2,file3"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which flag forces deletion of a file without asking for confirmation?",
+                        "o": ["rm -r", "rm -f", "rm -i", "rm -v"]
+                    },
+                    "ar": {
+                        "q": "أي خيار يفرض حذف الملف دون طلب تأكيد؟",
+                        "o": ["rm -r", "rm -f", "rm -i", "rm -v"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which command deletes a directory and its contents recursively without confirmation?",
+                        "o": ["rm -rf directoryname", "rmdir directoryname", "rm directoryname", "del -r directoryname"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يحذف دليلاً ومحتوياته بشكل متكرر دون تأكيد؟",
+                        "o": ["rm -rf directoryname", "rmdir directoryname", "rm directoryname", "del -r directoryname"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "What is the syntax to copy a single file to a new location?",
+                        "o": ["cp sourcefile destinationfile", "copy sourcefile destinationfile", "cp -to sourcefile destinationfile", "mv -copy sourcefile destinationfile"]
+                    },
+                    "ar": {
+                        "q": "ما هي صيغة نسخ ملف واحد إلى موقع جديد؟",
+                        "o": ["cp sourcefile destinationfile", "copy sourcefile destinationfile", "cp -to sourcefile destinationfile", "mv -copy sourcefile destinationfile"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which command copies a directory and its contents recursively to a destination?",
+                        "o": ["cp -r sourcedir /path/to/destination/", "cp sourcedir /path/to/destination/", "mv -r sourcedir /path/to/destination/", "copy -r sourcedir destination"]
+                    },
+                    "ar": {
+                        "q": "أي أمر ينسخ دليلاً ومحتوياته بشكل متكرر إلى وجهة معينة؟",
+                        "o": ["cp -r sourcedir /path/to/destination/", "cp sourcedir /path/to/destination/", "mv -r sourcedir /path/to/destination/", "copy -r sourcedir destination"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "What does the 'cp -i' option do if the destination file already exists?",
+                        "o": ["Overwrites it silently", "Prompts for confirmation before overwriting", "Deletes the source file instead", "Renames the destination automatically"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل خيار 'cp -i' إذا كان ملف الوجهة موجودًا بالفعل؟",
+                        "o": ["يكتب فوقه دون سؤال", "يطلب تأكيدًا قبل الكتابة فوقه", "يحذف ملف المصدر بدلاً من ذلك", "يعيد تسمية الوجهة تلقائيًا"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which command is used to rename a file from 'oldfilename' to 'newfilename'?",
+                        "o": ["cp oldfilename newfilename", "rename oldfilename newfilename", "mv oldfilename newfilename", "ren oldfilename newfilename"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يُستخدم لإعادة تسمية ملف من 'oldfilename' إلى 'newfilename'؟",
+                        "o": ["cp oldfilename newfilename", "rename oldfilename newfilename", "mv oldfilename newfilename", "ren oldfilename newfilename"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which single command family is used both to move files AND rename them?",
+                        "o": ["cp", "mv", "rm", "find"]
+                    },
+                    "ar": {
+                        "q": "أي عائلة أوامر تُستخدم لنقل الملفات وإعادة تسميتها في آنٍ واحد؟",
+                        "o": ["cp", "mv", "rm", "find"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "To move multiple files 'file1 file2 file3' to a directory, the correct syntax is:",
+                        "o": ["mv file1 file2 file3 /path/to/destination/", "mv /path/to/destination/ file1 file2 file3", "cp -m file1 file2 file3 dest", "move-all file1 file2 file3 dest"]
+                    },
+                    "ar": {
+                        "q": "لنقل عدة ملفات 'file1 file2 file3' إلى دليل، الصيغة الصحيحة هي:",
+                        "o": ["mv file1 file2 file3 /path/to/destination/", "mv /path/to/destination/ file1 file2 file3", "cp -m file1 file2 file3 dest", "move-all file1 file2 file3 dest"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 8,
+                    "en": {
+                        "q": "Which command deletes a single file directly by name?",
+                        "o": ["rm filename", "rmdir filename", "del filename", "erase filename"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يحذف ملفًا واحدًا مباشرة بالاسم؟",
+                        "o": ["rm filename", "rmdir filename", "del filename", "erase filename"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which command sorts the lines of a file alphabetically by default?",
+                        "o": ["sort filename.txt", "order filename.txt", "arrange filename.txt", "list filename.txt"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يفرز أسطر الملف أبجديًا بشكل افتراضي؟",
+                        "o": ["sort filename.txt", "order filename.txt", "arrange filename.txt", "list filename.txt"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which sort option reverses the alphabetical order?",
+                        "o": ["-n", "-r", "-u", "-k"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في sort يعكس الترتيب الأبجدي؟",
+                        "o": ["-n", "-r", "-u", "-k"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which sort option sorts numbers numerically instead of alphabetically?",
+                        "o": ["-n", "-r", "-u", "-k2"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في sort يفرز الأرقام رقميًا بدلاً من أبجديًا؟",
+                        "o": ["-n", "-r", "-u", "-k2"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which sort option sorts data based on a specific field/column?",
+                        "o": ["-r", "-n", "-k", "-u"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في sort يفرز البيانات حسب حقل أو عمود معين؟",
+                        "o": ["-r", "-n", "-k", "-u"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which sort option removes duplicate lines while sorting?",
+                        "o": ["-u", "-d", "-x", "-c"]
+                    },
+                    "ar": {
+                        "q": "أي خيار في sort يحذف الأسطر المكررة أثناء الفرز؟",
+                        "o": ["-u", "-d", "-x", "-c"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "What is the file descriptor number for standard input (stdin)?",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "ar": {
+                        "q": "ما رقم واصف الملف للمدخل القياسي (stdin)؟",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "What is the file descriptor number for standard output (stdout)?",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "ar": {
+                        "q": "ما رقم واصف الملف للمخرج القياسي (stdout)؟",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "What is the file descriptor number for standard error (stderr)?",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "ar": {
+                        "q": "ما رقم واصف الملف لمخرج الخطأ القياسي (stderr)؟",
+                        "o": ["0", "1", "2", "3"]
+                    },
+                    "c": 2
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "What does 'command > file.txt' do if file.txt already exists?",
+                        "o": ["Appends output to the end of file.txt", "Overwrites file.txt with the new output", "Deletes file.txt", "Merges the output alphabetically"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل الأمر 'command > file.txt' إذا كان الملف موجودًا مسبقًا؟",
+                        "o": ["يلحق المخرجات في نهاية الملف", "يكتب فوق الملف بالمخرجات الجديدة", "يحذف الملف", "يدمج المخرجات أبجديًا"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which operator appends output to a file without overwriting it?",
+                        "o": [">", ">>", "<", "2>"]
+                    },
+                    "ar": {
+                        "q": "أي عامل يُلحق المخرجات بملف دون الكتابة فوقه؟",
+                        "o": [">", ">>", "<", "2>"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which operator redirects the content of a file as input to a command?",
+                        "o": [">", "<", ">>", "|"]
+                    },
+                    "ar": {
+                        "q": "أي عامل يعيد توجيه محتوى ملف كمدخل لأمر؟",
+                        "o": [">", "<", ">>", "|"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which operator redirects error messages (stderr) to a file, overwriting it?",
+                        "o": ["2>", "2>>", "1>", "<"]
+                    },
+                    "ar": {
+                        "q": "أي عامل يعيد توجيه رسائل الخطأ (stderr) إلى ملف مع الكتابة فوقه؟",
+                        "o": ["2>", "2>>", "1>", "<"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 9,
+                    "en": {
+                        "q": "Which operator appends error output to an existing file instead of overwriting it?",
+                        "o": ["2>", "2>>", "1>>", ">>2"]
+                    },
+                    "ar": {
+                        "q": "أي عامل يُلحق مخرجات الخطأ بملف موجود بدلاً من الكتابة فوقه؟",
+                        "o": ["2>", "2>>", "1>>", ">>2"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "What is the default command-line editing mode in Bash?",
+                        "o": ["Vi mode", "Emacs mode", "Nano mode", "Visual mode"]
+                    },
+                    "ar": {
+                        "q": "ما هو الوضع الافتراضي لتحرير سطر الأوامر في Bash؟",
+                        "o": ["وضع Vi", "وضع Emacs", "وضع Nano", "الوضع المرئي"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which command switches Bash to Vi editing mode?",
+                        "o": ["set -o vi", "set -o emacs", "bindkey -v", "mode vi"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يبدّل Bash إلى وضع تحرير Vi؟",
+                        "o": ["set -o vi", "set -o emacs", "bindkey -v", "mode vi"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which command switches Bash back to Emacs editing mode?",
+                        "o": ["set -o vi", "set -o emacs", "bindkey -e", "mode emacs"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يعيد Bash إلى وضع تحرير Emacs؟",
+                        "o": ["set -o vi", "set -o emacs", "bindkey -e", "mode emacs"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In Emacs mode, what does Ctrl+A do?",
+                        "o": ["Move cursor to end of line", "Move cursor to beginning of line", "Cut the entire line", "Undo the last change"]
+                    },
+                    "ar": {
+                        "q": "في وضع Emacs، ماذا يفعل Ctrl+A؟",
+                        "o": ["نقل المؤشر لنهاية السطر", "نقل المؤشر لبداية السطر", "قص السطر بأكمله", "تراجع عن آخر تغيير"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In Emacs mode, what does Ctrl+E do?",
+                        "o": ["Move cursor to beginning of line", "Move cursor to end of line", "Erase the line", "Exit the shell"]
+                    },
+                    "ar": {
+                        "q": "في وضع Emacs، ماذا يفعل Ctrl+E؟",
+                        "o": ["نقل المؤشر لبداية السطر", "نقل المؤشر لنهاية السطر", "مسح السطر", "الخروج من الصدفة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In Emacs mode, what does Ctrl+K do?",
+                        "o": ["Paste the last cut text", "Cut text from cursor to end of line", "Move cursor left", "Kill the current process"]
+                    },
+                    "ar": {
+                        "q": "في وضع Emacs، ماذا يفعل Ctrl+K؟",
+                        "o": ["لصق آخر نص مقصوص", "قص النص من المؤشر حتى نهاية السطر", "تحريك المؤشر لليسار", "إنهاء العملية الحالية"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In Emacs mode, what does Ctrl+Y do?",
+                        "o": ["Cut the word before the cursor", "Paste the last cut text", "Redo the last change", "Yield the terminal"]
+                    },
+                    "ar": {
+                        "q": "في وضع Emacs، ماذا يفعل Ctrl+Y؟",
+                        "o": ["قص الكلمة قبل المؤشر", "لصق آخر نص مقصوص", "إعادة آخر تغيير", "تحرير الطرفية"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In Emacs mode, what does Ctrl+W do?",
+                        "o": ["Cut the word before the cursor", "Move forward one word", "Write the current buffer", "Exit insert mode"]
+                    },
+                    "ar": {
+                        "q": "في وضع Emacs، ماذا يفعل Ctrl+W؟",
+                        "o": ["قص الكلمة قبل المؤشر", "التحرك للأمام كلمة واحدة", "كتابة المحتوى الحالي", "الخروج من وضع الإدراج"]
+                    },
+                    "c": 0
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In shell Vi mode navigation, what does the 'k' key do?",
+                        "o": ["Move down (next command)", "Move up (previous command)", "Move cursor right", "Enter insert mode"]
+                    },
+                    "ar": {
+                        "q": "في تنقل وضع Vi بسطر الأوامر، ماذا يفعل مفتاح 'k'؟",
+                        "o": ["التحرك للأسفل (الأمر التالي)", "التحرك للأعلى (الأمر السابق)", "تحريك المؤشر لليمين", "الدخول في وضع الإدراج"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "In shell Vi mode navigation, what does the 'j' key do?",
+                        "o": ["Move up (previous command)", "Move down (next command)", "Move cursor left", "Delete a word"]
+                    },
+                    "ar": {
+                        "q": "في تنقل وضع Vi بسطر الأوامر، ماذا يفعل مفتاح 'j'؟",
+                        "o": ["التحرك للأعلى (الأمر السابق)", "التحرك للأسفل (الأمر التالي)", "تحريك المؤشر لليسار", "حذف كلمة"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "What is the correct format for defining an environment variable?",
+                        "o": ["VARIABLE_NAME:value", "VARIABLE_NAME=value", "VARIABLE_NAME->value", "$VARIABLE_NAME=value"]
+                    },
+                    "ar": {
+                        "q": "ما الصيغة الصحيحة لتعريف متغير بيئة؟",
+                        "o": ["VARIABLE_NAME:value", "VARIABLE_NAME=value", "VARIABLE_NAME->value", "$VARIABLE_NAME=value"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which environment variable represents the home directory of the user?",
+                        "o": ["PATH", "HOME", "USER", "PWD"]
+                    },
+                    "ar": {
+                        "q": "أي متغير بيئة يمثل الدليل الرئيسي للمستخدم؟",
+                        "o": ["PATH", "HOME", "USER", "PWD"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which environment variable is a colon-separated list of directories to search for commands?",
+                        "o": ["HOME", "PATH", "LOGNAME", "MAIL"]
+                    },
+                    "ar": {
+                        "q": "أي متغير بيئة عبارة عن قائمة أدلة مفصولة بفواصل منقوطة للبحث عن الأوامر؟",
+                        "o": ["HOME", "PATH", "LOGNAME", "MAIL"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which command displays ALL currently set environment variables?",
+                        "o": ["echo $HOME", "printenv (with no argument)", "whoami", "history"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يعرض كل متغيرات البيئة المضبوطة حاليًا؟",
+                        "o": ["echo $HOME", "printenv (بدون معطى)", "whoami", "history"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "What does the 'export' command do to a variable?",
+                        "o": ["Deletes it permanently", "Makes it available to subsequently executed (child) processes", "Encrypts its value", "Renames the variable"]
+                    },
+                    "ar": {
+                        "q": "ماذا يفعل أمر 'export' بمتغير ما؟",
+                        "o": ["يحذفه نهائيًا", "يجعله متاحًا للعمليات الفرعية التي تُنفذ لاحقًا", "يشفّر قيمته", "يعيد تسمية المتغير"]
+                    },
+                    "c": 1
+                }, {
+                    "lab": 10,
+                    "en": {
+                        "q": "Which command removes an environment variable?",
+                        "o": ["delete", "unset", "remove", "clear"]
+                    },
+                    "ar": {
+                        "q": "أي أمر يزيل متغير بيئة؟",
+                        "o": ["delete", "unset", "remove", "clear"]
+                    },
+                    "c": 1
+                }]
+            };
+
+            /* ============================================================
+   UI STRINGS (i18n)
+   ============================================================ */
+            const STR = {
+                en: {
+                    brandName: "basheer hamid",
+                    tabSummaries: "Summaries",
+                    tabQuiz: "Quiz Bank",
+                    tabDictionary: "Dictionary",
+                    revisionEyebrow: "REVISION",
+                    summariesTitle: "Summaries & Revision",
+                    summariesSub: "Ten labs from the Linux Operating System II manual, condensed into quick-reference cards.",
+                    quizEyebrow: "ASSESSMENT",
+                    quizTitle: "Interactive Quiz Bank",
+                    quizSub: "Test your knowledge with a randomized set pulled from the full question bank.",
+                    statPool: "questions in bank",
+                    statPerRun: "per attempt",
+                    statLabs: "labs covered",
+                    startQuizBtn: "Start Quiz",
+                    submitHint: "Answer all 20 questions to submit.",
+                    submitBtn: "Submit Quiz",
+                    resultsEyebrow: "RESULTS",
+                    retryBtn: "Try Another Set",
+                    reviewBtn: "Review Answers",
+                    dictEyebrow: "REFERENCE",
+                    dictTitle: "Technical Dictionary",
+                    dictSub: "Every key Linux term from the manual, paired with its Arabic translation.",
+                    dictSearchPlaceholder: "Search a term…",
+                    dictCount: (n, t) => `${n} of ${t} terms`,
+                    footerText: "basheer hamid — Linux Operating System II Lab Companion",
+                    labOpen: "Read summary",
+                    labClose: "Hide summary",
+                    scoreOf: (s, t) => `${s}/${t}`,
+                    correctLabel: "Correct answer",
+                    yourAnswer: "Your answer",
+                },
+                ar: {
+                    brandName: "basheer hamid",
+                    tabSummaries: "الملخصات",
+                    tabQuiz: "بنك الأسئلة",
+                    tabDictionary: "القاموس",
+                    revisionEyebrow: "مراجعة",
+                    summariesTitle: "الملخصات والمراجعة",
+                    summariesSub: "عشرة دروس من دليل نظام التشغيل لينكس II، ملخصة في بطاقات مرجعية سريعة.",
+                    quizEyebrow: "تقييم",
+                    quizTitle: "بنك الأسئلة التفاعلي",
+                    quizSub: "اختبر معلوماتك عبر مجموعة عشوائية مأخوذة من بنك الأسئلة الكامل.",
+                    statPool: "سؤال في البنك",
+                    statPerRun: "في كل محاولة",
+                    statLabs: "درسًا مغطى",
+                    startQuizBtn: "ابدأ الاختبار",
+                    submitHint: "أجب عن جميع الأسئلة العشرين لإرسال الاختبار.",
+                    submitBtn: "إرسال الاختبار",
+                    resultsEyebrow: "النتائج",
+                    retryBtn: "محاولة مجموعة أخرى",
+                    reviewBtn: "مراجعة الإجابات",
+                    dictEyebrow: "مرجع",
+                    dictTitle: "القاموس التقني",
+                    dictSub: "كل مصطلح أساسي من الدليل، مقترنًا بترجمته العربية.",
+                    dictSearchPlaceholder: "ابحث عن مصطلح…",
+                    dictCount: (n, t) => `${n} من ${t} مصطلح`,
+                    footerText: "basheer hamid — رفيقك في معمل نظام التشغيل لينكس II",
+                    labOpen: "عرض الملخص",
+                    labClose: "إخفاء الملخص",
+                    scoreOf: (s, t) => `${s}/${t}`,
+                    correctLabel: "الإجابة الصحيحة",
+                    yourAnswer: "إجابتك",
+                }
+            };
+
+            /* Motivational quotes — academic & tech-focused only */
+            const QUOTES = {
+                en: ["Great job! Keep pushing your limits.", "Every mistake is a learning step. You've got this!", "Debugging your knowledge today builds the engineer of tomorrow.", "Consistency compiles into mastery — keep running the loop.", "Small daily commits lead to a lifetime of expertise.", "You don't need to know everything — you need to keep learning.", "Every command you master is a step closer to fluency.", "Progress, not perfection. Review, retry, and grow.", ],
+                ar: ["عمل رائع! استمر في تجاوز حدودك.", "كل خطأ هو خطوة تعلّم جديدة. أنت قادر على النجاح!", "التعلم المستمر اليوم يبني مهندس الغد.", "الاستمرارية تتحول إلى إتقان — واصل الحلقة.", "خطوة بخطوة نحو الاحتراف.", "استمر في التقدم، النجاح بانتظارك.", "لست بحاجة لمعرفة كل شيء، بل لمواصلة التعلم.", "كل أمر تتقنه يقربك خطوة من الإتقان.", ]
+            };
+
+            /* ============================================================
+   STATE
+   ============================================================ */
+            let state = {
+                lang: 'en',
+                currentQuiz: [],
+                // 20 selected questions this attempt
+                answers: {},
+                // qIndex -> selected option index
+                submitted: false,
+            };
+
+            /* ============================================================
+   INIT
+   ============================================================ */
+            function selectLanguage(lang) {
+                document.getElementById('lang-gate').classList.add('hidden');
+                document.getElementById('app').classList.add('ready');
+                setLanguage(lang);
+            }
+
+            function setLanguage(lang) {
+                state.lang = lang;
+                document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                document.documentElement.lang = lang;
+                document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+                document.getElementById('btn-lang-ar').classList.toggle('active', lang === 'ar');
+
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (typeof STR[lang][key] === 'string')
+                        el.textContent = STR[lang][key];
+                }
+                );
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                    const key = el.getAttribute('data-i18n-placeholder');
+                    if (typeof STR[lang][key] === 'string')
+                        el.placeholder = STR[lang][key];
+                }
+                );
+
+                renderLabs();
+                renderDictionary();
+                if (state.currentQuiz.length)
+                    renderQuestions();
+                if (state.submitted)
+                    renderResults();
+            }
+
+            function showView(name) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('view-' + name).classList.add('active');
+                document.getElementById('tab-btn-' + name).classList.add('active');
+            }
+
+            /* ============================================================
+   SUMMARIES TAB
+   ============================================================ */
+            function renderLabs() {
+                const grid = document.getElementById('lab-grid');
+                grid.innerHTML = '';
+                DATA.labs.forEach( (lab, idx) => {
+                    const t = STR[state.lang];
+                    const card = document.createElement('div');
+                    card.className = 'lab-card';
+                    card.id = 'lab-card-' + lab.id;
+                    const title = state.lang === 'ar' ? lab.title_ar : lab.title_en;
+                    const desc = state.lang === 'ar' ? lab.summary_ar : lab.summary_en;
+                    const points = state.lang === 'ar' ? lab.points_ar : lab.points_en;
+                    card.innerHTML = `
+      <div class="lab-card-top">
+        <div class="lab-num">${String(lab.id).padStart(2, '0')}</div>
+        <div style="flex:1;">
+          <h3 class="lab-card-title">${escapeHtml(title)}</h3>
+          <p class="lab-card-desc">${escapeHtml(desc)}</p>
+        </div>
+      </div>
+      <div class="lab-card-foot">
+        <span class="lab-open-label">${t.labOpen}</span>
+        <span class="chev">›</span>
+      </div>
+      <ul class="lab-points">
+        ${points.map(p => `<li>${escapeHtml(p)}</li>`).join('')}
+      </ul>
+    `;
+                    card.addEventListener('click', () => {
+                        const isOpen = card.classList.toggle('open');
+                        card.querySelector('.lab-open-label').textContent = isOpen ? t.labClose : t.labOpen;
+                    }
+                    );
+                    grid.appendChild(card);
+                }
+                );
+            }
+
+            /* ============================================================
+   DICTIONARY TAB
+   ============================================================ */
+            function renderDictionary() {
+                const grid = document.getElementById('dict-grid');
+                const countEl = document.getElementById('dict-count');
+                const q = (document.getElementById('dict-search').value || '').trim().toLowerCase();
+                const t = STR[state.lang];
+                const filtered = DATA.dictionary.filter( ([en,ar]) => {
+                    if (!q)
+                        return true;
+                    return en.toLowerCase().includes(q) || ar.includes(q);
+                }
+                );
+                countEl.textContent = t.dictCount(filtered.length, DATA.dictionary.length);
+                grid.innerHTML = filtered.map( ([en,ar]) => `
+    <div class="dict-item">
+      <span class="dict-en">${escapeHtml(en)}</span>
+      <span class="dict-ar">${escapeHtml(ar)}</span>
+    </div>
+  `).join('');
+            }
+
+            /* ============================================================
+   QUIZ TAB
+   ============================================================ */
+            function shuffle(arr) {
+                const a = arr.slice();
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i],a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+
+            function startQuiz() {
+                const pool = shuffle(DATA.quiz.map( (q, i) => ({
+                    ...q,
+                    _poolIndex: i
+                })));
+                state.currentQuiz = pool.slice(0, 20);
+                state.answers = {};
+                state.submitted = false;
+                document.getElementById('quiz-stage-intro').style.display = 'none';
+                document.getElementById('quiz-stage-results').style.display = 'none';
+                document.getElementById('quiz-stage-active').style.display = 'block';
+                renderQuestions();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+
+            function renderQuestions() {
+                const container = document.getElementById('questions-container');
+                const t = STR[state.lang];
+                container.innerHTML = state.currentQuiz.map( (q, idx) => {
+                    const qq = q[state.lang];
+                    const answered = state.answers[idx] !== undefined;
+                    return `
+    <div class="q-card ${answered ? '' : 'unanswered'}" id="q-card-${idx}">
+      <div class="q-head">
+        <span class="q-index">${idx + 1}/20</span>
+        <span class="q-text">${escapeHtml(qq.q)}</span>
+      </div>
+      <div class="q-opts">
+        ${qq.o.map( (opt, oi) => `
+          <label class="q-opt ${state.answers[idx] === oi ? 'selected' : ''}" onclick="selectAnswer(${idx},${oi})">
+            <input type="radio" name="q${idx}" ${state.answers[idx] === oi ? 'checked' : ''}>
+            <span>${escapeHtml(opt)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>`;
+                }
+                ).join('');
+                updateProgress();
+            }
+
+            function selectAnswer(qIdx, optIdx) {
+                if (state.submitted)
+                    return;
+                state.answers[qIdx] = optIdx;
+                const card = document.getElementById('q-card-' + qIdx);
+                card.classList.remove('unanswered');
+                card.querySelectorAll('.q-opt').forEach( (el, i) => {
+                    el.classList.toggle('selected', i === optIdx);
+                    el.querySelector('input').checked = (i === optIdx);
+                }
+                );
+                updateProgress();
+            }
+
+            function updateProgress() {
+                const total = state.currentQuiz.length;
+                const answered = Object.keys(state.answers).length;
+                document.getElementById('progress-fill').style.width = (answered / total * 100) + '%';
+                const t = STR[state.lang];
+                document.getElementById('progress-label').textContent = state.lang === 'ar' ? `${answered} / ${total} تمت الإجابة عنها` : `${answered} / ${total} answered`;
+                const btn = document.getElementById('submit-btn');
+                const hint = document.getElementById('submit-hint');
+                if (answered >= total) {
+                    btn.disabled = false;
+                    hint.style.visibility = 'hidden';
+                } else {
+                    btn.disabled = true;
+                    hint.style.visibility = 'visible';
+                }
+            }
+
+            function submitQuiz() {
+                const total = state.currentQuiz.length;
+                const answered = Object.keys(state.answers).length;
+                if (answered < total)
+                    return;
+                // guard: cannot submit incomplete
+                state.submitted = true;
+
+                // Lock and grade the question cards in place
+                state.currentQuiz.forEach( (q, idx) => {
+                    const card = document.getElementById('q-card-' + idx);
+                    const correct = q.c;
+                    const chosen = state.answers[idx];
+                    card.querySelectorAll('.q-opt').forEach( (el, oi) => {
+                        el.classList.add('disabled');
+                        el.onclick = null;
+                        if (oi === correct)
+                            el.classList.add('correct');
+                        else if (oi === chosen)
+                            el.classList.add('incorrect');
+                    }
+                    );
+                }
+                );
+
+                const score = state.currentQuiz.reduce( (s, q, idx) => s + (state.answers[idx] === q.c ? 1 : 0), 0);
+                document.getElementById('quiz-stage-active').style.display = 'none';
+                document.getElementById('quiz-stage-results').style.display = 'block';
+                renderResults(score);
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+
+            function renderResults(scoreArg) {
+                if (!state.submitted)
+                    return;
+                const total = state.currentQuiz.length;
+                const score = scoreArg !== undefined ? scoreArg : state.currentQuiz.reduce( (s, q, idx) => s + (state.answers[idx] === q.c ? 1 : 0), 0);
+                const pct = Math.round(score / total * 100);
+                const t = STR[state.lang];
+                document.getElementById('result-score').textContent = t.scoreOf(score, total);
+                document.getElementById('result-pct').textContent = pct + '%';
+                const quotesArr = QUOTES[state.lang];
+                const quote = quotesArr[Math.floor(Math.random() * quotesArr.length)];
+                document.getElementById('result-quote').textContent = quote;
+            }
+
+            function reviewResults() {
+                const container = document.getElementById('review-container');
+                const t = STR[state.lang];
+                container.innerHTML = `<div class="review-title">${state.lang === 'ar' ? 'مراجعة تفصيلية' : 'Detailed Review'}</div>` + state.currentQuiz.map( (q, idx) => {
+                    const qq = q[state.lang];
+                    const correct = q.c;
+                    const chosen = state.answers[idx];
+                    return `
+      <div class="q-card">
+        <div class="q-head">
+          <span class="q-index">${idx + 1}/20</span>
+          <span class="q-text">${escapeHtml(qq.q)}</span>
+        </div>
+        <div class="q-opts">
+          ${qq.o.map( (opt, oi) => {
+                        let cls = 'q-opt disabled';
+                        if (oi === correct)
+                            cls += ' correct';
+                        else if (oi === chosen)
+                            cls += ' incorrect';
+                        return `<label class="${cls}"><input type="radio" disabled ${oi === chosen ? 'checked' : ''}><span>${escapeHtml(opt)}</span></label>`;
+                    }
+                    ).join('')}
+        </div>
+      </div>`;
+                }
+                ).join('');
+                container.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+
+            /* ============================================================
+   UTIL
+   ============================================================ */
+            function escapeHtml(str) {
+                const d = document.createElement('div');
+                d.textContent = str;
+                return d.innerHTML;
+            }
+
+            /* ============================================================
+   BOOT
+   ============================================================ */
+            document.getElementById('stat-pool').textContent = DATA.quiz.length;
+            document.getElementById('stat-labs').textContent = DATA.labs.length;
+            renderLabs();
+            renderDictionary();
+            showView('summaries');
+        </script>
+    </body>
+</html>
