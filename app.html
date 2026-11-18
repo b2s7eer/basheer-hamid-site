@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>basheer hamid — Computer Applications</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --bg: #101112;
+                --bg-deep: #0b0c0d;
+                --surface: #1a1b1d;
+                --surface-2: #1e2021;
+                --border: #2b2d2f;
+                --border-soft: #232527;
+                --cyan: #00ffcc;
+                --green: #00b38f;
+                --cyan-dim: rgba(0,255,204,.14);
+                --green-dim: rgba(0,179,143,.16);
+                --text: #eef0ef;
+                --muted: #9aa0a0;
+                --muted-2: #6d7373;
+                --danger: #ff5c72;
+                --danger-dim: rgba(255,92,114,.14);
+                --radius-s: 6px;
+                --radius: 12px;
+                --radius-l: 20px;
+                --font-en: 'Sora',sans-serif;
+                --font-ar: 'Tajawal',sans-serif;
+                --font-mono: 'JetBrains Mono',monospace;
+                --font-ui: var(--font-en);
+                --shadow-glow: 0 0 40px rgba(0,255,204,.06);
+            }
+
+            [dir="rtl"] {
+                --font-ui: var(--font-ar);
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background: radial-gradient(circle at 12% 8%, rgba(0,255,204,.05), transparent 42%), radial-gradient(circle at 88% 92%, rgba(0,179,143,.06), transparent 45%), var(--bg);
+                color: var(--text);
+                font-family: var(--font-ui);
+                min-height: 100vh;
+                line-height: 1.55;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            @media (prefers-reduced-motion:reduce) {
+                * {
+                    animation-duration: .01ms !important;
+                    transition-duration: .01ms !important;
+                }
+            }
+
+            /* ---------- utility ---------- */
+            .hidden {
+                display: none !important;
+            }
+
+            button {
+                font-family: inherit;
+                cursor: pointer;
+                border: none;
+                background: none;
+                color: inherit;
+            }
+
+            a {
+                color: inherit;
+            }
+
+            ::selection {
+                background: var(--cyan-dim);
+                color: var(--cyan);
+            }
+
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: var(--bg-deep);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 8px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--muted-2);
+            }
+
+            /* ---------- splash ---------- */
+            #splash {
+                position: fixed;
+                inset: 0;
+                z-index: 200;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: radial-gradient(circle at 50% 30%, #15171a, var(--bg-deep) 70%);
+                padding: 24px;
+            }
+
+            .splash-card {
+                width: 100%;
+                max-width: 460px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-l);
+                padding: 44px 34px;
+                text-align: center;
+                box-shadow: var(--shadow-glow), 0 30px 60px rgba(0,0,0,.5);
+                animation: rise .6s cubic-bezier(.2,.9,.3,1);
+            }
+
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(18px) scale(.98);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            .splash-mark {
+                font-family: var(--font-mono);
+                font-size: 13px;
+                letter-spacing: .16em;
+                color: var(--cyan);
+                margin-bottom: 6px;
+            }
+
+            .splash-title {
+                font-size: 30px;
+                font-weight: 800;
+                background: linear-gradient(120deg,var(--cyan),var(--green));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                margin-bottom: 10px;
+            }
+
+            .splash-sub {
+                color: var(--muted);
+                font-size: 14.5px;
+                margin-bottom: 32px;
+            }
+
+            .lang-choices {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .lang-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 20px;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                background: var(--surface-2);
+                transition: .2s;
+                text-align: left;
+            }
+
+            .lang-btn:hover {
+                border-color: var(--cyan);
+                box-shadow: 0 0 0 1px var(--cyan) inset;
+                transform: translateY(-1px);
+            }
+
+            .lang-btn .lb-title {
+                font-weight: 700;
+                font-size: 16px;
+            }
+
+            .lang-btn .lb-sub {
+                color: var(--muted-2);
+                font-size: 12.5px;
+                margin-top: 2px;
+            }
+
+            .lang-btn .lb-arrow {
+                color: var(--cyan);
+                font-size: 18px;
+            }
+
+            /* ---------- app shell ---------- */
+            #app {
+                opacity: 0;
+                transition: opacity .4s;
+            }
+
+            #app.ready {
+                opacity: 1;
+            }
+
+            header {
+                position: sticky;
+                top: 0;
+                z-index: 60;
+                background: rgba(16,17,18,.86);
+                backdrop-filter: blur(14px);
+                border-bottom: 1px solid var(--border-soft);
+            }
+
+            .header-inner {
+                max-width: 1180px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                padding: 14px 22px;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-shrink: 0;
+            }
+
+            .brand-mark {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: linear-gradient(135deg,var(--cyan),var(--green));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--font-mono);
+                font-weight: 700;
+                color: #08130f;
+                font-size: 15px;
+            }
+
+            .brand-name {
+                font-weight: 800;
+                font-size: 17px;
+                letter-spacing: .01em;
+            }
+
+            .brand-name sup {
+                color: var(--cyan);
+                font-size: 11px;
+            }
+
+            .brand-tag {
+                font-size: 10.5px;
+                color: var(--muted-2);
+                font-family: var(--font-mono);
+                letter-spacing: .08em;
+                margin-top: 1px;
+            }
+
+            nav.main-nav {
+                display: flex;
+                gap: 4px;
+                flex: 1;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+
+            nav.main-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-btn {
+                flex-shrink: 0;
+                padding: 9px 15px;
+                border-radius: 999px;
+                font-size: 13.5px;
+                font-weight: 600;
+                color: var(--muted);
+                white-space: nowrap;
+                transition: .18s;
+                border: 1px solid transparent;
+            }
+
+            .nav-btn:hover {
+                color: var(--text);
+            }
+
+            .nav-btn.active {
+                color: var(--bg-deep);
+                background: linear-gradient(120deg,var(--cyan),var(--green));
+            }
+
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-shrink: 0;
+            }
+
+            #langToggle {
+                display: flex;
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                overflow: hidden;
+                font-size: 12.5px;
+                font-weight: 700;
+            }
+
+            #langToggle button {
+                padding: 8px 13px;
+                color: var(--muted);
+                transition: .15s;
+            }
+
+            #langToggle button.active {
+                background: var(--cyan-dim);
+                color: var(--cyan);
+            }
+
+            main {
+                max-width: 1180px;
+                margin: 0 auto;
+                padding: 30px 22px 90px;
+            }
+
+            /* ---------- hero / module head ---------- */
+            .module-hero {
+                border: 1px solid var(--border);
+                border-radius: var(--radius-l);
+                padding: 30px 28px;
+                margin-bottom: 22px;
+                background: linear-gradient(160deg,var(--surface),var(--surface-2));
+                position: relative;
+                overflow: hidden;
+            }
+
+            .module-hero::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: radial-gradient(circle at 90% 0%, rgba(0,255,204,.08), transparent 55%);
+            }
+
+            .module-eyebrow {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                color: var(--green);
+                letter-spacing: .05em;
+                margin-bottom: 8px;
+            }
+
+            .module-title {
+                font-size: 26px;
+                font-weight: 800;
+                margin-bottom: 8px;
+            }
+
+            .module-desc {
+                color: var(--muted);
+                font-size: 14.5px;
+                max-width: 680px;
+            }
+
+            .subtabs {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .subtab-btn {
+                padding: 9px 16px;
+                border-radius: var(--radius-s);
+                font-size: 13.5px;
+                font-weight: 700;
+                border: 1px solid var(--border);
+                color: var(--muted);
+                background: var(--surface);
+                transition: .18s;
+            }
+
+            .subtab-btn:hover {
+                color: var(--text);
+                border-color: var(--muted-2);
+            }
+
+            .subtab-btn.active {
+                color: var(--cyan);
+                border-color: var(--cyan);
+                background: var(--cyan-dim);
+            }
+
+            .pane {
+                display: none;
+                animation: fadein .35s ease;
+            }
+
+            .pane.active {
+                display: block;
+            }
+
+            @keyframes fadein {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            /* ---------- summary cards ---------- */
+            .summary-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
+                gap: 14px;
+            }
+
+            .sum-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 18px;
+                transition: .2s;
+            }
+
+            .sum-card:hover {
+                border-color: var(--muted-2);
+            }
+
+            .sum-num {
+                font-family: var(--font-mono);
+                color: var(--cyan);
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .sum-head {
+                font-weight: 700;
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .sum-body {
+                color: var(--muted);
+                font-size: 13.5px;
+            }
+
+            .sum-body code, .formula {
+                font-family: var(--font-mono);
+                background: var(--bg-deep);
+                border: 1px solid var(--border-soft);
+                color: var(--green);
+                padding: 2px 7px;
+                border-radius: 5px;
+                font-size: 12.5px;
+                display: inline-block;
+                margin-top: 6px;
+            }
+
+            /* ---------- practical / simulation ---------- */
+            .task-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+
+            .task-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .task-badge {
+                font-family: var(--font-mono);
+                font-size: 11px;
+                padding: 3px 9px;
+                border-radius: 999px;
+                background: var(--green-dim);
+                color: var(--green);
+                font-weight: 600;
+            }
+
+            .task-title {
+                font-weight: 700;
+                font-size: 15.5px;
+            }
+
+            .task-scenario {
+                color: var(--muted);
+                font-size: 13.5px;
+                margin-bottom: 14px;
+            }
+
+            .grid-table {
+                border-collapse: collapse;
+                margin: 12px 0;
+                font-size: 13px;
+                font-family: var(--font-mono);
+                width: 100%;
+                max-width: 480px;
+                overflow-x: auto;
+                display: block;
+            }
+
+            .grid-table td,.grid-table th {
+                border: 1px solid var(--border);
+                padding: 7px 10px;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .grid-table th {
+                background: var(--bg-deep);
+                color: var(--cyan);
+            }
+
+            .grid-table td.cellref {
+                background: var(--bg-deep);
+                color: var(--muted-2);
+            }
+
+            .opt-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .opt-btn {
+                text-align: left;
+                padding: 11px 14px;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-s);
+                font-family: var(--font-mono);
+                font-size: 13px;
+                background: var(--surface-2);
+                transition: .15s;
+            }
+
+            [dir="rtl"] .opt-btn {
+                text-align: right;
+                font-family: var(--font-ar);
+            }
+
+            .opt-btn:hover {
+                border-color: var(--cyan);
+            }
+
+            .opt-btn.correct {
+                border-color: var(--green);
+                background: var(--green-dim);
+                color: var(--green);
+            }
+
+            .opt-btn.wrong {
+                border-color: var(--danger);
+                background: var(--danger-dim);
+                color: var(--danger);
+            }
+
+            .opt-btn:disabled {
+                cursor: default;
+            }
+
+            .order-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .order-item {
+                padding: 11px 14px;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-s);
+                background: var(--surface-2);
+                font-size: 13.5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: .15s;
+            }
+
+            .order-item:hover {
+                border-color: var(--muted-2);
+            }
+
+            .order-item .oi-idx {
+                font-family: var(--font-mono);
+                color: var(--muted-2);
+                font-size: 12px;
+                min-width: 18px;
+            }
+
+            .order-item.picked {
+                border-color: var(--cyan);
+                color: var(--cyan);
+            }
+
+            .order-item.correct-pos {
+                border-color: var(--green);
+                background: var(--green-dim);
+            }
+
+            .order-item.wrong-pos {
+                border-color: var(--danger);
+                background: var(--danger-dim);
+            }
+
+            .match-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 9px;
+                flex-wrap: wrap;
+            }
+
+            .match-left {
+                font-size: 13.5px;
+                min-width: 180px;
+                color: var(--text);
+            }
+
+            .match-row select {
+                background: var(--surface-2);
+                color: var(--text);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-s);
+                padding: 8px 10px;
+                font-family: inherit;
+                font-size: 13px;
+                flex: 1;
+                min-width: 160px;
+            }
+
+            .match-row.correct select {
+                border-color: var(--green);
+                color: var(--green);
+            }
+
+            .match-row.wrong select {
+                border-color: var(--danger);
+                color: var(--danger);
+            }
+
+            .task-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 14px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                border-radius: 999px;
+                font-weight: 700;
+                font-size: 13.5px;
+                transition: .18s;
+            }
+
+            .btn-primary {
+                background: linear-gradient(120deg,var(--cyan),var(--green));
+                color: #08130f;
+            }
+
+            .btn-primary:hover {
+                filter: brightness(1.08);
+                transform: translateY(-1px);
+            }
+
+            .btn-primary:disabled {
+                opacity: .4;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .btn-ghost {
+                border: 1px solid var(--border);
+                color: var(--muted);
+            }
+
+            .btn-ghost:hover {
+                color: var(--text);
+                border-color: var(--muted-2);
+            }
+
+            .task-feedback {
+                font-size: 13px;
+                margin-top: 10px;
+                font-weight: 600;
+            }
+
+            .task-feedback.ok {
+                color: var(--green);
+            }
+
+            .task-feedback.no {
+                color: var(--danger);
+            }
+
+            /* ---------- quiz ---------- */
+            .quiz-intro {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-l);
+                padding: 30px;
+                text-align: center;
+            }
+
+            .quiz-intro .qi-num {
+                font-size: 44px;
+                font-weight: 800;
+                color: var(--cyan);
+                font-family: var(--font-mono);
+            }
+
+            .quiz-intro p {
+                color: var(--muted);
+                margin: 10px 0 22px;
+                font-size: 14px;
+            }
+
+            .quiz-wrap {
+                display: none;
+            }
+
+            .quiz-wrap.active {
+                display: block;
+            }
+
+            .quiz-progress {
+                height: 5px;
+                background: var(--border);
+                border-radius: 4px;
+                overflow: hidden;
+                margin-bottom: 22px;
+            }
+
+            .quiz-progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg,var(--cyan),var(--green));
+                transition: width .3s;
+            }
+
+            .quiz-meta {
+                display: flex;
+                justify-content: space-between;
+                color: var(--muted-2);
+                font-size: 12.5px;
+                font-family: var(--font-mono);
+                margin-bottom: 14px;
+            }
+
+            .quiz-q-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 16px;
+            }
+
+            .quiz-q-text {
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 16px;
+            }
+
+            .quiz-options {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .quiz-nav {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 6px;
+            }
+
+            .qn-dots {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin: 18px 0;
+            }
+
+            .qn-dot {
+                width: 26px;
+                height: 26px;
+                border-radius: 7px;
+                border: 1px solid var(--border);
+                font-size: 11px;
+                font-family: var(--font-mono);
+                color: var(--muted);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .qn-dot.answered {
+                border-color: var(--cyan);
+                color: var(--cyan);
+            }
+
+            .qn-dot.current {
+                background: var(--cyan);
+                color: var(--bg-deep);
+                border-color: var(--cyan);
+            }
+
+            .quiz-results {
+                display: none;
+                text-align: center;
+            }
+
+            .quiz-results.active {
+                display: block;
+            }
+
+            .result-ring {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                margin: 0 auto 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                border: 6px solid var(--border);
+                position: relative;
+            }
+
+            .result-ring .rr-pct {
+                font-size: 30px;
+                font-weight: 800;
+                font-family: var(--font-mono);
+            }
+
+            .result-ring .rr-lbl {
+                font-size: 11px;
+                color: var(--muted-2);
+            }
+
+            .result-quote {
+                font-size: 15px;
+                font-style: italic;
+                color: var(--cyan);
+                margin: 18px auto;
+                max-width: 520px;
+                border-left: 3px solid var(--cyan);
+                padding: 4px 0 4px 14px;
+                text-align: left;
+            }
+
+            [dir="rtl"] .result-quote {
+                border-left: none;
+                border-right: 3px solid var(--cyan);
+                padding: 4px 14px 4px 0;
+                text-align: right;
+            }
+
+            .review-list {
+                text-align: left;
+                margin-top: 26px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            [dir="rtl"] .review-list {
+                text-align: right;
+            }
+
+            .review-item {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-s);
+                padding: 14px;
+                font-size: 13px;
+            }
+
+            .review-item .ri-q {
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .review-item .ri-a {
+                color: var(--muted);
+                margin-bottom: 3px;
+            }
+
+            .review-item .ri-a.right {
+                color: var(--green);
+            }
+
+            .review-item .ri-a.wrong {
+                color: var(--danger);
+            }
+
+            /* ---------- glossary ---------- */
+            .glossary-search {
+                width: 100%;
+                padding: 13px 16px;
+                border-radius: var(--radius);
+                border: 1px solid var(--border);
+                background: var(--surface);
+                color: var(--text);
+                font-family: inherit;
+                font-size: 14px;
+                margin-bottom: 18px;
+            }
+
+            .gloss-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+                gap: 12px;
+            }
+
+            .gloss-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 16px;
+            }
+
+            .gloss-term {
+                font-weight: 700;
+                color: var(--cyan);
+                font-family: var(--font-mono);
+                font-size: 13.5px;
+                margin-bottom: 6px;
+            }
+
+            .gloss-def {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            footer {
+                border-top: 1px solid var(--border-soft);
+                padding: 26px 22px;
+                text-align: center;
+                color: var(--muted-2);
+                font-size: 12px;
+            }
+
+            @media (max-width: 720px) {
+                .header-inner {
+                    flex-wrap:wrap;
+                }
+
+                nav.main-nav {
+                    order: 3;
+                    width: 100%;
+                    padding-top: 8px;
+                    border-top: 1px solid var(--border-soft);
+                    margin-top: 8px;
+                }
+
+                .module-title {
+                    font-size: 21px;
+                }
+
+                .quiz-q-text {
+                    font-size: 14.5px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ================= SPLASH ================= -->
+        <div id="splash">
+            <div class="splash-card">
+                <div class="splash-mark">basheer hamid</div>
+                <div class="splash-title">Computer Applications</div>
+                <div class="splash-sub">Select your language to begin · اختر لغتك للبدء</div>
+                <div class="lang-choices">
+                    <button class="lang-btn" data-lang="en">
+                        <div>
+                            <div class="lb-title">English</div>
+                            <div class="lb-sub">Continue in English</div>
+                        </div>
+                        <span class="lb-arrow">→</span>
+                    </button>
+                    <button class="lang-btn" data-lang="ar">
+                        <div>
+                            <div class="lb-title">العربية</div>
+                            <div class="lb-sub">المتابعة باللغة العربية</div>
+                        </div>
+                        <span class="lb-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- ================= APP ================= -->
+        <div id="app">
+            <header>
+                <div class="header-inner">
+                    <div class="brand">
+                        <div class="brand-mark">BH</div>
+                        <div>
+                            <div class="brand-name" dir="ltr">
+                                basheer hamid
+                            </div>
+                            <div class="brand-tag" id="brandTag" dir="ltr">COMPUTER APPLICATIONS</div>
+                        </div>
+                    </div>
+                    <nav class="main-nav" id="mainNav"></nav>
+                    <div class="header-actions">
+                        <div id="langToggle">
+                            <button data-lang="en">EN</button>
+                            <button data-lang="ar">AR</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <main id="mainContent"></main>
+            <footer id="footerText"></footer>
+        </div>
+        <script>
+            /* ============================================================
+   basheer hamid — Computer Applications SPA
+   Vanilla JS. No frameworks. All content grounded in the
+   supplied "Computer Applications II" lab manual (Word / Excel /
+   PowerPoint). Bilingual EN/AR with full state-preserving switch.
+   ============================================================ */
+
+            /* ---------------- UI STRING DICTIONARY ---------------- */
+            const UI = {
+                en: {
+                    brandTag: "COMPUTER APPLICATIONS",
+                    navWord: "Word",
+                    navExcel: "Excel",
+                    navPpt: "PowerPoint",
+                    navGloss: "Glossary",
+                    subSummary: "Summaries",
+                    subPractical: "Practical Application",
+                    subQuiz: "Theoretical Quiz",
+                    wordTitle: "Microsoft Word",
+                    wordDesc: "Document structure, styles, templates, long-document workflows, mail merge and academic citations.",
+                    excelTitle: "Microsoft Excel",
+                    excelDesc: "Logical functions, lookup functions, data validation, protection and PivotTables for real data-processing tasks.",
+                    pptTitle: "Microsoft PowerPoint",
+                    pptDesc: "Slide structure, transitions, animation systems, the Slide Master, media, and AI-assisted presentation building.",
+                    glossTitle: "General Glossary",
+                    glossDesc: "Every technical term used across the three modules, in one searchable place.",
+                    glossSearch: "Search a term…",
+                    startQuiz: "Start Quiz",
+                    quizIntroLine: "20 random questions pulled from this module's question bank.",
+                    quizIntroNum: "20",
+                    questions: "Questions",
+                    qLabel: "Question",
+                    of: "of",
+                    next: "Next",
+                    prev: "Back",
+                    submitQuiz: "Submit Quiz",
+                    answerAll: "Answer every question to submit.",
+                    yourScore: "Your Score",
+                    retake: "Retake Quiz",
+                    backSummaries: "Review Answers",
+                    reviewTitle: "Answer Review",
+                    correctLbl: "Correct answer",
+                    yourAnswer: "Your answer",
+                    taskCheck: "Check Answer",
+                    taskReset: "Reset",
+                    taskCorrect: "Correct — exactly right.",
+                    taskWrong: "Not quite — review the highlighted answer.",
+                    scenario: "Scenario",
+                    practicalBadgeChoice: "Practical Scenario",
+                    practicalBadgeOrder: "Sequence the Steps",
+                    practicalBadgeMatch: "Match the Concept",
+                    orderHint: "Click the steps below in the correct order.",
+                    matchHint: "Choose the matching option for each item.",
+                    footer: "basheer hamid — Computer Applications · Built from the course lab manual",
+                    formula: "Formula",
+                },
+                ar: {
+                    brandTag: "تطبيقات الحاسوب",
+                    navWord: "وورد",
+                    navExcel: "إكسل",
+                    navPpt: "بوربوينت",
+                    navGloss: "المسرد العام",
+                    subSummary: "الملخصات",
+                    subPractical: "التطبيق العملي",
+                    subQuiz: "الاختبار النظري",
+                    wordTitle: "مايكروسوفت وورد",
+                    wordDesc: "بنية المستندات، الأنماط، القوالب، إدارة المستندات الطويلة، الدمج البريدي، والاستشهادات الأكاديمية.",
+                    excelTitle: "مايكروسوفت إكسل",
+                    excelDesc: "الدوال المنطقية، دوال البحث، التحقق من صحة البيانات، الحماية والجداول المحورية لمعالجة بيانات حقيقية.",
+                    pptTitle: "مايكروسوفت بوربوينت",
+                    pptDesc: "بنية الشرائح، الانتقالات، أنظمة الحركة، الشريحة الرئيسية، الوسائط، وبناء العروض بمساعدة الذكاء الاصطناعي.",
+                    glossTitle: "المسرد العام",
+                    glossDesc: "جميع المصطلحات التقنية المستخدمة عبر الوحدات الثلاث، في مكان واحد قابل للبحث.",
+                    glossSearch: "ابحث عن مصطلح…",
+                    startQuiz: "ابدأ الاختبار",
+                    quizIntroLine: "٢٠ سؤالاً عشوائياً يتم سحبها من بنك أسئلة هذه الوحدة.",
+                    quizIntroNum: "٢٠",
+                    questions: "سؤال",
+                    qLabel: "السؤال",
+                    of: "من",
+                    next: "التالي",
+                    prev: "السابق",
+                    submitQuiz: "إنهاء الاختبار",
+                    answerAll: "أجب عن جميع الأسئلة لإنهاء الاختبار.",
+                    yourScore: "نتيجتك",
+                    retake: "إعادة الاختبار",
+                    backSummaries: "مراجعة الإجابات",
+                    reviewTitle: "مراجعة الإجابات",
+                    correctLbl: "الإجابة الصحيحة",
+                    yourAnswer: "إجابتك",
+                    taskCheck: "تحقق من الإجابة",
+                    taskReset: "إعادة التعيين",
+                    taskCorrect: "إجابة صحيحة تماماً.",
+                    taskWrong: "غير صحيحة — راجع الإجابة المظللة.",
+                    scenario: "السيناريو",
+                    practicalBadgeChoice: "سيناريو عملي",
+                    practicalBadgeOrder: "رتّب الخطوات",
+                    practicalBadgeMatch: "طابق المفهوم",
+                    orderHint: "انقر على الخطوات أدناه بالترتيب الصحيح.",
+                    matchHint: "اختر الخيار المطابق لكل عنصر.",
+                    footer: "basheer hamid — تطبيقات الحاسوب · مبني من دليل مختبر المقرر",
+                    formula: "الصيغة",
+                },
+            };
+
+            /* Motivational, purely academic/tech-flavored quotes (bilingual pairs, index-aligned) */
+            const QUOTES_EN = ["Code your way to success — one function at a time.", "Mastery is built on persistence, not perfection.", "Every formula you understand is a problem you'll never fear again.", "Great effort! Consistency compiles into expertise.", "Debug your weak points today, ship a stronger version of yourself tomorrow.", "Skilled hands with Office tools are never idle hands.", "Precision today, productivity for a lifetime.", ];
+            const QUOTES_AR = ["استمر في التقدم، الاحتراف يبدأ بخطوة واحدة.", "الإتقان يُبنى بالمثابرة لا بالكمال المفاجئ.", "كل دالة تفهمها اليوم مشكلة لن تخشاها غداً.", "مجهود رائع! الاستمرارية تتحول مع الوقت إلى خبرة حقيقية.", "عالج نقاط ضعفك اليوم لتصدر نسخة أقوى من نفسك غداً.", "اليد الماهرة في أدوات أوفيس لا تعرف الكسل.", "الدقة اليوم إنتاجية تدوم العمر كله.", ];
+
+            /* ---------------- STATE ---------------- */
+            const state = {
+                lang: null,
+                module: 'excel',
+                subtab: 'summary',
+                quiz: {
+                    module: null,
+                    pool: [],
+                    idx: 0,
+                    answers: {},
+                    submitted: false
+                },
+            };
+
+            function t(key) {
+                return UI[state.lang][key];
+            }
+            function pick(obj) {
+                return state.lang === 'ar' ? obj.ar : obj.en;
+            }
+
+            /* Strict-syntax guard: any option/answer text that is (or contains) Excel
+   formula syntax must render LTR + monospace, isolated from the surrounding
+   RTL paragraph direction, so "=", commas and parentheses never re-order. */
+            function safeFormula(txt) {
+                if (typeof txt !== 'string')
+                    return txt;
+                if (/^=|^[A-Z]+\(.*\)$|\b(IF|AND|OR|NOT|VLOOKUP|HLOOKUP|MATCH|INDEX|XLOOKUP)\(/.test(txt)) {
+                    return `<span dir="ltr" style="unicode-bidi:isolate;display:inline-block;font-family:var(--font-mono);">${txt}</span>`;
+                }
+                return txt;
+            }
+
+            /* ---------------- BOOT ---------------- */
+            document.querySelectorAll('.lang-btn').forEach(b => {
+                b.addEventListener('click', () => setLanguage(b.dataset.lang, true));
+            }
+            );
+            document.querySelectorAll('#langToggle button').forEach(b => {
+                b.addEventListener('click', () => setLanguage(b.dataset.lang, false));
+            }
+            );
+
+            function setLanguage(lang, fromSplash) {
+                state.lang = lang;
+                document.documentElement.lang = lang;
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                document.querySelectorAll('#langToggle button').forEach(b => {
+                    b.classList.toggle('active', b.dataset.lang === lang);
+                }
+                );
+                document.getElementById('brandTag').textContent = t('brandTag');
+                document.getElementById('footerText').textContent = t('footer');
+                buildNav();
+                renderMain();
+                if (fromSplash) {
+                    document.getElementById('splash').style.display = 'none';
+                    const app = document.getElementById('app');
+                    app.classList.add('ready');
+                }
+            }
+
+            function buildNav() {
+                const nav = document.getElementById('mainNav');
+                const items = [{
+                    id: 'word',
+                    label: t('navWord')
+                }, {
+                    id: 'excel',
+                    label: t('navExcel')
+                }, {
+                    id: 'powerpoint',
+                    label: t('navPpt')
+                }, {
+                    id: 'glossary',
+                    label: t('navGloss')
+                }, ];
+                nav.innerHTML = items.map(i => `<button class="nav-btn ${state.module === i.id ? 'active' : ''}" data-mod="${i.id}">${i.label}</button>`).join('');
+                nav.querySelectorAll('.nav-btn').forEach(b => {
+                    b.addEventListener('click', () => {
+                        state.module = b.dataset.mod;
+                        state.subtab = 'summary';
+                        state.quiz = {
+                            module: null,
+                            pool: [],
+                            idx: 0,
+                            answers: {},
+                            submitted: false
+                        };
+                        buildNav();
+                        renderMain();
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                    );
+                }
+                );
+            }
+
+            /* ---------------- MAIN RENDER ---------------- */
+            function renderMain() {
+                const main = document.getElementById('mainContent');
+                if (state.module === 'glossary') {
+                    main.innerHTML = renderGlossary();
+                    attachGlossary();
+                    return;
+                }
+
+                const mod = MODULES[state.module];
+                const heroTitleKey = state.module === 'word' ? 'wordTitle' : state.module === 'excel' ? 'excelTitle' : 'pptTitle';
+                const heroDescKey = state.module === 'word' ? 'wordDesc' : state.module === 'excel' ? 'excelDesc' : 'pptDesc';
+
+                main.innerHTML = `
+    <div class="module-hero">
+      <div class="module-eyebrow">MODULE · ${mod.eyebrow}</div>
+      <div class="module-title">${t(heroTitleKey)}</div>
+      <div class="module-desc">${t(heroDescKey)}</div>
+    </div>
+    <div class="subtabs">
+      <button class="subtab-btn ${state.subtab === 'summary' ? 'active' : ''}" data-sub="summary">${t('subSummary')}</button>
+      <button class="subtab-btn ${state.subtab === 'practical' ? 'active' : ''}" data-sub="practical">${t('subPractical')}</button>
+      <button class="subtab-btn ${state.subtab === 'quiz' ? 'active' : ''}" data-sub="quiz">${t('subQuiz')}</button>
+    </div>
+    <div id="paneHolder"></div>
+  `;
+                main.querySelectorAll('.subtab-btn').forEach(b => {
+                    b.addEventListener('click', () => {
+                        state.subtab = b.dataset.sub;
+                        if (state.subtab !== 'quiz') {
+                            state.quiz = {
+                                module: null,
+                                pool: [],
+                                idx: 0,
+                                answers: {},
+                                submitted: false
+                            };
+                        }
+                        renderMain();
+                    }
+                    );
+                }
+                );
+                renderPane(mod);
+            }
+
+            function renderPane(mod) {
+                const holder = document.getElementById('paneHolder');
+                if (state.subtab === 'summary')
+                    holder.innerHTML = renderSummaries(mod);
+                else if (state.subtab === 'practical') {
+                    holder.innerHTML = renderTasksShell(mod);
+                    attachTasks(mod);
+                } else if (state.subtab === 'quiz') {
+                    holder.innerHTML = renderQuizShell(mod);
+                    attachQuiz(mod);
+                }
+            }
+
+            /* ---------------- SUMMARIES ---------------- */
+            function renderSummaries(mod) {
+                return `<div class="summary-grid">` + mod.summaries.map( (s, i) => `
+    <div class="sum-card">
+      <div class="sum-num">${String(i + 1).padStart(2, '0')}</div>
+      <div class="sum-head">${pick(s).h}</div>
+      <div class="sum-body">${pick(s).body}</div>
+      ${s.formula ? `<div style="font-size:11px;color:var(--muted-2);margin-top:12px;font-weight:700;letter-spacing:.04em;">${t('formula').toUpperCase()}</div><div dir="ltr" style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; font-family: monospace; color: #00ffcc; text-align: left; margin: 6px 0 0; font-size: 1.05rem; font-weight: bold; overflow-x:auto; unicode-bidi: isolate;">${s.formula}</div>` : ''}
+    </div>`).join('') + `</div>`;
+            }
+
+            /* ---------------- GLOSSARY ---------------- */
+            function renderGlossary() {
+                return `
+    <div class="module-hero">
+      <div class="module-eyebrow">REFERENCE</div>
+      <div class="module-title">${t('glossTitle')}</div>
+      <div class="module-desc">${t('glossDesc')}</div>
+    </div>
+    <input class="glossary-search" id="glossSearch" placeholder="${t('glossSearch')}">
+    <div class="gloss-grid" id="glossGrid"></div>
+  `;
+            }
+            function attachGlossary() {
+                const grid = document.getElementById('glossGrid');
+                const input = document.getElementById('glossSearch');
+                function draw(filter) {
+                    const f = (filter || '').trim().toLowerCase();
+                    const items = GLOSSARY.filter(g => {
+                        if (!f)
+                            return true;
+                        return pick(g).term.toLowerCase().includes(f) || pick(g).def.toLowerCase().includes(f) || g.en.term.toLowerCase().includes(f);
+                    }
+                    );
+                    grid.innerHTML = items.map(g => `
+      <div class="gloss-card">
+        <div class="gloss-term">${pick(g).term}</div>
+        <div class="gloss-def">${pick(g).def}</div>
+      </div>`).join('') || `<div style="color:var(--muted-2);padding:20px;">—</div>`;
+                }
+                draw('');
+                input.addEventListener('input', () => draw(input.value));
+            }
+
+            /* ---------------- PRACTICAL TASKS ENGINE ---------------- */
+            function renderTasksShell(mod) {
+                return `<div id="tasksHolder">` + mod.tasks.map( (task, i) => renderTask(task, i)).join('') + `</div>`;
+            }
+
+            function renderTask(task, idx) {
+                const badgeKey = task.type === 'choice' ? 'practicalBadgeChoice' : task.type === 'order' ? 'practicalBadgeOrder' : 'practicalBadgeMatch';
+                let body = '';
+                if (task.type === 'choice') {
+                    body = `
+      ${task.table ? renderGridTable(task.table) : ''}
+      <div class="opt-list" data-tid="${idx}">
+        ${pick(task.options).map( (o, oi) => `<button class="opt-btn" data-i="${oi}">${safeFormula(o)}</button>`).join('')}
+      </div>
+      <div class="task-actions">
+        <button class="btn btn-ghost" data-reset="${idx}">${t('taskReset')}</button>
+      </div>
+      <div class="task-feedback" data-fb="${idx}"></div>
+    `;
+                } else if (task.type === 'order') {
+                    body = `
+      <div class="task-scenario" style="margin-bottom:8px;font-style:italic;">${t('orderHint')}</div>
+      <div class="order-list" data-tid="${idx}"></div>
+      <div class="task-actions">
+        <button class="btn btn-primary" data-check="${idx}">${t('taskCheck')}</button>
+        <button class="btn btn-ghost" data-reset="${idx}">${t('taskReset')}</button>
+      </div>
+      <div class="task-feedback" data-fb="${idx}"></div>
+    `;
+                } else if (task.type === 'match') {
+                    body = `
+      <div class="task-scenario" style="margin-bottom:8px;font-style:italic;">${t('matchHint')}</div>
+      <div data-tid="${idx}"></div>
+      <div class="task-actions">
+        <button class="btn btn-primary" data-check="${idx}">${t('taskCheck')}</button>
+        <button class="btn btn-ghost" data-reset="${idx}">${t('taskReset')}</button>
+      </div>
+      <div class="task-feedback" data-fb="${idx}"></div>
+    `;
+                }
+                return `
+    <div class="task-card" data-task="${idx}">
+      <div class="task-head">
+        <span class="task-badge">${t(badgeKey)}</span>
+        <span class="task-title">${pick(task.title)}</span>
+      </div>
+      <div class="task-scenario">${pick(task.scenario)}</div>
+      ${body}
+    </div>
+  `;
+            }
+
+            function renderGridTable(rows) {
+                return `<table class="grid-table" dir="ltr" style="unicode-bidi:isolate;"><tbody>` + rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') + `</tbody></table>`;
+            }
+
+            function attachTasks(mod) {
+                mod.tasks.forEach( (task, idx) => {
+                    if (task.type === 'choice')
+                        attachChoiceTask(mod, task, idx);
+                    else if (task.type === 'order')
+                        attachOrderTask(mod, task, idx);
+                    else if (task.type === 'match')
+                        attachMatchTask(mod, task, idx);
+                }
+                );
+            }
+
+            function attachChoiceTask(mod, task, idx) {
+                const card = document.querySelector(`.task-card[data-task="${idx}"]`);
+                const btns = card.querySelectorAll('.opt-btn');
+                const fb = card.querySelector(`[data-fb="${idx}"]`);
+                btns.forEach( (b, oi) => {
+                    b.addEventListener('click', () => {
+                        btns.forEach(x => x.disabled = true);
+                        if (oi === task.correct) {
+                            b.classList.add('correct');
+                            fb.textContent = t('taskCorrect');
+                            fb.className = 'task-feedback ok';
+                        } else {
+                            b.classList.add('wrong');
+                            btns[task.correct].classList.add('correct');
+                            fb.textContent = t('taskWrong');
+                            fb.className = 'task-feedback no';
+                        }
+                    }
+                    );
+                }
+                );
+                card.querySelector(`[data-reset="${idx}"]`).addEventListener('click', () => {
+                    btns.forEach(b => {
+                        b.disabled = false;
+                        b.classList.remove('correct', 'wrong');
+                    }
+                    );
+                    fb.textContent = '';
+                    fb.className = 'task-feedback';
+                }
+                );
+            }
+
+            function attachOrderTask(mod, task, idx) {
+                const card = document.querySelector(`.task-card[data-task="${idx}"]`);
+                const list = card.querySelector(`.order-list[data-tid="${idx}"]`);
+                const fb = card.querySelector(`[data-fb="${idx}"]`);
+                const correctOrder = pick(task.items);
+                let shuffled, picked;
+
+                function build() {
+                    shuffled = correctOrder.map( (txt, i) => ({
+                        txt,
+                        i
+                    })).sort( () => Math.random() - 0.5);
+                    picked = [];
+                    draw();
+                }
+                function draw() {
+                    list.innerHTML = shuffled.map(item => {
+                        const seq = picked.indexOf(item.i);
+                        return `<div class="order-item ${seq > -1 ? 'picked' : ''}" data-oi="${item.i}">
+        <span class="oi-idx">${seq > -1 ? seq + 1 : '·'}</span><span>${item.txt}</span>
+      </div>`;
+                    }
+                    ).join('');
+                    list.querySelectorAll('.order-item').forEach(el => {
+                        el.addEventListener('click', () => {
+                            const oi = Number(el.dataset.oi);
+                            if (picked.includes(oi))
+                                picked = picked.filter(x => x !== oi);
+                            else
+                                picked.push(oi);
+                            draw();
+                        }
+                        );
+                    }
+                    );
+                }
+                build();
+
+                card.querySelector(`[data-check="${idx}"]`).addEventListener('click', () => {
+                    if (picked.length !== correctOrder.length) {
+                        fb.textContent = t('answerAll');
+                        fb.className = 'task-feedback no';
+                        return;
+                    }
+                    let allOk = true;
+                    list.querySelectorAll('.order-item').forEach(el => {
+                        const oi = Number(el.dataset.oi);
+                        const seq = picked.indexOf(oi);
+                        if (seq === oi) {
+                            el.classList.add('correct-pos');
+                        } else {
+                            el.classList.add('wrong-pos');
+                            allOk = false;
+                        }
+                    }
+                    );
+                    fb.textContent = allOk ? t('taskCorrect') : t('taskWrong');
+                    fb.className = 'task-feedback ' + (allOk ? 'ok' : 'no');
+                }
+                );
+                card.querySelector(`[data-reset="${idx}"]`).addEventListener('click', () => {
+                    fb.textContent = '';
+                    fb.className = 'task-feedback';
+                    build();
+                }
+                );
+            }
+
+            function attachMatchTask(mod, task, idx) {
+                const card = document.querySelector(`.task-card[data-task="${idx}"]`);
+                const holder = card.querySelector(`[data-tid="${idx}"]`);
+                const fb = card.querySelector(`[data-fb="${idx}"]`);
+                const pairs = pick(task.pairs);
+                const rightOptions = pairs.map( (p, i) => ({
+                    i,
+                    text: p.right
+                }));
+
+                function build() {
+                    holder.innerHTML = pairs.map( (p, i) => {
+                        const shuffledRight = [...rightOptions].sort( () => Math.random() - 0.5);
+                        return `<div class="match-row" data-row="${i}">
+        <div class="match-left">${p.left}</div>
+        <select data-row-select="${i}">
+          <option value="-1">···</option>
+          ${shuffledRight.map(r => `<option value="${r.i}">${r.text}</option>`).join('')}
+        </select>
+      </div>`;
+                    }
+                    ).join('');
+                }
+                build();
+
+                card.querySelector(`[data-check="${idx}"]`).addEventListener('click', () => {
+                    let allOk = true
+                      , allAnswered = true;
+                    holder.querySelectorAll('.match-row').forEach(row => {
+                        const ri = Number(row.dataset.row);
+                        const sel = row.querySelector('select');
+                        const val = Number(sel.value);
+                        row.classList.remove('correct', 'wrong');
+                        if (val === -1) {
+                            allAnswered = false;
+                            return;
+                        }
+                        if (val === ri)
+                            row.classList.add('correct');
+                        else {
+                            row.classList.add('wrong');
+                            allOk = false;
+                        }
+                    }
+                    );
+                    if (!allAnswered) {
+                        fb.textContent = t('answerAll');
+                        fb.className = 'task-feedback no';
+                        return;
+                    }
+                    fb.textContent = allOk ? t('taskCorrect') : t('taskWrong');
+                    fb.className = 'task-feedback ' + (allOk ? 'ok' : 'no');
+                }
+                );
+                card.querySelector(`[data-reset="${idx}"]`).addEventListener('click', () => {
+                    fb.textContent = '';
+                    fb.className = 'task-feedback';
+                    build();
+                }
+                );
+            }
+
+            /* ---------------- QUIZ ENGINE ---------------- */
+            function shuffleArr(arr) {
+                return [...arr].sort( () => Math.random() - 0.5);
+            }
+
+            function renderQuizShell(mod) {
+                if (state.quiz.module !== state.module || !state.quiz.pool.length) {
+                    const pool = shuffleArr(mod.questions).slice(0, 20);
+                    state.quiz = {
+                        module: state.module,
+                        pool,
+                        idx: 0,
+                        answers: {},
+                        submitted: false
+                    };
+                }
+                return `
+    <div class="quiz-intro" id="quizIntro" style="${state.quiz.started ? 'display:none;' : ''}">
+      <div class="qi-num">${t('quizIntroNum')}</div>
+      <div style="color:var(--muted);font-weight:700;margin-top:2px;">${t('questions')}</div>
+      <p>${t('quizIntroLine')}</p>
+      <button class="btn btn-primary" id="quizStartBtn">${t('startQuiz')}</button>
+    </div>
+    <div class="quiz-wrap" id="quizWrap"></div>
+    <div class="quiz-results" id="quizResults"></div>
+  `;
+            }
+
+            function attachQuiz(mod) {
+                const intro = document.getElementById('quizIntro');
+                const wrap = document.getElementById('quizWrap');
+                const startBtn = document.getElementById('quizStartBtn');
+                startBtn.addEventListener('click', () => {
+                    intro.style.display = 'none';
+                    wrap.classList.add('active');
+                    drawQuestion();
+                }
+                );
+
+                function drawQuestion() {
+                    const q = state.quiz;
+                    const item = q.pool[q.idx];
+                    const opts = pick(item).o;
+                    const answered = q.answers[q.idx];
+                    wrap.innerHTML = `
+      <div class="quiz-progress"><div class="quiz-progress-bar" style="width:${((q.idx + 1) / q.pool.length) * 100}%"></div></div>
+      <div class="quiz-meta"><span>${t('qLabel')} ${q.idx + 1} ${t('of')} ${q.pool.length}</span></div>
+      <div class="quiz-q-card">
+        <div class="quiz-q-text">${safeFormula(pick(item).q)}</div>
+        <div class="quiz-options">
+          ${opts.map( (o, oi) => `<button class="opt-btn ${answered === oi ? 'picked-cur' : ''}" style="${answered === oi ? 'border-color:var(--cyan);color:var(--cyan);' : ''}" data-oi="${oi}">${safeFormula(o)}</button>`).join('')}
+        </div>
+      </div>
+      <div class="qn-dots">
+        ${q.pool.map( (_, i) => `<div class="qn-dot ${q.answers[i] !== undefined ? 'answered' : ''} ${i === q.idx ? 'current' : ''}" data-goto="${i}">${i + 1}</div>`).join('')}
+      </div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost" id="qPrev" ${q.idx === 0 ? 'disabled' : ''}>${t('prev')}</button>
+        ${q.idx < q.pool.length - 1 ? `<button class="btn btn-primary" id="qNext">${t('next')}</button>` : `<button class="btn btn-primary" id="qSubmit">${t('submitQuiz')}</button>`}
+      </div>
+      <div class="task-feedback no" id="qWarn" style="margin-top:10px;"></div>
+    `;
+                    wrap.querySelectorAll('.quiz-options .opt-btn').forEach(b => {
+                        b.addEventListener('click', () => {
+                            q.answers[q.idx] = Number(b.dataset.oi);
+                            drawQuestion();
+                        }
+                        );
+                    }
+                    );
+                    wrap.querySelectorAll('.qn-dot').forEach(d => {
+                        d.addEventListener('click', () => {
+                            q.idx = Number(d.dataset.goto);
+                            drawQuestion();
+                        }
+                        );
+                    }
+                    );
+                    const prevBtn = document.getElementById('qPrev');
+                    if (prevBtn)
+                        prevBtn.addEventListener('click', () => {
+                            q.idx = Math.max(0, q.idx - 1);
+                            drawQuestion();
+                        }
+                        );
+                    const nextBtn = document.getElementById('qNext');
+                    if (nextBtn)
+                        nextBtn.addEventListener('click', () => {
+                            q.idx = Math.min(q.pool.length - 1, q.idx + 1);
+                            drawQuestion();
+                        }
+                        );
+                    const submitBtn = document.getElementById('qSubmit');
+                    if (submitBtn)
+                        submitBtn.addEventListener('click', () => {
+                            if (Object.keys(q.answers).length < q.pool.length) {
+                                document.getElementById('qWarn').textContent = t('answerAll');
+                                return;
+                            }
+                            showResults(mod);
+                        }
+                        );
+                }
+            }
+
+            function showResults(mod) {
+                const wrap = document.getElementById('quizWrap');
+                const results = document.getElementById('quizResults');
+                wrap.classList.remove('active');
+                results.classList.add('active');
+
+                const q = state.quiz;
+                let correctCount = 0;
+                q.pool.forEach( (item, i) => {
+                    if (q.answers[i] === item.c)
+                        correctCount++;
+                }
+                );
+                const pct = Math.round((correctCount / q.pool.length) * 100);
+                const ringColor = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--cyan)' : 'var(--danger)';
+                const qi = Math.floor(Math.random() * QUOTES_EN.length);
+                const quote = state.lang === 'ar' ? QUOTES_AR[qi] : QUOTES_EN[qi];
+
+                results.innerHTML = `
+    <div class="result-ring" style="border-color:${ringColor};">
+      <div class="rr-pct" style="color:${ringColor};">${pct}%</div>
+      <div class="rr-lbl">${correctCount}/${q.pool.length}</div>
+    </div>
+    <div style="font-weight:700;font-size:16px;">${t('yourScore')}</div>
+    <div class="result-quote">${quote}</div>
+    <div class="task-actions" style="justify-content:center;">
+      <button class="btn btn-primary" id="retakeBtn">${t('retake')}</button>
+    </div>
+    <div class="review-list">
+      ${q.pool.map( (item, i) => {
+                    const ua = q.answers[i];
+                    const opts = pick(item).o;
+                    return `<div class="review-item">
+          <div class="ri-q">${i + 1}. ${safeFormula(pick(item).q)}</div>
+          <div class="ri-a ${ua === item.c ? 'right' : 'wrong'}">${t('yourAnswer')}: ${safeFormula(opts[ua])}</div>
+          ${ua !== item.c ? `<div class="ri-a right">${t('correctLbl')}: ${safeFormula(opts[item.c])}</div>` : ''}
+        </div>`;
+                }
+                ).join('')}
+    </div>
+  `;
+                document.getElementById('retakeBtn').addEventListener('click', () => {
+                    state.quiz = {
+                        module: null,
+                        pool: [],
+                        idx: 0,
+                        answers: {},
+                        submitted: false
+                    };
+                    renderPane(mod);
+                }
+                );
+            }
+
+            /* ============================================================
+   CONTENT DATA — grounded in the course lab manual
+   ============================================================ */
+            function Q(qEn, oEn, qAr, oAr, c) {
+                return {
+                    en: {
+                        q: qEn,
+                        o: oEn
+                    },
+                    ar: {
+                        q: qAr,
+                        o: oAr
+                    },
+                    c
+                };
+            }
+            /* True/False shorthand — ans=true means the statement is correct (option index 0) */
+            function TF(qEn, qAr, ans) {
+                return Q(qEn, ["True", "False"], qAr, ["صح", "خطأ"], ans ? 0 : 1);
+            }
+            function S(hEn, bodyEn, hAr, bodyAr, formula) {
+                return {
+                    en: {
+                        h: hEn,
+                        body: bodyEn
+                    },
+                    ar: {
+                        h: hAr,
+                        body: bodyAr
+                    },
+                    formula: formula || null
+                };
+            }
+
+            /* ================= EXCEL ================= */
+            const EXCEL_SUMMARIES = [S("The IF Function", "Evaluates a logical test and returns one value if it's TRUE and another if it's FALSE. Supported comparison operators are <, >, <=, >=, =.", "دالة IF", "تُقيّم شرطاً منطقياً وتُرجع قيمة عند تحقق الشرط (TRUE) وقيمة أخرى عند عدم تحققه (FALSE). عوامل المقارنة المدعومة هي: <، >، <=، >=، =.", "=IF(condition, value_if_true, value_if_false)"), S("IF with AND", "Combines several conditions and returns the TRUE result only when every single condition is met — if even one fails, the FALSE result is returned.", "دالة IF مع AND", "تجمع بين عدة شروط وتُرجع النتيجة الصحيحة فقط عندما تتحقق كل الشروط معاً — وإذا فشل شرط واحد فقط تُرجع النتيجة البديلة.", "=IF(AND(A1>90, B1>90), \"A1 Grade\", \"Fail\")"), S("IF with OR", "Tests several conditions and returns the TRUE result as soon as at least one of them is met.", "دالة IF مع OR", "تختبر عدة شروط وتُرجع النتيجة الصحيحة بمجرد تحقق شرط واحد على الأقل منها.", "=IF(OR(A2>90, B2>90), \"Pass\", \"Fail\")"), S("IF with NOT", "Reverses a condition's outcome: it returns the TRUE result when the tested condition is actually false.", "دالة IF مع NOT", "تعكس نتيجة الشرط: تُرجع النتيجة الصحيحة عندما يكون الشرط المُختبر في الحقيقة غير متحقق (خاطئاً).", "=IF(NOT(A1=\"Red\"), \"Selected\", \"Rejected\")"), S("Nested IF", "Chains multiple IF functions inside one another to test several ranges of values in sequence and return a different result for each range.", "دالة IF المتداخلة", "تُدمج عدة دوال IF داخل بعضها لاختبار عدة نطاقات من القيم بالتتابع وإرجاع نتيجة مختلفة لكل نطاق.", "=IF(B2>=80,\"1st class\",IF(B2>=70,\"2nd class\",IF(B2>=50,\"3rd class\",\"Fail\")))"), S("VLOOKUP (Vertical Lookup)", "Searches for a value in the first column of a table and returns related data from another column in the same row. The lookup column must be the table's first column.", "دالة VLOOKUP (بحث عمودي)", "تبحث عن قيمة في العمود الأول من جدول وتُرجع بيانات مرتبطة من عمود آخر في نفس الصف. يجب أن يكون عمود البحث هو العمود الأول في الجدول.", "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])"), S("HLOOKUP (Horizontal Lookup)", "Works exactly like VLOOKUP but searches across the first row of a table instead of the first column, returning a value from a specified row below it.", "دالة HLOOKUP (بحث أفقي)", "تعمل تماماً مثل VLOOKUP لكنها تبحث عبر الصف الأول من الجدول بدلاً من العمود الأول، وتُرجع قيمة من صف محدد أسفله.", "=HLOOKUP(lookup_value, table_array, row_index_num, [range_lookup])"), S("MATCH & INDEX", "MATCH returns the relative position of an item within a range. INDEX returns the value at a given row/column position inside a range. Paired together (INDEX + MATCH) they look up a value dynamically without requiring the lookup column to be first — a more flexible alternative to VLOOKUP.", "دالتا MATCH و INDEX", "ترجع MATCH الموضع النسبي لعنصر داخل نطاق. أما INDEX فترجع القيمة الموجودة عند موضع صف/عمود محدد داخل نطاق. عند دمجهما معاً (INDEX + MATCH) يمكن البحث عن قيمة ديناميكياً دون اشتراط أن يكون عمود البحث هو الأول — بديل أكثر مرونة من VLOOKUP.", "=INDEX(B1:B5, MATCH(\"Cherry\", A1:A5, 0))"), S("Data Validation", "Restricts what can be entered into a cell — including dropdown lists built from a defined range — and can show a custom error alert style when the entered value doesn't meet the rule.", "التحقق من صحة البيانات (Data Validation)", "تُقيّد ما يمكن إدخاله في خلية — بما في ذلك القوائم المنسدلة المبنية من نطاق محدد — ويمكنها إظهار نمط تنبيه خطأ مخصص عندما لا تتوافق القيمة المُدخلة مع القاعدة.", null), S("PivotTables & PivotCharts", "A PivotTable is an efficient tool for summarizing, analyzing, and organizing large datasets: it groups, filters, and performs calculations (sums, averages) through a flexible drag-and-drop interface — dragging fields into Rows, Columns, Values and Filters — without writing a single formula. A PivotChart is the visual counterpart, charting that same summarized data, and a pre-designed PivotTable Style can be applied instantly from the Design tab.", "الجداول والمخططات المحورية", "الجدول المحوري أداة فعّالة لتلخيص وتحليل وتنظيم كميات كبيرة من البيانات: فهو يُجمّع ويُصفّي وينفّذ عمليات حسابية (كالمجموع والمتوسط) عبر واجهة سحب وإفلات مرنة — بسحب الحقول إلى مناطق الصفوف (Rows) والأعمدة (Columns) والقيم (Values) والمرشحات (Filters) — دون كتابة أي صيغة على الإطلاق. أما المخطط المحوري فهو النظير البصري، حيث يرسم نفس البيانات المُلخصة بيانياً، ويمكن تطبيق نمط جدول محوري جاهز فوراً من تبويب Design.", null), S("Data Validation — The Three Tabs", "The Data Validation dialog (Data tab) has three tabs working together: Settings defines the rule itself (Whole Number, Date, Text Length, List, or a Custom formula); Input Message (optional) shows a helpful tooltip the moment the cell is selected, explaining what is expected; Error Alert (optional) controls what happens on an invalid entry, with a custom title and message.", "التحقق من صحة البيانات — التبويبات الثلاثة", "يحتوي مربع حوار Data Validation (من تبويب Data) على ثلاثة تبويبات تعمل معاً: تبويب Settings يُحدد القاعدة نفسها (رقم صحيح، تاريخ، طول نص، قائمة، أو صيغة مخصصة)؛ تبويب Input Message (اختياري) يعرض تلميحاً مفيداً بمجرد تحديد الخلية يوضح ما هو متوقع إدخاله؛ وتبويب Error Alert (اختياري) يتحكم فيما يحدث عند إدخال قيمة غير صالحة، بعنوان ورسالة مخصصين.", null), S("Error Alert Styles: Stop / Warning / Information", "Excel offers exactly three error-alert styles once Data Validation rejects an entry. Stop completely blocks the invalid value and forces the user to re-enter. Warning lets the user proceed anyway after confirming. Information simply notifies the user and allows the entry through regardless.", "أنماط تنبيه الخطأ: إيقاف / تحذير / معلومة", "يوفر إكسل ثلاثة أنماط بالضبط لتنبيه الخطأ عندما يرفض التحقق من صحة البيانات قيمة مُدخلة. Stop يمنع القيمة غير الصالحة منعاً تاماً ويُجبر المستخدم على إعادة الإدخال. Warning يسمح للمستخدم بالمتابعة رغم ذلك بعد التأكيد. Information يكتفي بإشعار المستخدم ويسمح بمرور القيمة بغض النظر.", null), S("Protecting a Sheet vs. a Workbook vs. a File", "Three distinct, non-interchangeable protection layers exist. Protect Sheet (via the sheet tab's right-click menu or the Review tab) restricts actions like selecting, formatting or inserting cells, with an optional password. Protect Workbook (Structure) stops users from adding, deleting, hiding, or renaming sheets. Encrypt with Password (File > Info > Protect Workbook) locks the entire file so it cannot even be opened without the password.", "حماية الورقة مقابل المصنف مقابل الملف", "توجد ثلاث طبقات حماية مستقلة وغير قابلة للتبادل. Protect Sheet (من قائمة النقر بزر الفأرة الأيمن على تبويب الورقة أو من تبويب Review) تُقيّد إجراءات مثل تحديد أو تنسيق أو إدراج الخلايا، مع كلمة مرور اختيارية. Protect Workbook (Structure) يمنع المستخدمين من إضافة أو حذف أو إخفاء أو إعادة تسمية الأوراق. Encrypt with Password (من File > Info > Protect Workbook) يُقفل الملف بأكمله بحيث لا يمكن فتحه إطلاقاً دون كلمة المرور.", null), S("Building a PivotTable — The Workflow", "After selecting the source data range, Insert > PivotTable creates a new report where fields from the source table are dragged into four zones: Rows (categories down the side), Columns (categories across the top), Values (the numbers being summarized — sum, average, count…), and Filters (a top-level slicer for the whole report).", "بناء جدول محوري — سير العمل", "بعد تحديد نطاق بيانات المصدر، يُنشئ Insert > PivotTable تقريراً جديداً تُسحب فيه الحقول من الجدول المصدر إلى أربع مناطق: Rows (فئات أسفل الجانب)، Columns (فئات عبر الأعلى)، Values (الأرقام التي يتم تلخيصها — مجموع، متوسط، عدد...)، وFilters (مرشّح عام على مستوى التقرير بأكمله).", null), ];
+
+            const EXCEL_TASKS = [{
+                type: 'choice',
+                title: {
+                    en: "Pass / Fail with a Simple IF",
+                    ar: "النجاح والرسوب بدالة IF بسيطة"
+                },
+                scenario: {
+                    en: "Column A holds student names, Column B holds their marks. In C2 you need a formula that shows \"Pass\" when the mark is 35 or above, otherwise \"Fail\".",
+                    ar: "يحتوي العمود A على أسماء الطلاب، والعمود B على درجاتهم. تحتاج في الخلية C2 إلى صيغة تُظهر \"Pass\" عندما تكون الدرجة ٣٥ أو أكثر، وإلا فتُظهر \"Fail\"."
+                },
+                table: [["", "A", "B", "C"], ["1", "Name", "Marks", "Status"], ["2", "Sara", "42", "?"]],
+                options: {
+                    en: ["=IF(B2>=35,\"Pass\",\"Fail\")", "=IF(B2<=35,\"Pass\",\"Fail\")", "=AND(B2>=35,\"Pass\",\"Fail\")", "=IF(35>=B2,\"Fail\",\"Pass\")"],
+                    ar: ["=IF(B2>=35,\"Pass\",\"Fail\")", "=IF(B2<=35,\"Pass\",\"Fail\")", "=AND(B2>=35,\"Pass\",\"Fail\")", "=IF(35>=B2,\"Fail\",\"Pass\")"]
+                },
+                correct: 0
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Two Conditions with AND",
+                    ar: "شرطان معاً باستخدام AND"
+                },
+                scenario: {
+                    en: "Column A holds Subject 1 scores, Column B holds Subject 2 scores. C2 must return \"A1 Grade\" only when BOTH scores are above 90, otherwise \"Fail\".",
+                    ar: "يحتوي العمود A على درجات المادة الأولى، والعمود B على درجات المادة الثانية. يجب أن تُرجع C2 عبارة \"A1 Grade\" فقط عندما تكون كِلتا الدرجتين أعلى من ٩٠، وإلا فتُرجع \"Fail\"."
+                },
+                table: [["", "A", "B", "C"], ["1", "Subj.1", "Subj.2", "Result"], ["2", "95", "93", "?"]],
+                options: {
+                    en: ["=IF(OR(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=IF(AND(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=AND(IF(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=IF(A2>90,AND(B2>90),\"Fail\")"],
+                    ar: ["=IF(OR(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=IF(AND(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=AND(IF(A2>90,B2>90),\"A1 Grade\",\"Fail\")", "=IF(A2>90,AND(B2>90),\"Fail\")"]
+                },
+                correct: 1
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Either Condition with OR",
+                    ar: "أحد الشرطين باستخدام OR"
+                },
+                scenario: {
+                    en: "Using the same two subject columns, C2 must return \"Pass\" when EITHER score is above 90.",
+                    ar: "باستخدام نفس عمودي المادتين، يجب أن تُرجع C2 عبارة \"Pass\" عندما تكون إحدى الدرجتين أعلى من ٩٠."
+                },
+                table: [["", "A", "B", "C"], ["1", "Subj.1", "Subj.2", "Result"], ["2", "70", "95", "?"]],
+                options: {
+                    en: ["=IF(AND(A2>90,B2>90),\"Pass\",\"Fail\")", "=OR(A2>90,B2>90,\"Pass\",\"Fail\")", "=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(A2>90 OR B2>90,\"Pass\",\"Fail\")"],
+                    ar: ["=IF(AND(A2>90,B2>90),\"Pass\",\"Fail\")", "=OR(A2>90,B2>90,\"Pass\",\"Fail\")", "=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(A2>90 OR B2>90,\"Pass\",\"Fail\")"]
+                },
+                correct: 2
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Multi-Tier Result with Nested IF",
+                    ar: "نتيجة متعددة المستويات بدالة IF المتداخلة"
+                },
+                scenario: {
+                    en: "B2 holds a student's mark. You need: 80+ → \"1st class\", 70–79 → \"2nd class\", 50–69 → \"3rd class\", below 50 → \"Fail\".",
+                    ar: "تحتوي B2 على درجة طالب. تحتاج إلى: ٨٠ فأكثر ← \"1st class\"، ٧٠-٧٩ ← \"2nd class\"، ٥٠-٦٩ ← \"3rd class\"، أقل من ٥٠ ← \"Fail\"."
+                },
+                table: [["", "A", "B", "C"], ["1", "Name", "Marks", "Class"], ["2", "Omar", "74", "?"]],
+                options: {
+                    en: ["=IF(B2>=80,\"1st class\",IF(B2>=70,\"2nd class\",IF(B2>=50,\"3rd class\",\"Fail\")))", "=IF(B2>=50,\"1st class\",IF(B2>=70,\"2nd class\",\"Fail\"))", "=NESTEDIF(B2,80,70,50)", "=IF(B2>=80 AND B2>=70,\"1st class\",\"Fail\")"],
+                    ar: ["=IF(B2>=80,\"1st class\",IF(B2>=70,\"2nd class\",IF(B2>=50,\"3rd class\",\"Fail\")))", "=IF(B2>=50,\"1st class\",IF(B2>=70,\"2nd class\",\"Fail\"))", "=NESTEDIF(B2,80,70,50)", "=IF(B2>=80 AND B2>=70,\"1st class\",\"Fail\")"]
+                },
+                correct: 0
+            }, {
+                type: 'match',
+                title: {
+                    en: "Match the Lookup Function to Its Job",
+                    ar: "طابق دالة البحث بوظيفتها"
+                },
+                scenario: {
+                    en: "Each lookup tool solves a slightly different retrieval problem. Match each function to what it actually does.",
+                    ar: "كل أداة بحث تحل مشكلة استرجاع مختلفة قليلاً. طابق كل دالة بما تقوم به فعلياً."
+                },
+                pairs: {
+                    en: [{
+                        left: "VLOOKUP",
+                        right: "Searches a value down the first column of a table, returns data from a chosen column in that row"
+                    }, {
+                        left: "HLOOKUP",
+                        right: "Searches a value across the first row of a table, returns data from a chosen row below it"
+                    }, {
+                        left: "MATCH",
+                        right: "Returns the relative position of a value inside a range"
+                    }, {
+                        left: "INDEX",
+                        right: "Returns the value stored at a given row/column position inside a range"
+                    }, ],
+                    ar: [{
+                        left: "VLOOKUP",
+                        right: "تبحث عن قيمة في العمود الأول من الجدول وتُرجع بيانات من عمود مُختار في نفس الصف"
+                    }, {
+                        left: "HLOOKUP",
+                        right: "تبحث عن قيمة في الصف الأول من الجدول وتُرجع بيانات من صف مُختار أسفله"
+                    }, {
+                        left: "MATCH",
+                        right: "تُرجع الموضع النسبي لقيمة داخل نطاق"
+                    }, {
+                        left: "INDEX",
+                        right: "تُرجع القيمة المخزنة عند موضع صف/عمود محدد داخل نطاق"
+                    }, ]
+                }
+            }, {
+                type: 'order',
+                title: {
+                    en: "Build a Dropdown List with Data Validation",
+                    ar: "إنشاء قائمة منسدلة باستخدام التحقق من صحة البيانات"
+                },
+                scenario: {
+                    en: "Put the steps for restricting a cell to a dropdown list of allowed values in the correct order.",
+                    ar: "رتّب خطوات تقييد خلية بقائمة منسدلة من القيم المسموح بها بالترتيب الصحيح."
+                },
+                items: {
+                    en: ["Select the cell (or range) that should hold the dropdown", "Open the Data tab and click Data Validation", "In Allow, choose List and set the Source to your range of values", "Confirm with OK, then click the cell's arrow to pick a value", ],
+                    ar: ["حدد الخلية (أو النطاق) الذي سيحتوي على القائمة المنسدلة", "افتح تبويب Data ثم انقر Data Validation", "في خانة Allow اختر List وحدد Source كنطاق القيم", "أكّد بالضغط على OK، ثم انقر سهم الخلية لاختيار قيمة", ]
+                }
+            }, ];
+
+            const EXCEL_QUESTIONS = [Q("What does the IF function's syntax require as its second argument?", ["The logical test", "The value returned when the test is TRUE", "The value returned when the test is FALSE", "The cell range to search"], "ما الذي تتطلبه الوسيطة الثانية في صيغة دالة IF؟", ["الشرط المنطقي", "القيمة التي تُرجع عند تحقق الشرط (TRUE)", "القيمة التي تُرجع عند عدم تحقق الشرط (FALSE)", "نطاق الخلايا المطلوب البحث فيه"], 1), Q("Which comparison operators does Excel's IF function support?", ["<, >, <=, >=, =", "only =", "AND, OR, NOT", "+, -, *, /"], "ما عوامل المقارنة التي تدعمها دالة IF في إكسل؟", ["<، >، <=، >=، =", "علامة = فقط", "AND، OR، NOT", "+، -، *، /"], 0), Q("=IF(A1>10,\"Greater than 10\",\"10 or less\") — if A1 = 8, the result is:", ["Greater than 10", "10 or less", "TRUE", "#N/A"], "=IF(A1>10,\"Greater than 10\",\"10 or less\") — إذا كانت قيمة A1 تساوي ٨، فإن النتيجة هي:", ["Greater than 10", "10 or less", "TRUE", "#N/A"], 1), Q("A pass/fail formula uses the rule \"marks ≥ 35 → Pass\". Which formula is correct?", ["=IF(B2>=35,\"Pass\",\"Fail\")", "=IF(B2=35,\"Pass\",\"Fail\")", "=IF(Pass,B2>=35,\"Fail\")", "=B2>=35(\"Pass\",\"Fail\")"], "صيغة النجاح/الرسوب تعتمد قاعدة \"الدرجة ≥ ٣٥ ← Pass\". ما الصيغة الصحيحة؟", ["=IF(B2>=35,\"Pass\",\"Fail\")", "=IF(B2=35,\"Pass\",\"Fail\")", "=IF(Pass,B2>=35,\"Fail\")", "=B2>=35(\"Pass\",\"Fail\")"], 0), Q("To fill an IF formula down an entire column quickly, you:", ["Retype the formula in each cell", "Drag the fill handle at the bottom-right of the first cell", "Use Ctrl+P", "Delete the column and start over"], "لملء صيغة IF على عمود كامل بسرعة، تقوم بـ:", ["إعادة كتابة الصيغة في كل خلية", "سحب مقبض التعبئة الموجود أسفل يمين الخلية الأولى", "استخدام Ctrl+P", "حذف العمود والبدء من جديد"], 1), Q("=IF(AND(A1>90,B1>90),\"A1 Grade\",\"Fail\") returns \"A1 Grade\" when:", ["Either A1 or B1 is above 90", "Both A1 and B1 are above 90", "A1 is above 90 regardless of B1", "Neither A1 nor B1 is above 90"], "=IF(AND(A1>90,B1>90),\"A1 Grade\",\"Fail\") تُرجع \"A1 Grade\" عندما:", ["تكون A1 أو B1 أعلى من ٩٠", "تكون A1 و B1 معاً أعلى من ٩٠", "تكون A1 أعلى من ٩٠ بغض النظر عن B1", "لا تكون A1 ولا B1 أعلى من ٩٠"], 1), Q("With IF + AND, if one of several conditions is false, the formula returns:", ["The TRUE result anyway", "The FALSE result", "#VALUE!", "It leaves the cell blank"], "مع IF + AND، إذا كان أحد عدة شروط خاطئاً، فإن الصيغة تُرجع:", ["نتيجة TRUE رغم ذلك", "نتيجة FALSE", "#VALUE!", "تترك الخلية فارغة"], 1), Q("AND requires:", ["At least one condition to be true", "All conditions to be true", "No conditions at all", "Exactly two conditions"], "تتطلب دالة AND:", ["تحقق شرط واحد على الأقل", "تحقق جميع الشروط", "عدم وجود أي شروط", "شرطين بالتحديد فقط"], 1), Q("=IF(AND(A2>90,B2>90),\"A1 Grade\",\"Fail\") with A2=95 and B2=60 returns:", ["A1 Grade", "Fail", "95", "#N/A"], "=IF(AND(A2>90,B2>90),\"A1 Grade\",\"Fail\") مع A2=95 وB2=60 تُرجع:", ["A1 Grade", "Fail", "95", "#N/A"], 1), Q("=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\") returns \"Pass\" when:", ["Both scores must be above 90", "Neither score is above 90", "At least one score is above 90", "A2 equals B2"], "=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\") تُرجع \"Pass\" عندما:", ["يجب أن تكون الدرجتان معاً أعلى من ٩٠", "لا تكون أي من الدرجتين أعلى من ٩٠", "تكون درجة واحدة على الأقل أعلى من ٩٠", "تتساوى A2 مع B2"], 2), Q("The manual notes a caution about IF+OR and non-numeric cells: Excel treats text as:", ["Zero, so the condition is false", "A non-zero value, so the condition is treated as TRUE", "An error automatically", "Equal to blank"], "يذكر الدليل تحذيراً بخصوص IF+OR والخلايا غير الرقمية: يتعامل إكسل مع النص كـ:", ["صفر، فيصبح الشرط خاطئاً", "قيمة غير صفرية، فيُعامل الشرط كأنه TRUE", "خطأ تلقائياً", "مساوٍ للخلية الفارغة"], 1), Q("Which formula returns \"Pass\" if either Subject 1 or Subject 2 exceeds 90?", ["=IF(AND(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(NOT(A2>90),\"Pass\",\"Fail\")", "=OR(A2,B2,\"Pass\")"], "أي صيغة تُرجع \"Pass\" إذا تجاوزت درجة المادة الأولى أو الثانية ٩٠؟", ["=IF(AND(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(OR(A2>90,B2>90),\"Pass\",\"Fail\")", "=IF(NOT(A2>90),\"Pass\",\"Fail\")", "=OR(A2,B2,\"Pass\")"], 1), Q("The IF+NOT function's purpose is to:", ["Combine two conditions", "Reverse the outcome of a condition", "Search a table for a value", "Restrict cell input"], "الغرض من دالة IF+NOT هو:", ["دمج شرطين معاً", "عكس نتيجة الشرط", "البحث عن قيمة داخل جدول", "تقييد الإدخال في الخلية"], 1), Q("=IF(NOT(A1=\"Red\"),\"Selected\",\"Rejected\") — if A1 = \"Red\", the result is:", ["Selected", "Rejected", "Red", "#VALUE!"], "=IF(NOT(A1=\"Red\"),\"Selected\",\"Rejected\") — إذا كانت A1 تساوي \"Red\"، فإن النتيجة هي:", ["Selected", "Rejected", "Red", "#VALUE!"], 1), Q("=IF(NOT(A1=\"Red\"),\"Selected\",\"Rejected\") — if A1 = \"Blue\", the result is:", ["Selected", "Rejected", "Blue", "TRUE"], "=IF(NOT(A1=\"Red\"),\"Selected\",\"Rejected\") — إذا كانت A1 تساوي \"Blue\"، فإن النتيجة هي:", ["Selected", "Rejected", "Blue", "TRUE"], 0), Q("A Nested IF is best described as:", ["A single condition tested twice", "Multiple IF functions combined inside one formula to test several ranges", "A shortcut for AND", "A formula that only works with text"], "أفضل وصف لدالة IF المتداخلة هو:", ["شرط واحد يُختبر مرتين", "عدة دوال IF مدمجة داخل صيغة واحدة لاختبار عدة نطاقات", "اختصار لدالة AND", "صيغة تعمل مع النصوص فقط"], 1), Q("=IF(B2>=60,\"1st Division\",IF(B2>=30,\"2nd Division\",IF(B2>=10,\"3rd Division\",\"Fail\"))) with B2=45 returns:", ["1st Division", "2nd Division", "3rd Division", "Fail"], "=IF(B2>=60,\"1st Division\",IF(B2>=30,\"2nd Division\",IF(B2>=10,\"3rd Division\",\"Fail\"))) مع B2=45 تُرجع:", ["1st Division", "2nd Division", "3rd Division", "Fail"], 1), Q("=IF(B2>=80,\"1st class\",IF(B2>=70,\"2nd class\",IF(B2>=50,\"3rd class\",\"Fail\"))) with B2=30 returns:", ["1st class", "2nd class", "3rd class", "Fail"], "=IF(B2>=80,\"1st class\",IF(B2>=70,\"2nd class\",IF(B2>=50,\"3rd class\",\"Fail\"))) مع B2=30 تُرجع:", ["1st class", "2nd class", "3rd class", "Fail"], 3), Q("In a Nested IF, what happens after the first condition is found false?", ["The formula stops and returns blank", "Excel checks the next IF condition inside the formula", "It automatically returns TRUE", "It throws #REF!"], "في دالة IF المتداخلة، ماذا يحدث بعد أن يثبت أن الشرط الأول خاطئ؟", ["تتوقف الصيغة وتُرجع خلية فارغة", "يفحص إكسل شرط IF التالي داخل الصيغة", "تُرجع تلقائياً TRUE", "تُظهر خطأ #REF!"], 1), Q("VLOOKUP stands for:", ["Value Lookup", "Vertical Lookup", "Variable Lookup", "Vector Lookup"], "تعني VLOOKUP:", ["بحث القيمة (Value Lookup)", "بحث عمودي (Vertical Lookup)", "بحث متغيّر (Variable Lookup)", "بحث اتجاهي (Vector Lookup)"], 1), Q("VLOOKUP's fourth, optional argument [range_lookup] set to FALSE means:", ["Approximate match", "Exact match", "Search the whole workbook", "Ignore the lookup value"], "الوسيطة الرابعة الاختيارية [range_lookup] في VLOOKUP عند ضبطها على FALSE تعني:", ["تطابق تقريبي", "تطابق تام (دقيق)", "البحث في المصنف بأكمله", "تجاهل قيمة البحث"], 1), Q("If [range_lookup] is omitted from VLOOKUP, Excel assumes:", ["FALSE (exact match)", "TRUE (approximate match)", "It returns an error", "Zero"], "إذا حُذفت الوسيطة [range_lookup] من VLOOKUP، فإن إكسل يفترض:", ["FALSE (تطابق تام)", "TRUE (تطابق تقريبي)", "يُرجع خطأ", "صفر"], 1), Q("For VLOOKUP to work correctly, the lookup column must be:", ["Anywhere in the table", "The last column of the table", "The first column of the table_array", "Hidden"], "لكي تعمل VLOOKUP بشكل صحيح، يجب أن يكون عمود البحث:", ["في أي مكان بالجدول", "العمود الأخير في الجدول", "العمود الأول في table_array", "مخفياً"], 2), Q("col_index_num in VLOOKUP refers to:", ["The row number to search", "The column number (within table_array) to return data from", "The sheet number", "The number of matches found"], "تشير col_index_num في VLOOKUP إلى:", ["رقم الصف المطلوب البحث فيه", "رقم العمود (داخل table_array) الذي تُرجع منه البيانات", "رقم الورقة", "عدد التطابقات الموجودة"], 1), Q("HLOOKUP differs from VLOOKUP because it searches:", ["Down the first column", "Across the first row", "The last row", "A separate workbook only"], "تختلف HLOOKUP عن VLOOKUP لأنها تبحث:", ["عبر أسفل العمود الأول", "عبر الصف الأول", "الصف الأخير", "مصنفاً منفصلاً فقط"], 1), Q("HLOOKUP's row_index_num argument tells Excel:", ["Which row to search", "Which row (below the top row) to return the value from", "How many rows exist", "The column width"], "تخبر وسيطة row_index_num في HLOOKUP إكسل بـ:", ["أي صف يجب البحث فيه", "أي صف (أسفل الصف العلوي) تُرجع منه القيمة", "عدد الصفوف الموجودة", "عرض العمود"], 1), Q("The MATCH function returns:", ["The value found in a range", "The relative position of an item in a range", "A formatted table", "The sum of a range"], "تُرجع دالة MATCH:", ["القيمة الموجودة في النطاق", "الموضع النسبي لعنصر داخل النطاق", "جدولاً مُنسقاً", "مجموع النطاق"], 1), Q("In MATCH, a match_type of 0 means:", ["Approximate match, ascending", "Exact match", "Approximate match, descending", "Case-sensitive only"], "في MATCH، تعني قيمة match_type التي تساوي ٠:", ["تطابق تقريبي تصاعدي", "تطابق تام (دقيق)", "تطابق تقريبي تنازلي", "حساسية لحالة الأحرف فقط"], 1), Q("=MATCH(\"Cherry\",A1:A5,0) returns:", ["The value \"Cherry\"", "The position of \"Cherry\" within A1:A5", "The row above Cherry", "#DIV/0!"], "=MATCH(\"Cherry\",A1:A5,0) تُرجع:", ["القيمة \"Cherry\"", "موضع \"Cherry\" داخل النطاق A1:A5", "الصف الذي يعلو Cherry", "#DIV/0!"], 1), Q("MATCH is most often paired with which function to retrieve an actual value at a found position?", ["SUM", "INDEX", "COUNT", "TODAY"], "غالباً ما تُقرن MATCH بأي دالة لاسترجاع القيمة الفعلية عند الموضع الذي عثرت عليه؟", ["SUM", "INDEX", "COUNT", "TODAY"], 1), Q("The INDEX function's basic syntax requires an array and:", ["A row number, with an optional column number", "Only a column letter", "A worksheet name", "A conditional formula"], "تتطلب صيغة INDEX الأساسية مصفوفة (array) بالإضافة إلى:", ["رقم صف، مع رقم عمود اختياري", "حرف عمود فقط", "اسم ورقة عمل", "صيغة شرطية"], 0), Q("=INDEX(A2:C6,3,2) returns:", ["The value in the 3rd row, 2nd column of A2:C6", "Row 3 entirely", "Column 2 entirely", "The value in cell A2"], "=INDEX(A2:C6,3,2) تُرجع:", ["القيمة الموجودة في الصف الثالث والعمود الثاني من النطاق A2:C6", "الصف الثالث بالكامل", "العمود الثاني بالكامل", "القيمة الموجودة في الخلية A2"], 0), Q("INDEX + MATCH is considered more flexible than VLOOKUP mainly because:", ["It's faster to type", "The lookup column doesn't have to be the first column", "It never returns errors", "It only works with numbers"], "يُعتبر دمج INDEX + MATCH أكثر مرونة من VLOOKUP لأن:", ["كتابته أسرع", "لا يشترط أن يكون عمود البحث هو العمود الأول", "لا يُرجع أخطاء أبداً", "يعمل مع الأرقام فقط"], 1), Q("=INDEX(B1:B5,MATCH(\"Cherry\",A1:A5,0)) works by first:", ["Finding Cherry's value directly", "Finding Cherry's position, then returning the matching value from B1:B5", "Sorting column A", "Deleting blank rows"], "تعمل =INDEX(B1:B5,MATCH(\"Cherry\",A1:A5,0)) بأن تقوم أولاً بـ:", ["إيجاد قيمة Cherry مباشرة", "إيجاد موضع Cherry، ثم إرجاع القيمة المقابلة من B1:B5", "فرز العمود A", "حذف الصفوف الفارغة"], 1), Q("Data Validation is used to:", ["Delete invalid rows automatically", "Restrict what values can be entered into a cell", "Merge two worksheets", "Convert text to numbers"], "يُستخدم التحقق من صحة البيانات (Data Validation) في:", ["حذف الصفوف غير الصالحة تلقائياً", "تقييد القيم التي يمكن إدخالها في خلية", "دمج ورقتي عمل", "تحويل النص إلى أرقام"], 1), Q("Where is the Data Validation command found?", ["The Home tab", "The Data tab", "The View tab", "The Insert tab"], "أين يوجد أمر Data Validation؟", ["تبويب Home", "تبويب Data", "تبويب View", "تبويب Insert"], 1), Q("To build a dropdown list with Data Validation, you set Allow to:", ["Whole number", "List", "Any value", "Text length"], "لإنشاء قائمة منسدلة بواسطة Data Validation، تضبط خيار Allow على:", ["Whole number", "List", "Any value", "Text length"], 1), Q("Data Validation's Error Alert style lets you:", ["Choose fonts", "Define how the warning appears when an invalid entry is typed", "Hide the whole sheet", "Protect the workbook password"], "يتيح لك نمط تنبيه الخطأ (Error Alert) في Data Validation:", ["اختيار الخطوط", "تحديد شكل التحذير الذي يظهر عند إدخال قيمة غير صالحة", "إخفاء الورقة بالكامل", "حماية كلمة مرور المصنف"], 1), Q("A PivotTable is best used to:", ["Format text as bold", "Summarize and analyze large datasets interactively", "Insert images", "Spell-check a sheet"], "يُستخدم الجدول المحوري (PivotTable) بشكل أفضل لـ:", ["تنسيق النص بخط عريض", "تلخيص وتحليل مجموعات بيانات كبيرة بشكل تفاعلي", "إدراج صور", "التدقيق الإملائي في الورقة"], 1), Q("A PivotChart is:", ["A chart type unrelated to PivotTables", "A visual representation of the data summarized in a PivotTable", "Only usable in PowerPoint", "A print layout option"], "المخطط المحوري (PivotChart) هو:", ["نوع مخطط لا علاقة له بالجداول المحورية", "تمثيل بصري للبيانات المُلخصة في جدول محوري", "يُستخدم فقط في بوربوينت", "خيار تخطيط للطباعة"], 1), Q("The Data Validation dialog box contains exactly how many tabs?", ["Two", "Three", "Four", "Five"], "يحتوي مربع حوار Data Validation على كم تبويباً بالضبط؟", ["اثنان", "ثلاثة", "أربعة", "خمسة"], 1), Q("Which Data Validation tab lets you display a helpful tooltip the instant a cell is selected?", ["Settings", "Input Message", "Error Alert", "Format"], "أي تبويب في Data Validation يتيح عرض تلميح مفيد فور تحديد الخلية؟", ["Settings", "Input Message", "Error Alert", "Format"], 1), Q("Which Data Validation error alert style completely blocks the invalid entry?", ["Information", "Warning", "Stop", "Notice"], "أي نمط تنبيه خطأ في Data Validation يمنع الإدخال غير الصالح منعاً تاماً؟", ["Information", "Warning", "Stop", "Notice"], 2), Q("Which error alert style lets the user proceed anyway, after a confirmation prompt?", ["Stop", "Warning", "Information", "Silent"], "أي نمط تنبيه خطأ يسمح للمستخدم بالمتابعة رغم ذلك بعد رسالة تأكيد؟", ["Stop", "Warning", "Information", "Silent"], 1), Q("To restrict a Name field to between 3 and 7 characters, which Allow option is used?", ["Whole Number", "Text Length", "Date", "List"], "لتقييد حقل الاسم بين ٣ و٧ أحرف، أي خيار في Allow يُستخدم؟", ["Whole Number", "Text Length", "Date", "List"], 1), Q("In a dropdown-list validation, multiple items typed into the Source box must be separated by:", ["Semicolons only", "Commas", "Slashes", "New paragraphs"], "في التحقق بقائمة منسدلة، تُفصل العناصر المتعددة المكتوبة في مربع Source بـ:", ["الفاصلة المنقوطة فقط", "الفاصلة العادية", "الشرطة المائلة", "فقرات جديدة"], 1), Q("Protect Sheet can be applied from which two locations?", ["Only the File menu", "The sheet tab's right-click menu, and the Review tab", "Only the View tab", "Only the Insert tab"], "يمكن تطبيق Protect Sheet من أي موقعين؟", ["قائمة File فقط", "قائمة النقر بزر الفأرة الأيمن على تبويب الورقة، وتبويب Review", "تبويب View فقط", "تبويب Insert فقط"], 1), Q("Protect Workbook (Structure) mainly prevents users from:", ["Typing in unlocked cells", "Adding, deleting, hiding, or renaming entire sheets", "Changing font size", "Printing the file"], "يمنع Protect Workbook (Structure) المستخدمين بشكل أساسي من:", ["الكتابة في الخلايا غير المقفلة", "إضافة أو حذف أو إخفاء أو إعادة تسمية أوراق كاملة", "تغيير حجم الخط", "طباعة الملف"], 1), Q("To prevent a file from even being opened without a password, you use:", ["Protect Sheet", "Protect Workbook (Structure)", "Encrypt with Password (File > Info)", "Freeze Panes"], "لمنع فتح الملف حتى دون كلمة مرور، تستخدم:", ["Protect Sheet", "Protect Workbook (Structure)", "Encrypt with Password (من File > Info)", "Freeze Panes"], 2), TF("The IF function can only compare numbers, never text values.", "يمكن لدالة IF مقارنة الأرقام فقط، ولا يمكنها مقارنة القيم النصية أبداً.", false), TF("=IF(AND(A1>10,B1<5),\"Yes\",\"No\") returns \"Yes\" only when both conditions are met.", "=IF(AND(A1>10,B1<5),\"Yes\",\"No\") تُرجع \"Yes\" فقط عندما يتحقق الشرطان معاً.", true), TF("OR requires every one of its listed conditions to be true before returning TRUE.", "تتطلب OR تحقق كل شرط من شروطها المدرجة قبل أن تُرجع TRUE.", false), TF("For VLOOKUP to work, the lookup column does not have to be the first column of the table_array.", "لكي تعمل VLOOKUP، لا يشترط أن يكون عمود البحث هو العمود الأول في table_array.", false), TF("INDEX + MATCH is more flexible than VLOOKUP because the lookup column doesn't need to be first.", "يُعد دمج INDEX + MATCH أكثر مرونة من VLOOKUP لأن عمود البحث لا يشترط أن يكون الأول.", true), TF("Data Validation can restrict a cell to only accept dates within a specific range.", "يمكن لـ Data Validation تقييد خلية بحيث تقبل فقط تواريخ ضمن نطاق محدد.", true), TF("A PivotTable requires writing custom formulas before it can summarize data.", "يتطلب الجدول المحوري كتابة صيغ مخصصة قبل أن يتمكن من تلخيص البيانات.", false), TF("HLOOKUP searches down the first column of a table, exactly like VLOOKUP.", "تبحث HLOOKUP عبر أسفل العمود الأول من الجدول، تماماً مثل VLOOKUP.", false), TF("MATCH returns the actual value found, not its position.", "تُرجع MATCH القيمة الفعلية التي عُثر عليها، وليس موضعها.", false), TF("Encrypting a workbook with a password is a stronger protection than simply protecting one sheet.", "يُعد تشفير المصنف بكلمة مرور حماية أقوى من مجرد حماية ورقة واحدة فقط.", true), ];
+
+            /* ================= WORD ================= */
+            const WORD_SUMMARIES = [S("Styles", "A style bundles many formatting commands (font, size, spacing, color) into one named set, applied from the Styles gallery, the Styles pane, or the Apply Styles task pane — keeping a long document visually consistent.", "الأنماط (Styles)", "يجمع النمط عدة أوامر تنسيق (الخط، الحجم، التباعد، اللون) في مجموعة واحدة بمسمى محدد، ويُطبّق من معرض الأنماط أو جزء الأنماط أو جزء مهام تطبيق الأنماط — مما يحافظ على اتساق المستند الطويل بصرياً.", null), S("Creating a New Style", "A style can be created from an already-formatted paragraph (becomes part of that document only) or built from the ground up in the Styles pane so it can be saved into a template for future documents.", "إنشاء نمط جديد", "يمكن إنشاء نمط من فقرة مُنسّقة مسبقاً (يصبح جزءاً من ذلك المستند فقط) أو بناؤه من الصفر عبر جزء الأنماط بحيث يمكن حفظه ضمن قالب لاستخدامه في مستندات مستقبلية.", null), S("Templates (.dotx)", "A template is a pre-formatted starting point with predefined layouts, fonts, colors and placeholders. Save one via File > Save As, choosing Word Template (*.dotx) as the file type.", "القوالب (.dotx)", "القالب هو نقطة انطلاق مُنسّقة مسبقاً تحتوي على تخطيطات وخطوط وألوان وعناصر نائبة محددة سلفاً. يُحفظ عبر File > Save As باختيار نوع الملف Word Template (*.dotx).", null), S("Sections & Breaks", "Layout > Breaks > Next Page (or Continuous) starts an independent section, allowing different margins, orientation, and header/footer content per section — enabled by turning off \"Link to Previous\".", "الأقسام وفواصل الأقسام", "يبدأ الأمر Layout > Breaks > Next Page (أو Continuous) قسماً مستقلاً، مما يسمح بهوامش واتجاه صفحة ومحتوى ترويسة/تذييل مختلف لكل قسم — ويُفعَّل ذلك بإيقاف خيار \"Link to Previous\".", null), S("Page Numbering per Section", "Insert > Page Number > Format Page Numbers lets you choose a numbering style (e.g., Roman numerals for an introduction, Arabic numerals for chapters) and set where numbering starts.", "ترقيم الصفحات لكل قسم", "يتيح لك Insert > Page Number > Format Page Numbers اختيار نمط ترقيم (كالأرقام الرومانية للمقدمة والعربية للفصول) وتحديد بداية الترقيم.", null), S("Automated Table of Contents", "Found under the References tab, it builds itself from headings formatted with the Styles tool. It can be Updated (page numbers only, or the entire table) or removed entirely.", "جدول المحتويات الآلي", "يوجد تحت تبويب References، ويُبنى تلقائياً من العناوين المُنسقة بأداة الأنماط. يمكن تحديثه (أرقام الصفحات فقط، أو الجدول بالكامل) أو حذفه بالكامل.", null), S("Mail Merge", "Combines a main document (like a letter template) with a recipient list to create personalized copies. Managed from the Mailings tab: Select Recipients, build the address list, then insert merge fields.", "الدمج البريدي (Mail Merge)", "يدمج مستنداً رئيسياً (كقالب خطاب) مع قائمة مستلمين لإنتاج نسخ مُخصصة لكل شخص. يُدار من تبويب Mailings: Select Recipients، ثم بناء قائمة العناوين، ثم إدراج حقول الدمج.", null), S("Citations & Bibliography", "References to sources (books, articles) inserted from the References tab. Choose a citation style, add sources via Add New Source or manage them via Manage Sources, then generate the Bibliography automatically.", "الاستشهادات والمراجع (Bibliography)", "إشارات إلى المصادر (كتب، مقالات) تُدرج من تبويب References. اختر نمط استشهاد، أضف المصادر عبر Add New Source أو أدرها عبر Manage Sources، ثم أنشئ قائمة المراجع تلقائياً.", null), S("Creating and Managing an Index", "An index is a list of important terms with their page numbers, usually placed at a document's end. Entries are marked with References > Index group > Mark Entry (Alt+Shift+X) — each entry can carry a Main entry, a Subentry (e.g. \"Chart Types\" under \"Data Analysis\"), and a Cross-reference (\"See also Graphs\"). Mark places one instance; Mark All tags every occurrence. The index itself is inserted afterward via References > Insert Index, with a choice of Indented or Run-in layout and a chosen number of columns. Because it is dynamic, right-click the index and Update Field whenever page numbers or content shift — or press Ctrl+A then F9 to refresh every field in the document at once.", "إنشاء وإدارة الفهرس (Index)", "الفهرس قائمة بأهم المصطلحات مع أرقام صفحاتها، توضع عادة في نهاية المستند. تُعلَّم الإدخالات عبر References > Index group > Mark Entry (أو Alt+Shift+X) — ويمكن لكل إدخال أن يحمل إدخالاً رئيسياً (Main entry)، وإدخالاً فرعياً (Subentry) مثل \"أنواع المخططات\" تحت \"تحليل البيانات\"، ومرجعاً تبادلياً (Cross-reference) مثل \"انظر أيضاً الرسوم البيانية\". يُعلّم Mark نسخة واحدة، بينما يُعلّم Mark All كل تكرار للمصطلح. يُدرج الفهرس نفسه لاحقاً عبر References > Insert Index، مع اختيار تخطيط Indented أو Run-in وعدد أعمدة محدد. ولأنه ديناميكي، انقر بزر الفأرة الأيمن على الفهرس واختر Update Field كلما تغيّرت أرقام الصفحات أو المحتوى — أو اضغط Ctrl+A ثم F9 لتحديث كل الحقول في المستند دفعة واحدة.", null), S("Essential Word Keyboard Shortcuts", "<table style=\"width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px;\" dir=\"ltr\"><tbody>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Normal style</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+Shift+N</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Heading 1 / 2 / 3</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+Alt+1 / 2 / 3</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Jump to next higher heading</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Alt+Shift+←</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Jump to next lower heading</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Alt+Shift+→</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Mark Index Entry</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Alt+Shift+X</td></tr>" + "<tr><td style=\"padding:6px 8px;color:var(--muted);\">Update all fields (incl. Index / TOC)</td><td style=\"padding:6px 8px;color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+A, then F9</td></tr>" + "</tbody></table>", "اختصارات لوحة المفاتيح الأساسية في وورد", "<table style=\"width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px;\"><tbody>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">النمط العادي (Normal)</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+Shift+N</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">عنوان ١ / ٢ / ٣</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+Alt+1 / 2 / 3</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">الانتقال للعنوان الأعلى التالي</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Alt+Shift+←</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">الانتقال للعنوان الأدنى التالي</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Alt+Shift+→</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">تعليم إدخال فهرس</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Alt+Shift+X</td></tr>" + "<tr><td style=\"padding:6px 8px;color:var(--muted);\">تحديث كل الحقول (فهرس/جدول محتويات)</td><td style=\"padding:6px 8px;color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+A, then F9</td></tr>" + "</tbody></table>", null), ];
+
+            const WORD_TASKS = [{
+                type: 'match',
+                title: {
+                    en: "Match the Word Feature to Its Purpose",
+                    ar: "طابق ميزة وورد بغرضها"
+                },
+                scenario: {
+                    en: "You're structuring a 60-page thesis. Match each Word feature to the problem it actually solves.",
+                    ar: "تعمل على تنظيم أطروحة من ٦٠ صفحة. طابق كل ميزة في وورد بالمشكلة التي تحلّها فعلياً."
+                },
+                pairs: {
+                    en: [{
+                        left: "Styles",
+                        right: "Applies consistent formatting to headings and body text in one click"
+                    }, {
+                        left: "Sections",
+                        right: "Lets one chapter be landscape while the rest stays portrait"
+                    }, {
+                        left: "Table of Contents",
+                        right: "Auto-builds a navigable outline from your heading styles"
+                    }, {
+                        left: "Mail Merge",
+                        right: "Personalizes the same letter for many different recipients"
+                    }, ],
+                    ar: [{
+                        left: "الأنماط (Styles)",
+                        right: "يُطبّق تنسيقاً متسقاً على العناوين والنص الأساسي بنقرة واحدة"
+                    }, {
+                        left: "الأقسام (Sections)",
+                        right: "يسمح بجعل فصل واحد بالاتجاه العرضي بينما تبقى بقية الصفحات طولية"
+                    }, {
+                        left: "جدول المحتويات",
+                        right: "يبني مخططاً قابلاً للتنقل تلقائياً من أنماط العناوين"
+                    }, {
+                        left: "الدمج البريدي",
+                        right: "يُخصّص نفس الخطاب لعدد كبير من المستلمين المختلفين"
+                    }, ]
+                }
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Choosing the Right Section Break",
+                    ar: "اختيار فاصل القسم المناسب"
+                },
+                scenario: {
+                    en: "Your report is entirely portrait, but page 12 has a wide table that needs a landscape page — the rest of the document must stay portrait.",
+                    ar: "تقريرك بالكامل بالاتجاه الطولي، لكن الصفحة ١٢ تحتوي جدولاً عريضاً يحتاج صفحة عرضية — ويجب أن تبقى بقية المستند طولية."
+                },
+                options: {
+                    en: ["Change the whole document to landscape", "Insert a Next Page section break before and after page 12, then set only that section to landscape", "Manually rotate the table image", "Print page 12 separately"],
+                    ar: ["تغيير المستند بأكمله إلى الاتجاه العرضي", "إدراج فاصل قسم Next Page قبل وبعد الصفحة ١٢، ثم ضبط ذلك القسم فقط على الاتجاه العرضي", "تدوير صورة الجدول يدوياً", "طباعة الصفحة ١٢ بشكل منفصل"]
+                },
+                correct: 1
+            }, {
+                type: 'order',
+                title: {
+                    en: "Generating a Table of Contents",
+                    ar: "إنشاء جدول محتويات"
+                },
+                scenario: {
+                    en: "Put the correct sequence for producing a working, clickable table of contents.",
+                    ar: "رتّب التسلسل الصحيح لإنتاج جدول محتويات فعّال وقابل للنقر."
+                },
+                items: {
+                    en: ["Format chapter headings and subheadings using the Styles tool on the Home tab", "Place the cursor at the beginning of the document", "Open the References tab and click Table of Contents", "Select an automatic table style, then use Update Table whenever content changes", ],
+                    ar: ["نسّق عناوين الفصول والعناوين الفرعية باستخدام أداة الأنماط في تبويب Home", "ضع المؤشر في بداية المستند", "افتح تبويب References وانقر Table of Contents", "اختر نمط جدول تلقائي، واستخدم Update Table كلما تغيّر المحتوى", ]
+                }
+            }, {
+                type: 'order',
+                title: {
+                    en: "Running a Mail Merge",
+                    ar: "تنفيذ الدمج البريدي"
+                },
+                scenario: {
+                    en: "You have one invitation letter to send to 40 recipients. Order the Mail Merge workflow correctly.",
+                    ar: "لديك خطاب دعوة واحد لإرساله إلى ٤٠ مستلماً. رتّب سير عمل الدمج البريدي بشكل صحيح."
+                },
+                items: {
+                    en: ["On the Mailings tab, click Select Recipients and choose Type New List", "Enter each recipient's data in the New Address List dialog", "Place the cursor in the letter and Insert Merge Field for each placeholder", "Click Finish & Merge to generate the personalized letters", ],
+                    ar: ["في تبويب Mailings، انقر Select Recipients واختر Type New List", "أدخل بيانات كل مستلم في نافذة New Address List", "ضع المؤشر في الخطاب وأدرج Insert Merge Field لكل عنصر نائب", "انقر Finish & Merge لإنتاج الخطابات المُخصصة", ]
+                }
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Adding an Academic Citation",
+                    ar: "إضافة استشهاد أكاديمي"
+                },
+                scenario: {
+                    en: "You need to cite a new book that has never appeared in this document before, then have Word build the bibliography automatically.",
+                    ar: "تحتاج إلى الاستشهاد بكتاب جديد لم يظهر في هذا المستند من قبل، ثم تريد أن يُنشئ وورد قائمة المراجع تلقائياً."
+                },
+                options: {
+                    en: ["Type the citation manually in the text", "Go to References > Citation > Add New Source, then later use References > Bibliography", "Insert it as a footnote image", "Copy the reference from another PDF and paste it as plain text"],
+                    ar: ["كتابة الاستشهاد يدوياً داخل النص", "الذهاب إلى References > Citation > Add New Source، ثم لاحقاً استخدام References > Bibliography", "إدراجه كصورة حاشية سفلية", "نسخ المرجع من ملف PDF آخر ولصقه كنص عادي"]
+                },
+                correct: 1
+            }, ];
+
+            const WORD_QUESTIONS = [Q("Applying a style to a paragraph does what, in one action?", ["Changes only the font color", "Applies many formatting commands simultaneously", "Deletes the paragraph", "Inserts a page break"], "تطبيق نمط على فقرة يفعل ماذا، في إجراء واحد؟", ["يغيّر لون الخط فقط", "يطبّق عدة أوامر تنسيق في آن واحد", "يحذف الفقرة", "يُدرج فاصل صفحة"], 1), Q("Where can a style be applied from?", ["The Styles gallery on the Home tab only", "The Styles gallery, the Styles pane, or the Apply Styles task pane", "Only the Insert tab", "The Print Preview screen"], "من أين يمكن تطبيق نمط؟", ["معرض الأنماط في تبويب Home فقط", "معرض الأنماط، أو جزء الأنماط، أو جزء مهام تطبيق الأنماط", "تبويب Insert فقط", "شاشة معاينة الطباعة"], 1), Q("A style created directly from a formatted paragraph becomes:", ["Part of every future document automatically", "Part of the current document only, not the template", "Deleted after saving", "Locked and uneditable"], "النمط المُنشأ مباشرة من فقرة مُنسّقة يصبح:", ["جزءاً من كل مستند مستقبلي تلقائياً", "جزءاً من المستند الحالي فقط، دون القالب", "محذوفاً بعد الحفظ", "مقفلاً وغير قابل للتعديل"], 1), Q("To make a new style available in future documents, you should:", ["Only apply it to one paragraph", "Build it from the ground up and save it as part of a template", "Print the document", "Disable AutoCorrect"], "لجعل نمط جديد متاحاً في المستندات المستقبلية، يجب:", ["تطبيقه على فقرة واحدة فقط", "بناؤه من الصفر وحفظه كجزء من قالب", "طباعة المستند", "تعطيل التصحيح التلقائي"], 1), Q("A Word template file typically uses which extension?", [".docx", ".dotx", ".pdf", ".ttf"], "غالباً ما يستخدم ملف قالب وورد الامتداد:", [".docx", ".dotx", ".pdf", ".ttf"], 1), Q("To save a document as a reusable template, you use:", ["File > Print", "File > Save As, choosing Word Template (*.dotx)", "Insert > Template", "Review > New Comment"], "لحفظ مستند كقالب قابل لإعادة الاستخدام، تستخدم:", ["File > Print", "File > Save As، مع اختيار Word Template (*.dotx)", "Insert > Template", "Review > New Comment"], 1), Q("Custom personal templates can be opened again from:", ["File > Open > Personal", "Insert > Shapes", "View > Outline", "Home > Find"], "يمكن فتح القوالب الشخصية المخصصة مرة أخرى من:", ["File > Open > Personal", "Insert > Shapes", "View > Outline", "Home > Find"], 0), Q("Section breaks are inserted from which tab?", ["Home", "Layout", "References", "Review"], "تُدرج فواصل الأقسام من أي تبويب؟", ["Home", "Layout", "References", "Review"], 1), Q("A Next Page section break:", ["Starts the new section on the same page", "Starts the new section on a new page", "Deletes the previous section", "Only works in tables"], "فاصل قسم Next Page:", ["يبدأ القسم الجديد في نفس الصفحة", "يبدأ القسم الجديد في صفحة جديدة", "يحذف القسم السابق", "يعمل فقط داخل الجداول"], 1), Q("A Continuous section break:", ["Starts the new section on the same page", "Always forces a landscape page", "Removes all headers", "Can only be used once per document"], "فاصل قسم Continuous:", ["يبدأ القسم الجديد في نفس الصفحة", "يفرض دائماً صفحة عرضية", "يحذف جميع الترويسات", "يمكن استخدامه مرة واحدة فقط في المستند"], 0), Q("To give one section its own unique header, you must first:", ["Delete the header entirely", "Deselect \"Link to Previous\" in the Header & Footer tab", "Change the font size", "Insert a table"], "لإعطاء قسم ما ترويسة خاصة به، يجب أولاً:", ["حذف الترويسة بالكامل", "إلغاء تحديد \"Link to Previous\" في تبويب Header & Footer", "تغيير حجم الخط", "إدراج جدول"], 1), Q("Format Page Numbers is used to:", ["Change font style only", "Choose a numbering style and set where a section's numbering starts", "Merge two documents", "Insert images"], "يُستخدم Format Page Numbers لـ:", ["تغيير نمط الخط فقط", "اختيار نمط ترقيم وتحديد بداية ترقيم القسم", "دمج مستندين", "إدراج صور"], 1), Q("A common use of different numbering styles per section is:", ["Roman numerals for the introduction, Arabic numerals for chapters", "Only using letters throughout", "Disabling numbering entirely", "Numbering images instead of pages"], "من الاستخدامات الشائعة لأنماط الترقيم المختلفة لكل قسم:", ["أرقام رومانية للمقدمة، وأرقام عربية للفصول", "استخدام الحروف فقط طوال المستند", "تعطيل الترقيم بالكامل", "ترقيم الصور بدلاً من الصفحات"], 0), Q("An automated Table of Contents is generated from:", ["Bold text anywhere in the document", "Headings formatted with the Styles tool", "Manually typed page numbers", "Comments in the margin"], "يُنشأ جدول المحتويات الآلي من:", ["أي نص عريض في المستند", "العناوين المُنسّقة بأداة الأنماط", "أرقام صفحات مكتوبة يدوياً", "التعليقات في الهامش"], 1), Q("The Table of Contents tool is located on which tab?", ["Home", "Insert", "References", "Mailings"], "توجد أداة جدول المحتويات في أي تبويب؟", ["Home", "Insert", "References", "Mailings"], 2), Q("\"Update page numbers only\" versus \"Update entire table\" differ in that the second option also:", ["Deletes the table", "Refreshes the heading text itself, not just page numbers", "Changes the document theme", "Only works once"], "يختلف \"Update page numbers only\" عن \"Update entire table\" في أن الخيار الثاني أيضاً:", ["يحذف الجدول", "يُحدّث نص العناوين نفسه، وليس أرقام الصفحات فقط", "يغيّر سمة المستند", "يعمل مرة واحدة فقط"], 1), Q("To remove a Table of Contents entirely, you:", ["Press Delete on the whole page", "Use References > Table of Contents > Remove Table of Contents", "Undo ten times", "Rename the document"], "لحذف جدول المحتويات بالكامل، تقوم بـ:", ["الضغط على Delete للصفحة بأكملها", "استخدام References > Table of Contents > Remove Table of Contents", "التراجع عشر مرات", "إعادة تسمية المستند"], 1), Q("Mail Merge is primarily used to:", ["Create personalized copies of a document for a list of recipients", "Merge two Excel files", "Compress a Word file", "Translate a document"], "يُستخدم الدمج البريدي بشكل أساسي لـ:", ["إنشاء نسخ مُخصصة من مستند لقائمة من المستلمين", "دمج ملفي إكسل", "ضغط ملف وورد", "ترجمة مستند"], 0), Q("Mail Merge is managed primarily from which tab?", ["Mailings", "View", "Design", "Draw"], "يُدار الدمج البريدي بشكل أساسي من أي تبويب؟", ["Mailings", "View", "Design", "Draw"], 0), Q("To create a brand-new recipient list for a mail merge, you choose:", ["Use an Existing List only", "Select Recipients > Type New List", "Insert > Table", "Design > Themes"], "لإنشاء قائمة مستلمين جديدة تماماً لدمج بريدي، تختار:", ["استخدام قائمة موجودة فقط", "Select Recipients > Type New List", "Insert > Table", "Design > Themes"], 1), Q("Merge fields inserted into the main document act as:", ["Static text that never changes", "Placeholders that are replaced with each recipient's data", "Images", "Page breaks"], "تعمل حقول الدمج المُدرجة في المستند الرئيسي كـ:", ["نص ثابت لا يتغير أبداً", "عناصر نائبة تُستبدل ببيانات كل مستلم", "صور", "فواصل صفحات"], 1), Q("To finally produce the personalized letters after setting up fields, you click:", ["Finish & Merge", "Print Preview", "Save As", "Spelling & Grammar"], "لإنتاج الخطابات المُخصصة أخيراً بعد إعداد الحقول، تنقر:", ["Finish & Merge", "Print Preview", "Save As", "Spelling & Grammar"], 0), Q("A citation in Word is:", ["A footnote formatting style", "A reference to a source such as a book or article", "A type of table", "A slide transition"], "الاستشهاد في وورد هو:", ["نمط تنسيق حاشية سفلية", "إشارة إلى مصدر مثل كتاب أو مقال", "نوع من الجداول", "انتقال شرائح"], 1), Q("Where do you choose a citation style (e.g., APA, MLA)?", ["Home > Font", "References > Style dropdown in Citations & Bibliography", "Insert > Symbol", "View > Ruler"], "أين تختار نمط الاستشهاد (مثل APA أو MLA)؟", ["Home > Font", "قائمة Style المنسدلة في References داخل مجموعة Citations & Bibliography", "Insert > Symbol", "View > Ruler"], 1), Q("To add a brand-new source for a citation, you use:", ["Citation > Add New Source", "Insert > New Source", "Design > Sources", "File > New Source"], "لإضافة مصدر جديد تماماً للاستشهاد، تستخدم:", ["Citation > Add New Source", "Insert > New Source", "Design > Sources", "File > New Source"], 0), Q("Manage Sources, found under References, lets you:", ["Only delete the document", "View and organize every source used or available for citing", "Change the page orientation", "Resize images"], "يتيح لك Manage Sources الموجود تحت References:", ["حذف المستند فقط", "عرض وتنظيم جميع المصادر المُستخدمة أو المتاحة للاستشهاد بها", "تغيير اتجاه الصفحة", "تغيير حجم الصور"], 1), Q("A Bibliography (or Works Cited list) is generated from:", ["References > Bibliography", "Home > Paragraph", "Insert > Header", "View > Draft"], "تُنشأ قائمة المراجع (Bibliography) من:", ["References > Bibliography", "Home > Paragraph", "Insert > Header", "View > Draft"], 0), Q("An advantage of using Word's citation tool instead of typing references manually is:", ["It's the only way to add bold text", "The bibliography can be generated and updated automatically as sources are added", "It removes the need for a References tab", "It automatically translates the sources"], "من مزايا استخدام أداة الاستشهاد في وورد بدلاً من كتابة المراجع يدوياً:", ["أنها الطريقة الوحيدة لإضافة نص عريض", "يمكن إنشاء قائمة المراجع وتحديثها تلقائياً مع إضافة المصادر", "تُلغي الحاجة إلى تبويب References", "تُترجم المصادر تلقائياً"], 1), Q("Navigating headings quickly with Alt+Shift+→ moves you to:", ["The next lower heading level", "The previous document", "A blank page", "The print dialog"], "التنقل السريع بين العناوين باستخدام Alt+Shift+→ ينقلك إلى:", ["مستوى العنوان الأدنى التالي", "المستند السابق", "صفحة فارغة", "نافذة الطباعة"], 0), Q("Which best describes the relationship between Styles and a Table of Contents?", ["They are unrelated features", "The Table of Contents is built from headings that use Styles", "Styles can only be used after the Table of Contents exists", "Table of Contents replaces the need for Styles"], "أي وصف يمثّل العلاقة بين الأنماط وجدول المحتويات بأفضل شكل؟", ["ميزتان غير مرتبطتين", "يُبنى جدول المحتويات من العناوين التي تستخدم الأنماط", "لا يمكن استخدام الأنماط إلا بعد وجود جدول المحتويات", "جدول المحتويات يُلغي الحاجة إلى الأنماط"], 1), Q("Sections are especially useful in long documents because they allow:", ["A single font for the whole document only", "Different margins, orientation, and header/footer content per part of the document", "Automatic translation per chapter", "Removing all styles at once"], "تُعد الأقسام مفيدة بشكل خاص في المستندات الطويلة لأنها تسمح بـ:", ["خط واحد فقط للمستند بأكمله", "هوامش واتجاه ومحتوى ترويسة/تذييل مختلف لكل جزء من المستند", "ترجمة تلقائية لكل فصل", "إزالة جميع الأنماط دفعة واحدة"], 1), Q("If page numbers shift while still drafting a thesis, the correct fix for the Table of Contents is to:", ["Delete and manually retype it", "Click Update Table", "Restart Word", "Change the document language"], "إذا تغيّرت أرقام الصفحات أثناء صياغة الأطروحة، فإن الحل الصحيح لجدول المحتويات هو:", ["حذفه وإعادة كتابته يدوياً", "النقر على Update Table", "إعادة تشغيل وورد", "تغيير لغة المستند"], 1), Q("An index in Word is best described as:", ["A cover page", "A list of important terms with their page numbers, usually at the document's end", "A type of citation style", "A slide layout"], "أفضل وصف للفهرس (Index) في وورد هو:", ["صفحة غلاف", "قائمة بأهم المصطلحات مع أرقام صفحاتها، توضع عادة في نهاية المستند", "نمط استشهاد", "تخطيط شريحة"], 1), Q("To mark a selected term for the index, the shortcut is:", ["Alt+Shift+X", "Ctrl+Shift+N", "Ctrl+Alt+1", "Alt+F9"], "لتعليم مصطلح مُحدد للفهرس، الاختصار هو:", ["Alt+Shift+X", "Ctrl+Shift+N", "Ctrl+Alt+1", "Alt+F9"], 0), Q("Inside the Mark Index Entry dialog, a Subentry is used to:", ["Delete the main entry", "Add a subtopic nested under the main entry, e.g. \"Chart Types\" under \"Data Analysis\"", "Change the document's language", "Insert a hyperlink to a website"], "داخل نافذة Mark Index Entry، يُستخدم Subentry لـ:", ["حذف الإدخال الرئيسي", "إضافة موضوع فرعي متداخل تحت الإدخال الرئيسي، مثل \"أنواع المخططات\" تحت \"تحليل البيانات\"", "تغيير لغة المستند", "إدراج رابط تشعبي لموقع ويب"], 1), Q("Mark All, inside the Mark Index Entry dialog, does what Mark alone does not?", ["Marks every occurrence of the term in the document, not just the selected instance", "Deletes all other entries", "Changes the citation style", "Locks the document"], "ماذا يفعل Mark All داخل نافذة Mark Index Entry بخلاف Mark بمفرده؟", ["يُعلّم كل تكرار للمصطلح في المستند، وليس النسخة المُحددة فقط", "يحذف كل الإدخالات الأخرى", "يغيّر نمط الاستشهاد", "يقفل المستند"], 0), Q("An index is inserted into the document via:", ["Insert > Table", "References > Index group > Insert Index", "Home > Paragraph", "Design > Themes"], "يُدرج الفهرس في المستند عبر:", ["Insert > Table", "References > Index group > Insert Index", "Home > Paragraph", "Design > Themes"], 1), Q("The fastest way to refresh every field in a document at once, including the index, is:", ["Ctrl+A, then F9", "Ctrl+Z", "Alt+F4", "Ctrl+P"], "أسرع طريقة لتحديث كل الحقول في المستند دفعة واحدة، بما فيها الفهرس، هي:", ["Ctrl+A، ثم F9", "Ctrl+Z", "Alt+F4", "Ctrl+P"], 0), Q("The keyboard shortcut for applying the Normal style is:", ["Ctrl+Alt+1", "Ctrl+Shift+N", "Alt+Shift+X", "Ctrl+M"], "اختصار لوحة المفاتيح لتطبيق نمط Normal هو:", ["Ctrl+Alt+1", "Ctrl+Shift+N", "Alt+Shift+X", "Ctrl+M"], 1), Q("Applying Heading 2 with a keyboard shortcut uses:", ["Ctrl+Alt+2", "Ctrl+Shift+2", "Alt+2", "Ctrl+2"], "تطبيق Heading 2 باختصار لوحة المفاتيح يستخدم:", ["Ctrl+Alt+2", "Ctrl+Shift+2", "Alt+2", "Ctrl+2"], 0), TF("A style applied to a paragraph changes only that paragraph's font color and nothing else.", "النمط المُطبّق على فقرة يغيّر فقط لون خط تلك الفقرة ولا شيء آخر.", false), TF("A Word template saved with the .dotx extension can be reused as a starting point for new documents.", "يمكن إعادة استخدام قالب وورد المحفوظ بامتداد .dotx كنقطة انطلاق لمستندات جديدة.", true), TF("Turning off \"Link to Previous\" is required to give one section a unique header or footer.", "يُشترط إيقاف \"Link to Previous\" لإعطاء قسم واحد ترويسة أو تذييلاً فريداً.", true), TF("A Table of Contents can only be built manually; Word cannot generate one automatically.", "لا يمكن بناء جدول المحتويات إلا يدوياً؛ ولا يستطيع وورد إنشاءه تلقائياً.", false), TF("\"Update entire table\" refreshes the heading text itself, not just the page numbers.", "يُحدّث \"Update entire table\" نص العناوين نفسه، وليس أرقام الصفحات فقط.", true), TF("Mail Merge can only be used for printed letters, never for personalized emails.", "لا يمكن استخدام الدمج البريدي إلا للخطابات المطبوعة، ولا يمكن استخدامه أبداً للرسائل الإلكترونية المُخصصة.", false), TF("A citation's style (APA, MLA, etc.) can be changed from the References tab's Style dropdown.", "يمكن تغيير نمط الاستشهاد (APA، MLA، إلخ) من القائمة المنسدلة Style في تبويب References.", true), TF("An index entry can include a cross-reference pointing to a related term instead of a page number.", "يمكن أن يتضمن إدخال الفهرس مرجعاً تبادلياً يشير إلى مصطلح ذي صلة بدلاً من رقم صفحة.", true), ];
+
+            /* ================= POWERPOINT ================= */
+            const PPT_SUMMARIES = [S("The PowerPoint Interface", "The Ribbon holds task tabs (Home, Insert, Design, Transitions, Animations, Slide Show, Review, View). The Slides pane lists slides; the Slide window shows the current one; the Notes pane holds speaker notes the audience never sees.", "واجهة بوربوينت", "يحتوي الشريط (Ribbon) على تبويبات المهام (Home، Insert، Design، Transitions، Animations، Slide Show، Review، View). يعرض جزء الشرائح القائمة؛ ونافذة الشريحة تُظهر الشريحة الحالية؛ وجزء الملاحظات يحتوي ملاحظات المتحدث التي لا يراها الجمهور أبداً.", null), S("Slide Layouts", "Layouts like Title Slide, Title and Content, Section Header, and Two Content define what placeholders a slide starts with — chosen from the layout gallery next to New Slide on the Home tab.", "تخطيطات الشرائح", "تُحدد التخطيطات مثل Title Slide وTitle and Content وSection Header وTwo Content العناصر النائبة التي تبدأ بها الشريحة — تُختار من معرض التخطيطات بجانب New Slide في تبويب Home.", null), S("Transitions", "Effects applied on the Transitions tab that play when moving between two slides. Duration and Effect Options can be customized, and Apply to All makes the setting consistent across the whole deck.", "الانتقالات (Transitions)", "تأثيرات تُطبّق من تبويب Transitions تظهر عند الانتقال بين شريحتين. يمكن تخصيص المدة (Duration) وخيارات التأثير (Effect Options)، ويجعل الخيار Apply to All الإعداد موحداً عبر العرض بأكمله.", null), S("Transition Timing", "On Mouse Click advances manually; After (Time) advances automatically once a set number of seconds passes — both are configured in the Timing group of the Transitions tab.", "توقيت الانتقالات", "يُقدّم On Mouse Click الشريحة يدوياً؛ بينما يُقدّمها After (Time) تلقائياً بعد مرور عدد محدد من الثواني — يُضبط كلاهما في مجموعة Timing بتبويب Transitions.", null), S("Animations & Triggers", "Animations (entrance, emphasis, exit, motion path) are set on the Animations tab and managed in the Animation Pane. A Trigger makes an animation start only when a specific object is clicked, instead of automatically.", "الحركات والمُفعّلات (Triggers)", "تُضبط الحركات (دخول، تأكيد، خروج، مسار حركة) من تبويب Animations وتُدار عبر جزء Animation Pane. يجعل المُفعّل (Trigger) الحركة تبدأ فقط عند النقر على عنصر معيّن بدلاً من بدئها تلقائياً.", null), S("Animation Painter", "Copies a fully-configured animation from one object to another, the same way Format Painter copies text formatting — saving you from rebuilding the same effect repeatedly.", "أداة نسخ الحركة (Animation Painter)", "تنسخ حركة مُعدّة بالكامل من عنصر إلى آخر، بنفس طريقة عمل Format Painter مع تنسيق النص — فتوفر عليك إعادة بناء نفس التأثير مراراً.", null), S("Slide Master", "Built from the layouts used in a presentation, it lets you set a theme, font combination, color palette, and effects once from the top-level theme slide, and have every layout inherit it — unifying the whole deck instantly.", "الشريحة الرئيسية (Slide Master)", "تُبنى من التخطيطات المستخدمة في العرض، وتتيح لك ضبط السمة وتركيبة الخطوط ولوحة الألوان والتأثيرات مرة واحدة من شريحة السمة العلوية، بحيث يرثها كل تخطيط — موحّدة العرض بأكمله فوراً.", null), S("Media & Screen Recording", "Video and audio can be inserted directly into a slide from the Insert tab; PowerPoint also includes a built-in Screen Recording tool to capture on-screen actions straight into a slide.", "الوسائط وتسجيل الشاشة", "يمكن إدراج الفيديو والصوت مباشرة داخل الشريحة من تبويب Insert؛ ويضم بوربوينت أيضاً أداة تسجيل شاشة مدمجة لالتقاط ما يجري على الشاشة مباشرة داخل شريحة.", null), S("Microsoft 365 Collaboration", "Microsoft 365 pairs the desktop apps with cloud services — OneDrive for storage, Teams for communication, SharePoint for document management — enabling real-time co-authoring and file sharing via a generated link or email invite.", "التعاون عبر مايكروسوفت 365", "يقرن مايكروسوفت 365 تطبيقات سطح المكتب بخدمات سحابية — OneDrive للتخزين، وTeams للتواصل، وSharePoint لإدارة المستندات — مما يتيح التأليف المشترك الفوري ومشاركة الملفات عبر رابط أو دعوة بالبريد الإلكتروني.", null), S("AI Tools in Presentations", "Tools like Microsoft Copilot and Gamma AI generate an outline, text, and images from a topic prompt and a chosen theme; most allow further editing through text commands and export to PowerPoint, PDF, or Google Slides.", "أدوات الذكاء الاصطناعي في العروض", "تولّد أدوات مثل Microsoft Copilot وGamma AI مخططاً ونصاً وصوراً من فكرة موضوع وسمة مُختارة؛ وتتيح معظمها تعديلاً إضافياً عبر أوامر نصية والتصدير إلى بوربوينت أو PDF أو Google Slides.", null), S("PowerPoint Keyboard Shortcuts", "<table style=\"width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px;\" dir=\"ltr\"><tbody>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">New presentation</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+N</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">New slide</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+M</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Save</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Ctrl+S</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">Pause / resume screen recording</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Win+Shift+R</td></tr>" + "<tr><td style=\"padding:6px 8px;color:var(--muted);\">Stop screen recording</td><td style=\"padding:6px 8px;color:var(--cyan);font-family:var(--font-mono);text-align:right;\">Win+Shift+Q</td></tr>" + "</tbody></table>", "اختصارات لوحة المفاتيح في بوربوينت", "<table style=\"width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px;\"><tbody>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">عرض تقديمي جديد</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+N</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">شريحة جديدة</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+M</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">حفظ</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Ctrl+S</td></tr>" + "<tr><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--muted);\">إيقاف/استئناف تسجيل الشاشة مؤقتاً</td><td style=\"padding:6px 8px;border-bottom:1px solid var(--border-soft);color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Win+Shift+R</td></tr>" + "<tr><td style=\"padding:6px 8px;color:var(--muted);\">إيقاف تسجيل الشاشة نهائياً</td><td style=\"padding:6px 8px;color:var(--cyan);font-family:var(--font-mono);\" dir=\"ltr\">Win+Shift+Q</td></tr>" + "</tbody></table>", null), S("Saving a Screen Recording as Media", "After capturing a screen recording, right-click the recording object on the slide and choose Save as Media, then pick a destination drive/folder and file name — this exports the capture as a standalone video file separate from the .pptx.", "حفظ تسجيل الشاشة كملف وسائط", "بعد التقاط تسجيل الشاشة، انقر بزر الفأرة الأيمن على كائن التسجيل في الشريحة واختر Save as Media، ثم حدد محرك الأقراص/المجلد الوجهة واسم الملف — يُصدّر هذا التسجيل كملف فيديو مستقل منفصل عن ملف .pptx.", null), ];
+
+            const PPT_TASKS = [{
+                type: 'match',
+                title: {
+                    en: "Match the Slide Layout to Its Description",
+                    ar: "طابق تخطيط الشريحة بوصفه"
+                },
+                scenario: {
+                    en: "You're structuring a new deck. Match each layout name to what it actually contains.",
+                    ar: "تعمل على تنظيم عرض تقديمي جديد. طابق اسم كل تخطيط بما يحتويه فعلياً."
+                },
+                pairs: {
+                    en: [{
+                        left: "Title Slide",
+                        right: "Contains a title and a subtitle"
+                    }, {
+                        left: "Title and Content",
+                        right: "Contains a title plus a content placeholder"
+                    }, {
+                        left: "Section Header",
+                        right: "Contains a title positioned below a subtitle, used to divide the deck"
+                    }, {
+                        left: "Two Content",
+                        right: "Contains a title with two content areas side by side"
+                    }, ],
+                    ar: [{
+                        left: "شريحة العنوان",
+                        right: "تحتوي على عنوان وعنوان فرعي"
+                    }, {
+                        left: "العنوان والمحتوى",
+                        right: "تحتوي على عنوان بالإضافة إلى عنصر نائب للمحتوى"
+                    }, {
+                        left: "عنوان القسم",
+                        right: "تحتوي على عنوان أسفل عنوان فرعي، وتُستخدم لتقسيم العرض"
+                    }, {
+                        left: "محتويان",
+                        right: "تحتوي على عنوان مع منطقتي محتوى جنباً إلى جنب"
+                    }, ]
+                }
+            }, {
+                type: 'order',
+                title: {
+                    en: "Adding a Transition to the Whole Deck",
+                    ar: "إضافة انتقال للعرض بأكمله"
+                },
+                scenario: {
+                    en: "Order the steps for giving every slide in the deck the same, consistent transition.",
+                    ar: "رتّب خطوات إعطاء كل شريحة في العرض نفس الانتقال بشكل موحد."
+                },
+                items: {
+                    en: ["Select the slide where you want to preview the transition", "Open the Transitions tab and click a transition effect thumbnail", "Adjust Duration and Effect Options as needed", "Click Apply to All in the Timing group", ],
+                    ar: ["حدد الشريحة التي تريد معاينة الانتقال عليها", "افتح تبويب Transitions وانقر على صورة أحد تأثيرات الانتقال", "اضبط Duration وEffect Options حسب الحاجة", "انقر Apply to All في مجموعة Timing", ]
+                }
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Making an Animation Depend on a Click",
+                    ar: "جعل الحركة تعتمد على نقرة"
+                },
+                scenario: {
+                    en: "You want an icon's animation to play only when the presenter clicks a specific button on the slide — not automatically, and not on a generic mouse click anywhere.",
+                    ar: "تريد أن تعمل حركة أيقونة فقط عندما ينقر المُقدّم على زر معيّن في الشريحة — وليس تلقائياً، وليس عند أي نقرة عشوائية على الشريحة."
+                },
+                options: {
+                    en: ["Set the animation to start After Previous", "Use a Trigger tied to that specific button", "Use the Animation Painter", "Delete the animation and re-add it"],
+                    ar: ["ضبط الحركة على البدء After Previous", "استخدام Trigger مرتبط بذلك الزر المحدد", "استخدام أداة Animation Painter", "حذف الحركة وإعادة إضافتها"]
+                },
+                correct: 1
+            }, {
+                type: 'order',
+                title: {
+                    en: "Unifying a Deck with the Slide Master",
+                    ar: "توحيد العرض عبر الشريحة الرئيسية"
+                },
+                scenario: {
+                    en: "Order the steps for applying one consistent theme, font, and color scheme to an entire presentation.",
+                    ar: "رتّب خطوات تطبيق سمة وخط ولوحة ألوان موحدة على عرض تقديمي بأكمله."
+                },
+                items: {
+                    en: ["Click View, then Slide Master to open Slide Master view", "Select the top theme slide that groups the layouts", "Apply a theme, then choose a font combination from the Fonts menu", "Apply a color combination, then click Close Master View", ],
+                    ar: ["انقر View ثم Slide Master لفتح عرض الشريحة الرئيسية", "حدد شريحة السمة العلوية التي تجمع التخطيطات", "طبّق سمة، ثم اختر تركيبة خطوط من قائمة Fonts", "طبّق تركيبة ألوان، ثم انقر Close Master View", ]
+                }
+            }, {
+                type: 'choice',
+                title: {
+                    en: "Sharing a Presentation for Real-Time Co-Editing",
+                    ar: "مشاركة عرض للتحرير المشترك الفوري"
+                },
+                scenario: {
+                    en: "A colleague needs to edit your PowerPoint file together with you at the same time, from their own computer.",
+                    ar: "يحتاج زميلك إلى تحرير ملف بوربوينت الخاص بك معك في نفس الوقت، من جهازه الخاص."
+                },
+                options: {
+                    en: ["Email the file as a .zip attachment", "Share it from OneDrive with Allow Editing enabled", "Print it and scan it back", "Save it as a PDF and email that"],
+                    ar: ["إرسال الملف كمرفق مضغوط .zip بالبريد", "مشاركته من OneDrive مع تفعيل خيار Allow Editing", "طباعته ومسحه ضوئياً مرة أخرى", "حفظه كملف PDF وإرساله بالبريد"]
+                },
+                correct: 1
+            }, ];
+
+            const PPT_QUESTIONS = [Q("Which Ribbon tab contains Save, Undo, Repeat, and Start From Beginning?", ["The Ribbon tabs themselves", "The Quick Access Toolbar", "The Notes pane", "The Status bar"], "أي عنصر يحتوي على أوامر Save وUndo وRepeat وStart From Beginning؟", ["تبويبات الشريط نفسها", "شريط أدوات الوصول السريع (Quick Access Toolbar)", "جزء الملاحظات", "شريط الحالة"], 1), Q("The Notes pane in Normal view is used for:", ["Content the audience sees on screen", "Speaker notes the audience cannot see", "Slide transitions", "Animation settings"], "يُستخدم جزء الملاحظات في العرض العادي (Normal view) لـ:", ["محتوى يراه الجمهور على الشاشة", "ملاحظات المتحدث التي لا يراها الجمهور", "انتقالات الشرائح", "إعدادات الحركة"], 1), Q("Which view lets you rearrange slides for better flow?", ["Reading View", "Slide Sorter View", "Notes Page", "Outline only"], "أي عرض يتيح لك إعادة ترتيب الشرائح لتحسين التسلسل؟", ["Reading View", "Slide Sorter View", "Notes Page", "العرض التخطيطي فقط"], 1), Q("A new slide can be added quickly with the shortcut:", ["Ctrl+N", "Ctrl+M", "Ctrl+S", "Ctrl+P"], "يمكن إضافة شريحة جديدة بسرعة باستخدام اختصار:", ["Ctrl+N", "Ctrl+M", "Ctrl+S", "Ctrl+P"], 1), Q("A Title Slide layout typically contains:", ["Only an image placeholder", "A title and a subtitle", "Two content columns", "A video placeholder only"], "يحتوي تخطيط شريحة العنوان (Title Slide) عادة على:", ["عنصر نائب لصورة فقط", "عنوان وعنوان فرعي", "عمودي محتوى", "عنصر نائب لفيديو فقط"], 1), Q("The Section Header layout is mainly used to:", ["Divide a presentation into parts", "Insert a chart", "Show two images side by side", "Add a video"], "يُستخدم تخطيط عنوان القسم (Section Header) بشكل أساسي لـ:", ["تقسيم العرض التقديمي إلى أجزاء", "إدراج مخطط بياني", "عرض صورتين جنباً إلى جنب", "إضافة فيديو"], 0), Q("Slide layouts are chosen from:", ["The layout gallery next to New Slide on the Home tab", "The Review tab", "The View tab only", "The File menu"], "تُختار تخطيطات الشرائح من:", ["معرض التخطيطات بجانب New Slide في تبويب Home", "تبويب Review", "تبويب View فقط", "قائمة File"], 0), Q("Transitions in PowerPoint control:", ["The effect that plays moving between two slides", "How text is bolded", "The presentation's file size only", "The speaker notes font"], "تتحكم الانتقالات (Transitions) في بوربوينت بـ:", ["التأثير الذي يظهر عند الانتقال بين شريحتين", "كيفية جعل النص عريضاً", "حجم ملف العرض فقط", "خط ملاحظات المتحدث"], 0), Q("To preview a chosen transition effect, you can:", ["Click Preview on the Transitions tab", "Save the file first", "Restart PowerPoint", "Switch to grayscale"], "لمعاينة تأثير انتقال مُختار، يمكنك:", ["النقر على Preview في تبويب Transitions", "حفظ الملف أولاً", "إعادة تشغيل بوربوينت", "التحويل إلى تدرج الرمادي"], 0), Q("Applying the same transition to every slide at once is done with:", ["Apply to All", "Format Painter", "Slide Master", "Animation Pane"], "يتم تطبيق نفس الانتقال على كل الشرائح دفعة واحدة باستخدام:", ["Apply to All", "Format Painter", "Slide Master", "Animation Pane"], 0), Q("\"On Mouse Click\" in the Timing group means the slide advances:", ["Automatically after a set time", "Only when the presenter clicks", "Only during Slide Sorter view", "Never"], "يعني \"On Mouse Click\" في مجموعة Timing أن الشريحة تنتقل:", ["تلقائياً بعد وقت محدد", "فقط عند نقر المُقدّم", "فقط أثناء عرض Slide Sorter", "لا تنتقل أبداً"], 1), Q("\"After (Time)\" in the Timing group makes the slide advance:", ["Only on a click", "Automatically once the set number of seconds passes", "Backwards", "Only in Reading View"], "يجعل \"After (Time)\" في مجموعة Timing الشريحة تنتقل:", ["فقط عند النقر", "تلقائياً بعد مرور عدد الثواني المحدد", "إلى الخلف", "فقط في Reading View"], 1), Q("Animations in PowerPoint are grouped into entrance, emphasis, exit, and:", ["Motion path", "Formatting", "Compression", "Encryption"], "تُصنّف الحركات في بوربوينت إلى دخول وتأكيد وخروج بالإضافة إلى:", ["مسار الحركة (Motion Path)", "التنسيق", "الضغط", "التشفير"], 0), Q("The Animation Pane is used to:", ["Manage and reorder every animation applied to a slide", "Only preview transitions", "Insert audio", "Change slide size"], "يُستخدم جزء Animation Pane لـ:", ["إدارة وإعادة ترتيب كل حركة مُطبّقة على الشريحة", "معاينة الانتقالات فقط", "إدراج الصوت", "تغيير حجم الشريحة"], 0), Q("A Trigger makes an animation:", ["Play automatically when the slide loads", "Play only when a specific object on the slide is clicked", "Play in reverse", "Disappear permanently"], "يجعل المُفعّل (Trigger) الحركة:", ["تعمل تلقائياً عند تحميل الشريحة", "تعمل فقط عند النقر على عنصر معيّن في الشريحة", "تعمل بشكل معكوس", "تختفي بشكل دائم"], 1), Q("Animation Painter is best compared to:", ["Format Painter, but for animation settings", "A video insertion tool", "A transition style", "A chart type"], "تُقارن أداة Animation Painter بشكل أفضل بـ:", ["أداة Format Painter، لكن لإعدادات الحركة", "أداة لإدراج الفيديو", "نمط انتقال", "نوع مخطط بياني"], 0), Q("Using Animation Painter, you can:", ["Copy a configured animation from one object to another", "Only delete animations", "Convert a slide to a PDF", "Record narration"], "باستخدام Animation Painter، يمكنك:", ["نسخ حركة مُعدّة من عنصر إلى آخر", "حذف الحركات فقط", "تحويل شريحة إلى PDF", "تسجيل السرد الصوتي"], 0), Q("A Slide Master is built from:", ["The layouts used within the presentation", "A single random slide", "The Notes pane", "An external Word file"], "تُبنى الشريحة الرئيسية (Slide Master) من:", ["التخطيطات المستخدمة داخل العرض التقديمي", "شريحة عشوائية واحدة", "جزء الملاحظات", "ملف وورد خارجي"], 0), Q("The Slide Master is opened from:", ["Insert > Slide Master", "View > Slide Master", "Design > Slide Master", "Home > Slide Master"], "تُفتح الشريحة الرئيسية من:", ["Insert > Slide Master", "View > Slide Master", "Design > Slide Master", "Home > Slide Master"], 1), Q("The top theme slide in Slide Master view:", ["Has no effect on other layouts", "Groups multiple layouts and applies shared theme features to all of them", "Can only hold text", "Must be deleted before editing"], "شريحة السمة العلوية في عرض الشريحة الرئيسية:", ["ليس لها أي تأثير على التخطيطات الأخرى", "تجمع عدة تخطيطات وتُطبّق ميزات السمة المشتركة عليها جميعاً", "يمكن أن تحتوي على نص فقط", "يجب حذفها قبل التعديل"], 1), Q("To exit Slide Master view and return to Normal view, you click:", ["Close Master View", "Save As", "Undo", "File > Exit"], "للخروج من عرض الشريحة الرئيسية والعودة إلى العرض العادي، تنقر:", ["Close Master View", "Save As", "Undo", "File > Exit"], 0), Q("Applying a font combination from the Slide Master's Fonts menu affects:", ["Only the currently selected text box", "Every layout that inherits from that theme slide", "Only the file name", "Nothing until you restart PowerPoint"], "تطبيق تركيبة خطوط من قائمة Fonts في الشريحة الرئيسية يؤثر على:", ["مربع النص المُحدد حالياً فقط", "كل تخطيط يرث من شريحة السمة تلك", "اسم الملف فقط", "لا شيء حتى تعيد تشغيل بوربوينت"], 1), Q("Video and audio files can be inserted into a slide from which tab?", ["Insert", "Review", "Slide Show", "Transitions"], "يمكن إدراج ملفات الفيديو والصوت في شريحة من أي تبويب؟", ["Insert", "Review", "Slide Show", "Transitions"], 0), Q("PowerPoint's built-in Screen Recording tool is used to:", ["Record what's happening on screen directly into a slide", "Only record audio", "Translate speech to text", "Compress video files"], "تُستخدم أداة تسجيل الشاشة المدمجة في بوربوينت لـ:", ["تسجيل ما يحدث على الشاشة مباشرة داخل شريحة", "تسجيل الصوت فقط", "تحويل الكلام إلى نص", "ضغط ملفات الفيديو"], 0), Q("Microsoft 365 differs from a purely offline Office install mainly by adding:", ["More slide transitions", "Cloud-based services like OneDrive, Teams, and SharePoint", "A different file format only", "Free stock photos exclusively"], "يختلف مايكروسوفت 365 عن تثبيت أوفيس دون اتصال بشكل أساسي بإضافة:", ["مزيد من انتقالات الشرائح", "خدمات سحابية مثل OneDrive وTeams وSharePoint", "تنسيق ملف مختلف فقط", "صور مخزون مجانية حصراً"], 1), Q("OneDrive in Microsoft 365 primarily provides:", ["Real-time chat only", "Cloud storage with real-time co-authoring of files", "Spell-checking", "Video editing"], "يوفر OneDrive في مايكروسوفت 365 بشكل أساسي:", ["الدردشة الفورية فقط", "تخزيناً سحابياً مع تأليف مشترك فوري للملفات", "التدقيق الإملائي", "تحرير الفيديو"], 1), Q("Microsoft Teams within Microsoft 365 is mainly used for:", ["Slide design themes", "Team communication: chats, channels, file sharing, video meetings", "Formula auditing", "Mail merge"], "يُستخدم Microsoft Teams ضمن مايكروسوفت 365 بشكل أساسي لـ:", ["سمات تصميم الشرائح", "تواصل الفريق: محادثات، قنوات، مشاركة ملفات، اجتماعات فيديو", "تدقيق الصيغ", "الدمج البريدي"], 1), Q("To share a file so a colleague can view AND edit it, you should:", ["Leave Allow Editing deselected", "Select Allow Editing before sharing the link or email invite", "Only send a screenshot", "Print and mail it"], "لمشاركة ملف بحيث يستطيع زميلك عرضه وتحريره معاً، يجب عليك:", ["ترك خيار Allow Editing غير محدد", "تحديد Allow Editing قبل إرسال الرابط أو دعوة البريد", "إرسال لقطة شاشة فقط", "طباعته وإرساله بالبريد"], 1), Q("To stop a link from letting anyone access a shared file, you:", ["Remove the Link from Manage Access", "Change the file extension", "Reinstall PowerPoint", "Rename the file only"], "لإيقاف رابط عن السماح لأي شخص بالوصول إلى ملف مشترك، تقوم بـ:", ["إزالة الرابط (Remove Link) من Manage Access", "تغيير امتداد الملف", "إعادة تثبيت بوربوينت", "إعادة تسمية الملف فقط"], 0), Q("AI presentation tools such as Gamma or Copilot primarily generate a deck from:", ["A blank template only", "A topic prompt and a chosen theme", "Manually drawn slides", "A printed outline you scan in"], "تُنشئ أدوات العروض المدعومة بالذكاء الاصطناعي مثل Gamma أو Copilot العرض بشكل أساسي من:", ["قالب فارغ فقط", "فكرة موضوع وسمة مُختارة", "شرائح مرسومة يدوياً", "مخطط مطبوع يتم مسحه ضوئياً"], 1), Q("Most AI presentation tools allow further editing through:", ["Text commands", "Only starting completely over", "Physical remote controls", "Fax machines"], "تسمح معظم أدوات العروض المدعومة بالذكاء الاصطناعي بمزيد من التعديل عبر:", ["أوامر نصية", "البدء من جديد بالكامل فقط", "أجهزة تحكم فعلية عن بُعد", "أجهزة الفاكس"], 0), Q("AI-generated presentations can typically be exported to:", ["Only a proprietary format", "PowerPoint, PDF, or Google Slides", "Excel only", "A physical printout exclusively"], "يمكن عادة تصدير العروض المُولّدة بالذكاء الاصطناعي إلى:", ["تنسيق مملوك حصرياً فقط", "بوربوينت أو PDF أو Google Slides", "إكسل فقط", "نسخة مطبوعة فقط"], 1), Q("The keyboard shortcut for creating a new slide is:", ["Ctrl+N", "Ctrl+M", "Ctrl+S", "Ctrl+Shift+N"], "اختصار لوحة المفاتيح لإنشاء شريحة جديدة هو:", ["Ctrl+N", "Ctrl+M", "Ctrl+S", "Ctrl+Shift+N"], 1), Q("The keyboard shortcut for a brand-new PowerPoint document is:", ["Ctrl+N", "Ctrl+M", "Ctrl+O", "Ctrl+P"], "اختصار لوحة المفاتيح لعرض تقديمي جديد تماماً هو:", ["Ctrl+N", "Ctrl+M", "Ctrl+O", "Ctrl+P"], 0), Q("During a screen recording, which shortcut pauses or resumes it?", ["Win+Shift+Q", "Win+Shift+R", "Ctrl+Shift+R", "Alt+R"], "أثناء تسجيل الشاشة، أي اختصار يوقفه مؤقتاً أو يستأنفه؟", ["Win+Shift+Q", "Win+Shift+R", "Ctrl+Shift+R", "Alt+R"], 1), Q("During a screen recording, which shortcut stops it entirely?", ["Win+Shift+Q", "Win+Shift+R", "Ctrl+Q", "Esc"], "أثناء تسجيل الشاشة، أي اختصار يوقفه نهائياً؟", ["Win+Shift+Q", "Win+Shift+R", "Ctrl+Q", "Esc"], 0), Q("After capturing a screen recording, to export it as a standalone video file you:", ["Right-click it and choose Save as Media", "Press Ctrl+S only", "Print the slide", "Delete the recording"], "بعد التقاط تسجيل الشاشة، لتصديره كملف فيديو مستقل تقوم بـ:", ["النقر بزر الفأرة الأيمن عليه واختيار Save as Media", "الضغط على Ctrl+S فقط", "طباعة الشريحة", "حذف التسجيل"], 0), TF("Transitions and animations are the same feature with two different names.", "الانتقالات والحركات ميزة واحدة بمسمّيين مختلفين.", false), TF("A Trigger makes an animation start automatically the instant the slide loads.", "يجعل المُفعّل (Trigger) الحركة تبدأ تلقائياً بمجرد تحميل الشريحة.", false), TF("Apply to All, in the Transitions tab's Timing group, applies the chosen transition to every slide in the deck.", "يُطبّق الخيار Apply to All، في مجموعة Timing بتبويب Transitions، الانتقال المُختار على كل شريحة في العرض.", true), TF("The Slide Master's top theme slide has no effect on the layouts beneath it.", "ليس لشريحة السمة العلوية في الشريحة الرئيسية أي تأثير على التخطيطات الموجودة أسفلها.", false), TF("Animation Painter works the same way Format Painter does, but for animation settings instead of text formatting.", "تعمل أداة Animation Painter بنفس طريقة عمل Format Painter، لكن لإعدادات الحركة بدلاً من تنسيق النص.", true), TF("Video and audio can only be inserted into a PowerPoint slide by pasting a hyperlink.", "لا يمكن إدراج الفيديو والصوت في شريحة بوربوينت إلا بلصق رابط تشعبي.", false), TF("Microsoft 365 combines desktop apps with cloud services like OneDrive, Teams, and SharePoint.", "يجمع مايكروسوفت 365 بين تطبيقات سطح المكتب والخدمات السحابية مثل OneDrive وTeams وSharePoint.", true), TF("Sharing a file from OneDrive always grants edit access, with no option to restrict to view-only.", "مشاركة ملف من OneDrive تمنح دائماً صلاحية التحرير، دون أي خيار لتقييدها بالعرض فقط.", false), TF("AI presentation tools like Gamma or Copilot can only generate slides, with no option for further editing.", "لا يمكن لأدوات العروض المدعومة بالذكاء الاصطناعي مثل Gamma أو Copilot سوى توليد الشرائح، دون أي خيار للتعديل الإضافي.", false), ];
+
+            /* ================= GLOSSARY ================= */
+            function G(termEn, defEn, termAr, defAr) {
+                return {
+                    en: {
+                        term: termEn,
+                        def: defEn
+                    },
+                    ar: {
+                        term: termAr,
+                        def: defAr
+                    }
+                };
+            }
+            const GLOSSARY = [G("IF Function", "Excel's core logical function: it evaluates a single condition using a comparison operator (<, >, <=, >=, =) and branches into exactly one of two outcomes — the value_if_true argument when the test holds, the value_if_false argument when it doesn't. Every more advanced logical formula (AND, OR, NOT, Nested IF) is ultimately built around this same three-argument shape.", "دالة IF", "الدالة المنطقية الأساسية في إكسل: تُقيّم شرطاً واحداً باستخدام عامل مقارنة (<، >، <=، >=، =) وتتفرّع إلى واحدة فقط من نتيجتين — الوسيطة value_if_true عند تحقق الاختبار، والوسيطة value_if_false عند عدم تحققه. تُبنى كل صيغة منطقية أكثر تقدماً (AND، OR، NOT، IF المتداخلة) في النهاية حول نفس هذا الشكل ثلاثي الوسائط."), G("AND Function", "A combining function, never used alone: it wraps several individual conditions and returns TRUE only when every single one of them holds simultaneously. Nested inside an IF — =IF(AND(cond1,cond2),...) — it enforces an \"all requirements must pass\" rule, such as a student needing to clear two separate subjects to earn a top grade.", "دالة AND", "دالة دمج لا تُستخدم بمفردها أبداً: تُغلّف عدة شروط منفردة وتُرجع TRUE فقط عندما تتحقق كل الشروط في آن واحد. عند تداخلها داخل IF — =IF(AND(cond1,cond2),...) — تفرض قاعدة \"يجب اجتياز كل المتطلبات\"، كطالب يحتاج لاجتياز مادتين منفصلتين معاً للحصول على أعلى تقدير."), G("OR Function", "A combining function that returns TRUE the moment at least one of its listed conditions is true — the opposite bar from AND. Paired with IF — =IF(OR(cond1,cond2),...) — it enforces an \"any one requirement is enough\" rule. Caution: OR treats any non-numeric text as a non-zero value, so it can evaluate to TRUE unexpectedly on text cells.", "دالة OR", "دالة دمج تُرجع TRUE بمجرد تحقق شرط واحد على الأقل من الشروط المدرجة فيها — عكس معيار AND تماماً. عند اقترانها بـ IF — =IF(OR(cond1,cond2),...) — تفرض قاعدة \"يكفي تحقق أي متطلب واحد\". تنبيه: تتعامل OR مع أي نص غير رقمي كقيمة غير صفرية، لذا قد تُقيَّم بـ TRUE بشكل غير متوقع مع الخلايا النصية."), G("NOT Function", "A single-condition reversal function: whatever the tested condition would normally evaluate to, NOT flips it — TRUE becomes FALSE and vice-versa. It is most useful for phrasing an exclusion rule positively, such as \"anything that is NOT red gets selected\" instead of writing a longer list of every other color.", "دالة NOT", "دالة عكس لشرط واحد: مهما كانت نتيجة تقييم الشرط المُختبر عادة، تعكسها NOT — فتتحول TRUE إلى FALSE والعكس صحيح. تُفيد بشكل خاص في صياغة قاعدة استبعاد بأسلوب إيجابي، مثل \"كل ما ليس أحمر يُحدَّد\" بدلاً من كتابة قائمة أطول بكل الألوان الأخرى."), G("Nested IF", "Multiple IF functions combined inside one formula to test several value ranges.", "IF المتداخلة", "عدة دوال IF مدمجة داخل صيغة واحدة لاختبار عدة نطاقات من القيم."), G("VLOOKUP", "Searches a value down the first column of a table and returns data from another column in that row.", "VLOOKUP", "تبحث عن قيمة في العمود الأول من جدول وتُرجع بيانات من عمود آخر في نفس الصف."), G("HLOOKUP", "Searches a value across the first row of a table and returns data from a row below it.", "HLOOKUP", "تبحث عن قيمة في الصف الأول من جدول وتُرجع بيانات من صف أسفله."), G("MATCH", "Returns the relative position of an item within a range.", "MATCH", "تُرجع الموضع النسبي لعنصر داخل نطاق."), G("INDEX", "Returns the value stored at a given row/column position inside a range.", "INDEX", "تُرجع القيمة عند موضع صف/عمود محدد داخل نطاق."), G("INDEX + MATCH", "A flexible lookup pairing that doesn't require the lookup column to be first, unlike VLOOKUP.", "INDEX + MATCH", "دمج بحث مرن لا يشترط أن يكون عمود البحث هو الأول، خلافاً لـ VLOOKUP."), G("Data Validation", "Restricts what values can be entered into a cell, including building a dropdown list.", "التحقق من صحة البيانات", "تُقيّد القيم التي يمكن إدخالها في خلية، بما في ذلك بناء قائمة منسدلة."), G("PivotTable", "A tool that summarizes large datasets interactively by arranging fields into rows, columns, values, and filters.", "الجدول المحوري", "أداة تُلخّص كميات كبيرة من البيانات تفاعلياً بترتيب الحقول في صفوف وأعمدة وقيم ومرشحات."), G("PivotChart", "A chart that visualizes the data summarized inside a PivotTable.", "المخطط المحوري", "مخطط يعرض بصرياً البيانات المُلخصة داخل جدول محوري."), G("Style (Word)", "A saved bundle of formatting commands applied to text in one action.", "النمط (Style)", "مجموعة محفوظة من أوامر التنسيق تُطبّق على النص بإجراء واحد."), G("Template (.dotx)", "A pre-formatted starting document with predefined layout, fonts, and placeholders.", "القالب (.dotx)", "مستند بداية مُنسّق مسبقاً بتخطيط وخطوط وعناصر نائبة محددة."), G("Section Break", "A marker that divides a document into independently formatted parts.", "فاصل قسم", "علامة تُقسّم المستند إلى أجزاء مُنسّقة بشكل مستقل."), G("Table of Contents", "An automatically generated, navigable outline built from heading styles.", "جدول المحتويات", "مخطط آلي قابل للتنقل يُبنى من أنماط العناوين."), G("Mail Merge", "Combines a main document with a recipient list to produce personalized copies.", "الدمج البريدي", "يدمج مستنداً رئيسياً مع قائمة مستلمين لإنتاج نسخ مُخصصة."), G("Citation", "A reference inserted in text pointing to a source, such as a book or article.", "الاستشهاد", "إشارة تُدرج في النص تشير إلى مصدر، مثل كتاب أو مقال."), G("Bibliography", "An automatically generated list of every source cited in a document.", "قائمة المراجع", "قائمة تُنشأ تلقائياً بكل المصادر المُستشهد بها في المستند."), G("Ribbon", "The area at the top of Office apps holding tabs like Home, Insert, and Design.", "الشريط (Ribbon)", "المنطقة أعلى تطبيقات أوفيس التي تحتوي تبويبات مثل Home وInsert وDesign."), G("Slide Layout", "A predefined arrangement of placeholders (title, content, image) on a slide.", "تخطيط الشريحة", "ترتيب محدد مسبقاً للعناصر النائبة (عنوان، محتوى، صورة) على الشريحة."), G("Transition", "The visual effect that plays when moving from one slide to the next.", "الانتقال (Transition)", "التأثير البصري الذي يظهر عند الانتقال من شريحة إلى التالية."), G("Animation", "A visual effect (entrance, emphasis, exit, motion path) applied to an object on a slide.", "الحركة (Animation)", "تأثير بصري (دخول، تأكيد، خروج، مسار حركة) يُطبّق على عنصر داخل الشريحة."), G("Trigger", "A setting that makes an animation start only when a specific object is clicked.", "المُفعّل (Trigger)", "إعداد يجعل الحركة تبدأ فقط عند النقر على عنصر معيّن."), G("Animation Painter", "A tool that copies a configured animation from one object to another.", "أداة نسخ الحركة", "أداة تنسخ حركة مُعدّة بالكامل من عنصر إلى آخر."), G("Slide Master", "The top-level layout set that unifies theme, fonts, colors, and effects across an entire deck.", "الشريحة الرئيسية", "مجموعة التخطيط العليا التي توحّد السمة والخطوط والألوان والتأثيرات عبر العرض بأكمله."), G("Screen Recording", "A built-in PowerPoint tool that captures on-screen activity directly into a slide.", "تسجيل الشاشة", "أداة مدمجة في بوربوينت تلتقط نشاط الشاشة مباشرة داخل شريحة."), G("OneDrive", "Microsoft 365's cloud storage service enabling file sharing and real-time co-authoring.", "OneDrive", "خدمة التخزين السحابي في مايكروسوفت 365 التي تتيح مشاركة الملفات والتأليف المشترك الفوري."), G("SharePoint", "An advanced document management and collaboration platform used widely by large organizations.", "SharePoint", "منصة متقدمة لإدارة المستندات والتعاون تستخدمها المؤسسات الكبيرة على نطاق واسع."), G("Microsoft Teams", "A communication platform offering chats, channels, file sharing, and video meetings.", "Microsoft Teams", "منصة تواصل توفر المحادثات والقنوات ومشاركة الملفات واجتماعات الفيديو."), G("Microsoft Copilot", "An AI assistant that can help generate and edit presentation content from prompts.", "Microsoft Copilot", "مساعد ذكاء اصطناعي يساعد في توليد وتحرير محتوى العروض التقديمية من الأوامر النصية."), G("Gamma AI", "A third-party AI tool that generates a full presentation outline, text, and images from a topic prompt.", "Gamma AI", "أداة ذكاء اصطناعي خارجية تُولّد مخططاً كاملاً للعرض ونصاً وصوراً من فكرة موضوع."), G("Index (Word)", "A list of important terms with their page numbers, usually placed at the end of a long document. Entries are marked with Mark Entry (Alt+Shift+X) and can include main entries, subentries, and cross-references; the finished index is dynamic and refreshed with Update Field.", "الفهرس (وورد)", "قائمة بأهم المصطلحات مع أرقام صفحاتها، توضع عادة في نهاية المستند الطويل. تُعلَّم الإدخالات عبر Mark Entry (Alt+Shift+X) ويمكن أن تشمل إدخالات رئيسية وفرعية ومراجع تبادلية؛ والفهرس النهائي ديناميكي ويُحدَّث عبر Update Field."), G("Cross-reference", "Inside an index entry, a link pointing the reader to a related term instead of a page number — e.g. marking \"Graphs\" with a cross-reference to \"See also Charts\".", "المرجع التبادلي (Cross-reference)", "داخل إدخال الفهرس، رابط يوجّه القارئ إلى مصطلح ذي صلة بدلاً من رقم صفحة — مثل تعليم \"الرسوم\" بمرجع تبادلي إلى \"انظر أيضاً المخططات\"."), G("Protect Sheet", "An Excel security layer, applied via the sheet tab's right-click menu or the Review tab, that restricts which actions (selecting, formatting, inserting rows/columns) are allowed on that one worksheet, with an optional password.", "حماية الورقة (Protect Sheet)", "طبقة أمان في إكسل، تُطبَّق من قائمة النقر بزر الفأرة الأيمن على تبويب الورقة أو من تبويب Review، وتُقيّد الإجراءات المسموحة (تحديد، تنسيق، إدراج صفوف/أعمدة) على تلك الورقة تحديداً، مع كلمة مرور اختيارية."), G("Protect Workbook (Structure)", "A workbook-level lock, found on the Review tab, that stops other users from adding, deleting, hiding, renaming, or reordering entire sheets — distinct from protecting a single sheet's cell contents.", "حماية بنية المصنف (Protect Workbook)", "قفل على مستوى المصنف بأكمله، يوجد في تبويب Review، يمنع المستخدمين الآخرين من إضافة أو حذف أو إخفاء أو إعادة تسمية أو إعادة ترتيب الأوراق بالكامل — ويختلف عن حماية محتوى خلايا ورقة واحدة."), G("Encrypt with Password", "The strongest Excel protection layer (File > Info > Protect Workbook > Encrypt with Password): it locks the entire file so it cannot even be opened for viewing without the correct password.", "التشفير بكلمة مرور (Encrypt with Password)", "أقوى طبقة حماية في إكسل (من File > Info > Protect Workbook > Encrypt with Password): تُقفل الملف بأكمله بحيث لا يمكن حتى فتحه للعرض دون كلمة المرور الصحيحة."), G("Error Alert — Stop", "A Data Validation error style that completely blocks an invalid entry and forces the user to correct it before continuing.", "تنبيه الخطأ — إيقاف (Stop)", "نمط تنبيه خطأ في Data Validation يمنع الإدخال غير الصالح منعاً تاماً ويُجبر المستخدم على تصحيحه قبل المتابعة."), G("Error Alert — Warning", "A Data Validation error style that flags the invalid entry but still lets the user proceed after confirming.", "تنبيه الخطأ — تحذير (Warning)", "نمط تنبيه خطأ في Data Validation يُشير إلى الإدخال غير الصالح لكنه يسمح للمستخدم بالمتابعة رغم ذلك بعد التأكيد."), G("Error Alert — Information", "A Data Validation error style that simply informs the user of the issue while still allowing the entry through unchanged.", "تنبيه الخطأ — معلومة (Information)", "نمط تنبيه خطأ في Data Validation يكتفي بإعلام المستخدم بالمشكلة بينما يسمح بمرور الإدخال دون تغيير."), G("Input Message", "An optional Data Validation tooltip that appears automatically the moment a validated cell is selected, guiding the user on what kind of value is expected.", "رسالة الإدخال (Input Message)", "تلميح اختياري في Data Validation يظهر تلقائياً بمجرد تحديد خلية خاضعة للتحقق، ويُرشد المستخدم لنوع القيمة المتوقعة."), ];
+
+            /* ================= MODULES ASSEMBLY ================= */
+            const MODULES = {
+                word: {
+                    eyebrow: "WORD",
+                    summaries: WORD_SUMMARIES,
+                    tasks: WORD_TASKS,
+                    questions: WORD_QUESTIONS
+                },
+                excel: {
+                    eyebrow: "EXCEL",
+                    summaries: EXCEL_SUMMARIES,
+                    tasks: EXCEL_TASKS,
+                    questions: EXCEL_QUESTIONS
+                },
+                powerpoint: {
+                    eyebrow: "POWERPOINT",
+                    summaries: PPT_SUMMARIES,
+                    tasks: PPT_TASKS,
+                    questions: PPT_QUESTIONS
+                },
+            };
+        </script>
+    </body>
+</html>
